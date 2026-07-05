@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <!--
+  장금이 핵심 색상 탐색 — 후보 비교 목업
+  같은 UI 요소(로고칩·FAB·주요버튼·확률게이지·태그·영역액센트)를 후보 색마다 동일하게 렌더해
+  "장금이 테마(엄마·살림·식재료·현대적 앱)에 무엇이 어울리나"를 눈으로 비교한다.
+  각 후보는 primary(포인트)·primary-strong·primary-soft 3단으로 구성.
+  -->
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>장금이 — 핵심 색상 후보 비교</title>
+    <style>
+      :root {
+        --bg: #fbfbfa; --surface: #fff; --sunken: #f4f4f2;
+        --ink: #1f1d18; --ink-sub: #6b675e; --ink-mute: #9b978c; --line: #e7e4dc;
+        --r-sm: 10px; --r-md: 16px; --r-lg: 20px; --r-pill: 999px;
+        --shadow: 0 2px 10px rgba(31,29,24,.05); --shadow-f: 0 6px 20px rgba(31,29,24,.1);
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; background: var(--bg); color: var(--ink); line-height: 1.5; -webkit-font-smoothing: antialiased;
+        font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Malgun Gothic", sans-serif; }
+      .page { max-width: 1280px; margin: 0 auto; padding: 32px 24px 64px; }
+      .page-title { font-size: 30px; font-weight: 800; margin: 0 0 6px; }
+      .page-sub { color: var(--ink-sub); font-size: 15px; margin: 0 0 8px; max-width: 760px; }
+      .criteria { font-size: 13px; color: var(--ink-sub); background: var(--surface); border: 1px solid var(--line);
+        border-radius: var(--r-md); padding: 12px 16px; margin: 12px 0 28px; max-width: 760px; }
+      .criteria b { color: var(--ink); }
+
+      /* 후보 카드 그리드 */
+      .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; }
+      .cand { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg);
+        box-shadow: var(--shadow); padding: 20px; }
+      .cand-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+      .cand-name { font-size: 16px; font-weight: 800; }
+      .cand-hex { font-size: 11px; color: var(--ink-mute); font-family: "SFMono-Regular", Consolas, monospace; }
+      .cand-note { font-size: 12px; color: var(--ink-sub); margin-bottom: 16px; }
+
+      /* 색 3단 스와치 */
+      .sw-row { display: flex; gap: 6px; margin-bottom: 16px; }
+      .sw { flex: 1; height: 34px; border-radius: var(--r-sm); border: 1px solid rgba(0,0,0,.06);
+        display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; }
+
+      /* 동일 UI 샘플 (각 후보 색 적용) */
+      .sample { display: flex; flex-direction: column; gap: 12px; }
+      .logo { display: flex; align-items: center; gap: 8px; }
+      .logo .mark { width: 30px; height: 30px; border-radius: var(--r-sm); display: flex; align-items: center;
+        justify-content: center; font-size: 16px; }
+      .logo .name { font-size: 17px; font-weight: 800; }
+      .btn { border: none; border-radius: var(--r-md); padding: 12px; font-weight: 800; font-size: 14px;
+        color: #fff; font-family: inherit; text-align: center; cursor: pointer; }
+      .gauge { border-radius: var(--r-md); padding: 12px 14px; }
+      .gauge .g-lbl { font-size: 11px; font-weight: 700; }
+      .gauge .g-val { font-size: 26px; font-weight: 800; line-height: 1.1; }
+      .gauge .g-bar { height: 8px; border-radius: var(--r-pill); overflow: hidden; margin-top: 6px; }
+      .gauge .g-bar > i { display: block; height: 100%; width: 66%; border-radius: var(--r-pill); }
+      .row-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+      .tag { font-size: 12px; font-weight: 700; border-radius: var(--r-pill); padding: 4px 12px; }
+      .fab-row { display: flex; align-items: center; gap: 10px; }
+      .fab { width: 44px; height: 44px; border-radius: 50%; color: #fff; display: flex; align-items: center;
+        justify-content: center; font-size: 12px; font-weight: 800; box-shadow: var(--shadow-f); }
+      .fab-cap { font-size: 12px; color: var(--ink-sub); }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <h1 class="page-title">🎨 장금이 핵심 색상 후보 비교</h1>
+      <p class="page-sub">
+        같은 UI 요소(로고·FAB·버튼·확률 게이지·태그)를 후보 색마다 동일하게 적용. 어떤 색이
+        <b>장금이 테마</b>에 가장 어울리는지 눈으로 비교하세요.
+      </p>
+      <div class="criteria">
+        <b>판단 기준 3축</b> — ① 엄마·살림 고수(따뜻·신뢰) · ② 식재료 가이드(신선·자연·건강) ·
+        ③ 현대적 앱(세련·저채도·절제, 사극 아님). 형광·고채도 원색은 제외.
+      </div>
+
+      <div class="grid" id="grid"></div>
+    </div>
+
+    <script>
+      // 후보: [이름, primary, strong, soft, 설명]
+      const CANDIDATES = [
+        ["세이지 그린 (현재)", "#5C6E3D", "#47562F", "#EEF1E6",
+         "현재 시스템 색. 식재료 자연 연상 + 저채도 현대적. 살짝 어둡고 탁한 올리브 톤."],
+        ["프레시 세이지", "#6E8B4A", "#556E38", "#EEF3E5",
+         "현재보다 밝고 산뜻한 세이지. 신선함↑, 무거움↓. 같은 계열 미세 조정안."],
+        ["따뜻한 올리브그린", "#7A863F", "#616B32", "#F1F2E3",
+         "채소+햇살 느낌. 그린에 노랑 살짝. 정겨움↑이지만 촌스러움 주의."],
+        ["딥 포레스트", "#3D5A40", "#2E4531", "#E7EEE8",
+         "신뢰·전문성 강조. 진하고 안정적. 다만 '친근한 엄마'보다 무게감."],
+        ["테라코타 (따뜻)", "#B5623C", "#914B2E", "#F7EAE2",
+         "집밥·요리·정겨움. 따뜻함 최상. 식욕색이라 절제 어렵고 자극적일 수 있음."],
+        ["머스터드 옐로", "#C08A2D", "#9A6E23", "#F8EFDD",
+         "발랄·친근·주방 느낌. 눈에 띔. 저채도 유지 안 하면 촌스러워질 위험."],
+        ["소프트 클레이", "#A2705A", "#835946", "#F3E9E3",
+         "흙·도자기·손맛의 따뜻한 뉴트럴. 차분하고 세련. 식재료 신선함 신호는 약함."],
+      ];
+
+      const grid = document.getElementById("grid");
+      grid.innerHTML = CANDIDATES.map(([name, p, s, soft, note]) => `
+        <div class="cand">
+          <div class="cand-head">
+            <span class="cand-name">${name}</span>
+            <span class="cand-hex">${p}</span>
+          </div>
+          <div class="cand-note">${note}</div>
+          <div class="sw-row">
+            <div class="sw" style="background:${p};color:#fff">primary</div>
+            <div class="sw" style="background:${s};color:#fff">strong</div>
+            <div class="sw" style="background:${soft};color:${s}">soft</div>
+          </div>
+          <div class="sample">
+            <div class="logo">
+              <span class="mark" style="background:${soft}">🍳</span>
+              <span class="name">장금이</span>
+            </div>
+            <div class="fab-row">
+              <span class="fab" style="background:${p}">장금이</span>
+              <span class="fab-cap">하단 탭 FAB</span>
+            </div>
+            <button class="btn" style="background:${p}">나만의 수박 활용법 공유하기</button>
+            <div class="gauge" style="background:${soft}">
+              <div class="g-lbl" style="color:${p}">이 수박이 좋은 수박일 확률</div>
+              <div class="g-val" style="color:${p}">66%</div>
+              <div class="g-bar" style="background:${soft};filter:brightness(.94)">
+                <i style="background:${p}"></i>
+              </div>
+            </div>
+            <div class="row-tags">
+              <span class="tag" style="background:${soft};color:${s}">추천</span>
+              <span class="tag" style="background:${p};color:#fff">구매</span>
+              <span class="tag" style="background:${soft};color:${s}">제철</span>
+            </div>
+          </div>
+        </div>
+      `).join("");
+    </script>
+  </body>
+</html>
