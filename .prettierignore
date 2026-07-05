@@ -1,0 +1,8 @@
+.next
+node_modules
+out
+coverage
+.claude
+package-lock.json
+*.log
+.DS_Store
