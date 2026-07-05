@@ -1,0 +1,104 @@
+{
+  "id": "potato",
+  "name": "감자",
+  "aliases": ["potato"],
+  "category": "vegetable",
+  "emoji": "🥔",
+  "summary": "든든한 탄수화물 채소. 보관만 잘하면 몇 주씩 두고 먹을 수 있어요.",
+  "seasonMonths": [6, 7, 8, 9, 10],
+  "facts": [
+    { "key": "category", "label": "분류", "value": "채소(서류)" },
+    { "key": "calorie", "label": "칼로리", "value": "66kcal (100g)" },
+    { "key": "storagePeriod", "label": "보관 기간", "value": "냉암소 실온 2~4주" },
+    { "key": "nutrients", "label": "주요 영양 성분", "value": "탄수화물, 비타민C, 칼륨" }
+  ],
+
+  "purchase": {
+    "headline": "좋은 감자 고르는 법",
+    "intro": "싹과 색만 확인하면 실패하지 않아요.",
+    "criteria": [
+      { "key": "firmness", "title": "단단함", "desc": "눌렀을 때 단단하고 무르지 않은 것이 신선해요.", "image": null,
+        "source": { "org": "농촌진흥청 농사로", "type": "official", "mediaType": "article", "url": "https://www.nongsaro.go.kr", "verified": true, "lastReviewed": "2026-07-01" } },
+      { "key": "no-sprout", "title": "싹이 없는 것", "desc": "싹이 튼 감자는 솔라닌이 생겨 좋지 않아요. 눈이 튀어나오지 않은 걸 고르세요.", "image": null,
+        "source": { "org": "식품의약품안전처", "type": "official", "mediaType": "article", "url": "https://www.mfds.go.kr", "verified": true, "lastReviewed": "2026-07-01" } },
+      { "key": "no-green", "title": "초록빛이 없는 것", "desc": "껍질이 초록으로 변한 부분은 독성이 있어요. 고르게 갈색인 것을 고르세요.", "image": null,
+        "source": { "org": "식품의약품안전처", "type": "official", "mediaType": "article", "url": "https://www.mfds.go.kr", "verified": true, "lastReviewed": "2026-07-01" } },
+      { "key": "smooth-skin", "title": "껍질이 매끈한 것", "desc": "주름지거나 쭈글쭈글하면 수분이 빠진 오래된 감자예요.", "image": null,
+        "source": { "org": "농촌진흥청 농사로", "type": "official", "mediaType": "article", "url": "https://www.nongsaro.go.kr", "verified": true, "lastReviewed": "2026-07-01" } }
+    ],
+    "fieldData": { "enabled": false, "label": null, "value": null, "unit": null, "basis": null, "sampleSize": null }
+  },
+
+  "storage": {
+    "headline": "감자 보관 방법 비교",
+    "intro": "감자는 냉장 보관이 오히려 해로워요. 장소와 함께 둘 재료가 핵심이에요.",
+    "filters": [
+      { "key": "place", "label": "보관 장소", "options": ["냉암소(실온)", "냉장", "냉동"] },
+      { "key": "light", "label": "빛 차단", "options": ["차광", "일반"] },
+      { "key": "companion", "label": "함께 두는 것", "options": ["사과와 함께", "단독"] }
+    ],
+    "methods": [
+      {
+        "id": "dark-cool-apple",
+        "title": "종이봉투 + 사과와 함께 냉암소 보관",
+        "recommended": true,
+        "tags": { "place": "냉암소(실온)", "light": "차광", "companion": "사과와 함께" },
+        "summary": "빛을 차단한 서늘한 곳에 사과 한 알과 두면 싹 트는 걸 늦출 수 있어요.",
+        "durationDays": [21, 30],
+        "conditions": { "temp": "7~10℃" },
+        "steps": [
+          { "no": 1, "title": "씻지 말고 흙 털기", "desc": "물에 씻으면 쉽게 상해요. 흙만 가볍게 털어요.", "image": null },
+          { "no": 2, "title": "종이봉투·신문지로 빛 차단", "desc": "빛을 받으면 초록으로 변하고 싹이 나요.", "image": null },
+          { "no": 3, "title": "사과 한 알 넣기", "desc": "사과의 에틸렌이 감자 싹 트는 것을 늦춰줘요.", "image": null },
+          { "no": 4, "title": "서늘한 곳에 두기", "desc": "베란다 그늘이나 팬트리처럼 서늘하고 어두운 곳에 둬요.", "image": null }
+        ],
+        "goodFor": ["몇 주간 두고 먹을 때", "실온 보관 공간이 있을 때"],
+        "notFor": ["여름철 더운 실내(냉장 필요)"],
+        "cautions": ["냉장고에 넣으면 전분이 당으로 변해 맛이 나빠져요", "빛을 받으면 초록으로 변하니 반드시 차광", "양파와 같이 두면 서로 빨리 상해요"],
+        "rating": { "avg": 4.6, "count": 1120, "dist": { "5": 70, "4": 20, "3": 6, "2": 2, "1": 2 } },
+        "source": { "org": "농촌진흥청", "type": "official", "mediaType": "article", "url": "https://www.nongsaro.go.kr", "verified": true, "lastReviewed": "2026-07-01" },
+        "media": [
+          { "type": "video", "provider": "youtube", "url": "https://youtube.com/watch?v=ffff", "title": "감자 오래 보관하는 법", "thumbnail": null, "creator": "살림의여왕" }
+        ]
+      },
+      {
+        "id": "blanch-freeze",
+        "title": "데쳐서 냉동 (조리용)",
+        "recommended": false,
+        "tags": { "place": "냉동", "light": "일반", "companion": "단독" },
+        "summary": "삶거나 데쳐서 냉동하면 오래 두고 조리에 바로 쓸 수 있어요.",
+        "durationDays": [30, 90],
+        "conditions": { "temp": "-18℃" },
+        "steps": [],
+        "goodFor": ["대량 보관", "조리용(볶음·조림)"],
+        "notFor": ["생감자 식감 그대로"],
+        "cautions": ["생감자를 그냥 냉동하면 물러지고 맛이 변해요. 반드시 데쳐서!"],
+        "rating": { "avg": 4.1, "count": 480, "dist": { "5": 52, "4": 27, "3": 13, "2": 5, "1": 3 } },
+        "source": { "org": "식품의약품안전처", "type": "official", "mediaType": "article", "url": "https://www.mfds.go.kr", "verified": true, "lastReviewed": "2026-07-01" },
+        "media": []
+      }
+    ],
+    "tip": "감자의 3대 적은 빛·습기·냉장이에요. 어둡고 서늘하게, 씻지 말고 두는 게 핵심입니다."
+  },
+
+  "handling": {
+    "headline": "싹 난 감자·남은 감자 활용하기",
+    "intro": "잘 활용하면 버릴 일이 없어요.",
+    "categories": ["전체", "반찬", "국·찌개", "간식", "베이킹"],
+    "recipes": [
+      { "id": "gamja-jorim", "title": "감자조림", "category": "반찬", "desc": "간장 베이스로 조려내는 기본 밑반찬.", "image": null,
+        "author": { "name": "집밥연구소", "type": "ugc" }, "reaction": { "likes": 1050, "comments": 62 }, "source": null, "media": [] },
+      { "id": "gamja-jeon", "title": "감자전", "category": "간식", "desc": "갈아서 부치면 겉바속촉 감자전 완성.", "image": null,
+        "author": { "name": "비오는날엔", "type": "ugc" }, "reaction": { "likes": 940, "comments": 48 }, "source": null, "media": [] },
+      { "id": "mashed", "title": "으깬 감자 샐러드", "category": "반찬", "desc": "삶아 으깨 마요와 버무리면 든든한 샐러드.", "image": null,
+        "author": { "name": "healthy_식탁", "type": "ugc" }, "reaction": { "likes": 610, "comments": 29 }, "source": null, "media": [] }
+    ],
+    "contribution": { "enabled": true, "reward": "가챠권" }
+  },
+
+  "related": [
+    { "title": "감자 싹, 먹어도 될까?", "desc": "솔라닌과 안전한 손질법", "href": "/재료/potato/싹", "image": null }
+  ],
+
+  "meta": { "schemaVersion": "1.0.0", "generatedAt": null, "reviewStatus": "draft" }
+}

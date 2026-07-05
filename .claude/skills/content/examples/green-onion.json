@@ -1,0 +1,124 @@
+{
+  "id": "green-onion",
+  "name": "대파",
+  "aliases": ["파", "green onion", "welsh onion"],
+  "category": "vegetable",
+  "emoji": "🌿",
+  "summary": "국·볶음·양념 어디에나 들어가는 기본 채소. 잘 보관하면 오래 쓸 수 있어요.",
+  "seasonMonths": [11, 12, 1, 2, 3],
+  "facts": [
+    { "key": "category", "label": "분류", "value": "채소(엽경채)" },
+    { "key": "calorie", "label": "칼로리", "value": "26kcal (100g)" },
+    { "key": "storagePeriod", "label": "보관 기간", "value": "손질 후 냉장 1~2주 / 냉동 1개월+" },
+    { "key": "nutrients", "label": "주요 영양 성분", "value": "알리신, 비타민C, 식이섬유" }
+  ],
+
+  "purchase": {
+    "headline": "좋은 대파 고르는 법",
+    "intro": "뿌리와 잎 상태만 보면 신선도를 알 수 있어요.",
+    "criteria": [
+      { "key": "root", "title": "뿌리 상태", "desc": "뿌리가 하얗고 촉촉하며 잔뿌리가 살아있는 것이 신선해요.", "image": null,
+        "source": { "org": "농촌진흥청 농사로", "type": "official", "mediaType": "article", "url": "https://www.nongsaro.go.kr", "verified": true, "lastReviewed": "2026-07-01" } },
+      { "key": "white-part", "title": "흰 대(줄기) 굵기", "desc": "흰 부분이 길고 단단하며 곧게 뻗은 것이 좋아요.", "image": null,
+        "source": { "org": "농촌진흥청 농사로", "type": "official", "mediaType": "article", "url": "https://www.nongsaro.go.kr", "verified": true, "lastReviewed": "2026-07-01" } },
+      { "key": "leaf", "title": "잎 상태", "desc": "잎끝이 마르거나 누렇지 않고 진한 초록으로 탱탱한 것을 고르세요.", "image": null,
+        "source": { "org": "농촌진흥청 농사로", "type": "official", "mediaType": "article", "url": "https://www.nongsaro.go.kr", "verified": true, "lastReviewed": "2026-07-01" } },
+      { "key": "firmness", "title": "무르지 않았는지", "desc": "만졌을 때 물렁하거나 진물이 나오면 상하기 시작한 거예요.", "image": null,
+        "source": { "org": "식품의약품안전처", "type": "official", "mediaType": "article", "url": "https://www.mfds.go.kr", "verified": true, "lastReviewed": "2026-07-01" } }
+    ],
+    "fieldData": { "enabled": false, "label": null, "value": null, "unit": null, "basis": null, "sampleSize": null }
+  },
+
+  "storage": {
+    "headline": "대파 보관 방법 비교",
+    "intro": "손질 여부와 보관 장소에 따라 방법이 달라요.",
+    "filters": [
+      { "key": "prep", "label": "손질", "options": ["손질 전", "손질 후"] },
+      { "key": "place", "label": "보관 장소", "options": ["냉장", "냉동", "물꽂이"] },
+      { "key": "cut", "label": "형태", "options": ["통대파", "송송 썬 것"] }
+    ],
+    "methods": [
+      {
+        "id": "chop-freeze",
+        "title": "송송 썰어 밀폐 후 냉동",
+        "recommended": true,
+        "tags": { "prep": "손질 후", "place": "냉동", "cut": "송송 썬 것" },
+        "summary": "미리 썰어 냉동해두면 필요할 때 바로 꺼내 쓸 수 있어 가장 편해요.",
+        "durationDays": [30, 60],
+        "conditions": { "temp": "-18℃" },
+        "steps": [
+          { "no": 1, "title": "깨끗이 씻어 물기 제거", "desc": "물기가 남으면 얼면서 뭉쳐요. 키친타월로 충분히 말려요.", "image": null },
+          { "no": 2, "title": "송송 썰기", "desc": "요리에 쓰기 좋은 크기로 썰어요.", "image": null },
+          { "no": 3, "title": "밀폐용기·지퍼백에 평평하게", "desc": "얇게 펴서 얼리면 필요한 만큼 떼어 쓰기 좋아요.", "image": null }
+        ],
+        "goodFor": ["자주 요리하는 사람", "국·볶음에 바로 투입", "대량 보관"],
+        "notFor": ["파채·생으로 아삭하게 먹고 싶을 때"],
+        "cautions": ["물기를 완전히 제거해야 뭉치지 않아요", "해동하면 아삭함은 줄어요"],
+        "rating": { "avg": 4.7, "count": 1580, "dist": { "5": 78, "4": 15, "3": 5, "2": 1, "1": 1 } },
+        "source": { "org": "농촌진흥청", "type": "official", "mediaType": "article", "url": "https://www.nongsaro.go.kr", "verified": true, "lastReviewed": "2026-07-01" },
+        "media": [
+          { "type": "video", "provider": "youtube", "url": "https://youtube.com/watch?v=cccc", "title": "대파 냉동 보관법", "thumbnail": null, "creator": "살림9단" }
+        ]
+      },
+      {
+        "id": "water-jar",
+        "title": "물컵에 꽂아 냉장 (물꽂이)",
+        "recommended": false,
+        "tags": { "prep": "손질 전", "place": "물꽂이", "cut": "통대파" },
+        "summary": "뿌리를 살려 물에 꽂아 냉장하면 잎이 오래 싱싱해요.",
+        "durationDays": [10, 14],
+        "conditions": { "temp": "4℃" },
+        "steps": [
+          { "no": 1, "title": "뿌리 살려 다듬기", "desc": "뿌리를 자르지 말고 겉잎만 정리해요.", "image": null },
+          { "no": 2, "title": "물컵에 세워 꽂기", "desc": "뿌리가 물에 잠기게 컵에 세워요.", "image": null },
+          { "no": 3, "title": "냉장·물 갈아주기", "desc": "2~3일마다 물을 갈아주면 더 오래가요.", "image": null }
+        ],
+        "goodFor": ["잎을 싱싱하게 유지", "통대파 그대로 보관"],
+        "notFor": ["냉장고 공간이 부족할 때"],
+        "cautions": ["물을 안 갈면 물러질 수 있어요"],
+        "rating": { "avg": 4.4, "count": 910, "dist": { "5": 62, "4": 24, "3": 9, "2": 3, "1": 2 } },
+        "source": { "org": "농촌진흥청", "type": "official", "mediaType": "video", "url": "https://youtube.com/watch?v=dddd", "verified": true, "lastReviewed": "2026-07-01" },
+        "media": []
+      },
+      {
+        "id": "towel-wrap-fridge",
+        "title": "키친타월 감싸 밀폐 냉장",
+        "recommended": false,
+        "tags": { "prep": "손질 후", "place": "냉장", "cut": "통대파" },
+        "summary": "물기를 닦고 키친타월로 감싸 밀폐하면 무르지 않고 오래가요.",
+        "durationDays": [7, 14],
+        "conditions": { "temp": "4℃" },
+        "steps": [],
+        "goodFor": ["1~2주 내 소진", "냉장 보관 선호"],
+        "notFor": ["장기 보관"],
+        "cautions": ["젖은 채로 밀폐하면 물러져요"],
+        "rating": { "avg": 4.2, "count": 640, "dist": { "5": 55, "4": 28, "3": 11, "2": 4, "1": 2 } },
+        "source": { "org": "식품의약품안전처", "type": "official", "mediaType": "article", "url": "https://www.mfds.go.kr", "verified": true, "lastReviewed": "2026-07-01" },
+        "media": []
+      }
+    ],
+    "tip": "대파는 물기가 최대의 적이에요. 어떤 방법이든 물기를 제대로 제거하면 훨씬 오래 갑니다."
+  },
+
+  "handling": {
+    "headline": "남은 대파, 알뜰하게 다 쓰기",
+    "intro": "파기름부터 파김치까지 다양하게 활용해요.",
+    "categories": ["전체", "양념·기름", "국·찌개", "반찬", "김치/절임"],
+    "recipes": [
+      { "id": "pa-gireum", "title": "파기름 왕창 만들어 냉동", "category": "양념·기름", "desc": "많이 남은 대파는 파기름으로! 볶음요리 풍미가 살아나요.", "image": null,
+        "author": { "name": "자취3년차", "type": "ugc" }, "reaction": { "likes": 1420, "comments": 96 }, "source": null,
+        "media": [ { "type": "video", "provider": "youtube", "url": "https://youtube.com/watch?v=eeee", "title": "파기름 만들기", "thumbnail": null, "creator": "자취3년차" } ] },
+      { "id": "pa-kimchi", "title": "파김치", "category": "김치/절임", "desc": "쪽파·대파로 담그는 알싸한 파김치. 밥도둑이에요.", "image": null,
+        "author": { "name": "집밥연구소", "type": "ugc" }, "reaction": { "likes": 880, "comments": 51 }, "source": null, "media": [] },
+      { "id": "pa-jeon", "title": "대파전", "category": "반찬", "desc": "굵은 대파 흰 부분으로 부치는 간단 대파전.", "image": null,
+        "author": { "name": "요리초보", "type": "ugc" }, "reaction": { "likes": 512, "comments": 33 }, "source": null, "media": [] }
+    ],
+    "contribution": { "enabled": true, "reward": "가챠권" }
+  },
+
+  "related": [
+    { "title": "대파 vs 쪽파 차이", "desc": "용도별 구분", "href": "/재료/green-onion/종류", "image": null }
+  ],
+
+  "meta": { "schemaVersion": "1.0.0", "generatedAt": null, "reviewStatus": "draft" }
+}
