@@ -30,6 +30,11 @@ export function getIngredient(slug: string): Ingredient | null {
   return INGREDIENTS[slug] ?? null;
 }
 
+/** slug → 재료 이름(헤더 제목 등 가벼운 조회용). 없으면 null. */
+export function getIngredientName(slug: string): string | null {
+  return INGREDIENTS[slug]?.name ?? null;
+}
+
 /** 유효한 탭인지 검사 (URL 세그먼트 검증용). */
 export function isValidTab(tab: string): tab is IngredientTab {
   return (INGREDIENT_TABS as string[]).includes(tab);
