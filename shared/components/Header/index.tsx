@@ -1,0 +1,67 @@
+"use client";
+
+import { usePathname, useRouter } from "next/navigation";
+import { Bell, ChevronLeft, LogIn, User } from "lucide-react";
+import { useAuthStore } from "../../stores";
+import { HeaderIconButton } from "./HeaderIconButton";
+import Image from "next/image";
+import logo from "../../../assets/images/logo.webp";
+
+/** 경로 → 헤더 제목. 정확 일치 우선, 없으면 가장 긴 접두사로 매칭. */
+const PAGE_TITLES: Record<string, string> = {
+  "/search": "검색",
+  "/ingredients": "재료",
+};
+
+function resolveTitle(pathname: string): string {
+  if (PAGE_TITLES[pathname]) return PAGE_TITLES[pathname];
+
+  const prefix = Object.keys(PAGE_TITLES)
+    .filter((path) => pathname.startsWith(`${path}/`))
+    .sort((a, b) => b.length - a.length)[0];
+
+  return prefix ? PAGE_TITLES[prefix] : "";
+}
+
+export function Header() {
+  const pathname = usePathname();
+  const router = useRouter();
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+
+  const isHome = pathname === "/";
+  const title = resolveTitle(pathname);
+
+  return (
+    <header className="sticky top-0 z-20 flex h-14 w-full items-center justify-between px-2 bg-background">
+      {isHome ? (
+        <span>
+          <Image src={logo} alt="로고" className="h-14 w-auto" />
+        </span>
+      ) : (
+        <div className="flex items-center gap-1">
+          <HeaderIconButton label="뒤로" onClick={() => router.back()}>
+            <ChevronLeft className="size-5" />
+          </HeaderIconButton>
+          {title && <h1 className="text-[17px] font-extrabold">{title}</h1>}
+        </div>
+      )}
+
+      <div className="flex items-center gap-1">
+        {isLoggedIn ? (
+          <>
+            <HeaderIconButton label="알림">
+              <Bell className="size-5" />
+            </HeaderIconButton>
+            <HeaderIconButton label="마이페이지">
+              <User className="size-5" />
+            </HeaderIconButton>
+          </>
+        ) : (
+          <HeaderIconButton label="로그인" onClick={() => router.push("/login")}>
+            <LogIn className="size-5" />
+          </HeaderIconButton>
+        )}
+      </div>
+    </header>
+  );
+}
