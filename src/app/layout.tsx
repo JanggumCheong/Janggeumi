@@ -3,6 +3,7 @@ import "./globals.css";
 import { Geist } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { InstallPrompt } from "@/components/InstallPrompt";
+import { Providers } from "./providers";
 import { Header, TabBar } from "../../shared";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
@@ -35,13 +36,15 @@ export default function RootLayout({
   return (
     <html lang="ko" className={cn("font-sans", geist.variable)}>
       <body className="min-h-full flex flex-col antialiased items-center bg-white">
-        {/* 모바일 앱 컨테이너 */}
-        <div className="flex w-full flex-col bg-background sm:w-105">
-          <Header />
-          <main className="flex-1 overflow-y-auto px-5 pb-10 pt-5">{children}</main>
-          <TabBar />
-          <InstallPrompt />
-        </div>
+        <Providers>
+          {/* 모바일 앱 컨테이너 */}
+          <div className="flex w-full flex-col bg-background sm:w-105">
+            <Header />
+            <main className="flex-1 overflow-y-auto px-5 pb-10 pt-5">{children}</main>
+            <TabBar />
+            <InstallPrompt />
+          </div>
+        </Providers>
       </body>
     </html>
   );
