@@ -218,7 +218,8 @@
             "thumbnail": null,
             "creator": "살림9단"
           }
-        ]
+        ],
+        "janggeumiComment": "가장 편한 방법! 미리 썰어 얼리면 국·볶음에 바로 톡톡."
       },
       {
         "id": "water-jar",
@@ -286,7 +287,8 @@
           "verified": true,
           "lastReviewed": "2026-07-01"
         },
-        "media": []
+        "media": [],
+        "janggeumiComment": "뿌리째 물에 꽂으면 잎이 계속 자라요. 물만 갈아주세요."
       },
       {
         "id": "towel-wrap-fridge",
@@ -335,7 +337,8 @@
           "verified": true,
           "lastReviewed": "2026-07-01"
         },
-        "media": []
+        "media": [],
+        "janggeumiComment": "물기가 대파의 적이에요. 키친타월로 감싸는 게 신선도의 핵심!"
       }
     ],
     "tip": "대파는 물기가 최대의 적이에요. 어떤 방법이든 물기를 제대로 제거하면 훨씬 오래 갑니다."
