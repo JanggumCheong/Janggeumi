@@ -1,20 +1,14 @@
+"""User post helpers for the current DDL.
+
+The old reviews table was replaced by user_posts.
+"""
+
 from typing import Any
 
-from ..database import get_db
-from ..schemas import ReviewCreate
-
-supabase = get_db()
+from ..schemas import UserPostCreate
+from .master_data import create_user_post_record
 
 
-def _execute_mutation(query):
-    response = query.execute()
-    if getattr(response, "error", None):
-        raise RuntimeError(response.error.message if response.error else "Mutation failed")
-    return response.data
-
-
-def create_review(review: ReviewCreate) -> Any:
-    """Insert a new review into Supabase."""
-    return _execute_mutation(
-        supabase.table("reviews").insert(review.model_dump())
-    )
+def create_user_review(post: UserPostCreate) -> Any:
+    """Create a user post that can represent a review-style entry."""
+    return create_user_post_record(post)

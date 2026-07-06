@@ -1,15 +1,7 @@
-from typing import List, Optional
+from typing import List, Literal, Optional
 from pydantic import BaseModel
 
-
-class ReviewCreate(BaseModel):
-    """Request body schema for creating a review."""
-    storage_method_id: str
-    user_id: str
-    nickname: str
-    rating: int
-    content: str
-    image_url: Optional[str] = None
+TabType = Literal["purchase", "storage", "processing"]
 
 
 class RecentViewCreate(BaseModel):
@@ -34,42 +26,46 @@ class IngredientCreate(BaseModel):
     peak_months: Optional[List[str]] = None
 
 
-class FilterGroupCreate(BaseModel):
+class ProfileCreate(BaseModel):
+    """Request body schema for creating a profile."""
     id: str
-    name: str
+    nickname: str
+    avatar_url: Optional[str] = None
+
+
+class FilterSectionCreate(BaseModel):
+    id: str
+    main_tab: str
+    section_name: str
 
 
 class FilterOptionCreate(BaseModel):
     id: str
-    filter_group_id: Optional[str] = None
+    section_id: Optional[str] = None
     option_name: str
 
 
 class CategoryFilterCreate(BaseModel):
-    """Request body schema for connecting a category and a filter option."""
-    category_id: str
-    filter_option_id: str
+    id: Optional[str] = None
+    category_id: Optional[str] = None
+    section_id: Optional[str] = None
     sort_order: Optional[int] = 1
 
 
-class StorageMethodCreate(BaseModel):
-    """Request body schema for a storage method on an ingredient."""
-    id: str
+class IngredientFilterDetailCreate(BaseModel):
+    id: Optional[str] = None
     ingredient_id: Optional[str] = None
+    option_id: Optional[str] = None
+    description: str
+    rating_value: Optional[int] = None
+    tab_type: TabType = "purchase"
+
+
+class UserPostCreate(BaseModel):
+    id: Optional[str] = None
+    ingredient_id: Optional[str] = None
+    option_id: Optional[str] = None
+    tab_type: TabType
     title: str
-    duration_text: Optional[str] = None
-    is_recommended: Optional[bool] = False
-
-
-class StorageMethodFilterCreate(BaseModel):
-    """Request body schema for associating a storage method with a filter option."""
-    storage_method_id: str
-    filter_option_id: str
-
-
-class StorageContentCreate(BaseModel):
-    """Request body schema for adding storage content steps or notes."""
-    storage_method_id: Optional[str] = None
-    content_type: str
-    sort_order: int
-    text_content: str
+    content: str
+    rating_value: Optional[int] = None
