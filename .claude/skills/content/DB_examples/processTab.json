@@ -1,0 +1,44 @@
+{
+  "handling_headline": {
+    "headline": "남은 천도복숭아으로 무엇이든 지어보세요!",
+    "intro": "다양한 레시피와 아이디어 모음"
+  },
+  "handling_main_sections": [
+    {
+      "section_id": "fs_waste_status",
+      "section_name": "쓰레기 여부",
+      "options": [
+        {
+          "option_id": "fo_waste_yes",
+          "option_name": "쓰레기 (폐기)"
+        },
+        {
+          "option_id": "fo_waste_recipe",
+          "option_name": "임박/상함 방지 레시피 처리"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    "전체",
+    "쓰레기 (폐기)",
+    "임박/상함 방지 레시피 처리"
+  ],
+  "recipes": [],
+  "dispose": [
+    {
+      "option_id": "fo_waste_recipe",
+      "title": "임박/상함 방지 레시피 처리",
+      "way": "장금이 레시피 가이드: 멍이 들거나 단맛이 떨어진 복숭아는 설탕, 물, 레몬즙과 함께 냄비에 끓여 시원하게 보관하면 아삭하고 달콤한 [복숭아 통조림(병조림)]이 됩니다.",
+      "wasteType": "food",
+      "image": null
+    },
+    {
+      "option_id": "fo_waste_yes",
+      "title": "쓰레기 (폐기)",
+      "way": "장금이 배출 가이드: 복숭아 과육은 음식물 쓰레기이지만, 중간에 있는 [딱딱한 씨앗]은 동물이 소화할 수 없으므로 반드시 **일반 쓰레기(종량제)**로 분류해야 합니다.",
+      "wasteType": "general",
+      "image": null
+    }
+  ]
+}
