@@ -160,11 +160,19 @@
 
 정답 무한. **UGC 중심** — 출처보다 작성자·평점.
 
+처리는 **두 갈래**다 — 사용자의 고민 자체가 다르다:
+- **활용 처리(`recipes`)** = 남은 재료를 뭘로 만들까 (레시피·UGC, 확산형).
+- **폐기 처리(`dispose`)** = 다 쓰고 어떻게 버릴까 (분리배출 안내, 정답형에 가까움).
+
+화면도 상단 세그먼트로 활용/폐기를 나눈다. `categories`는 데이터엔 남겨도 되지만 **화면 필터로는 쓰지 않는다**(확산형은 피드 탐색 — 정렬만). → [[design-notes]], design-system.md 8-4.
+
 ```jsonc
 "handling": {
   "headline": "남은 수박으로 무엇이든 지어보세요!",
   "intro": "다양한 레시피와 아이디어 모음",
-  "categories": ["전체", "음료", "디저트", "요리", "김치/절임"],
+  "categories": ["전체", "음료", "디저트", "요리", "김치/절임"],  // 데이터용(화면 필터 X)
+
+  // ── 활용 처리: 레시피 UGC ──
   "recipes": [
     {
       "id": "watermelon-hwachae",
@@ -172,14 +180,37 @@
       "category": "음료",
       "desc": "남은 수박과 탄산수로 만드는 여름 별미!",
       "image": null,
-      "author": { "name": "요리하는_지니", "type": "ugc" },  // ugc | official
+      "author": { "name": "요리하는_지니", "type": "ugc" },  // ugc | official | curator
       "reaction": { "likes": 1200, "comments": 87 },
       "source": null              // 처리는 출처 선택(없어도 됨)
     }
   ],
-  "contribution": { "enabled": true, "reward": "가챠권" }
+
+  // ── 폐기 처리: 분리배출 안내 (정답형 — 지자체 기준) ──
+  "dispose": [
+    {
+      "key": "rind",
+      "title": "수박 껍질",
+      "way": "잘게 잘라 물기를 빼고 배출해요. 흰 속껍질은 무침·장아찌로도 쓸 수 있어요.",
+      "wasteType": "food",        // food | general | recycle
+      "image": null
+    },
+    {
+      "key": "wrap",
+      "title": "포장 랩·스티커",
+      "way": "과일에 붙은 스티커와 비닐 랩은 음식물이 아니에요. 일반 쓰레기로.",
+      "wasteType": "general",
+      "image": null
+    }
+  ],
+
+  "contribution": { "enabled": true, "reward": "가챠권" }  // 활용(UGC) 작성 보상
 }
 ```
+
+- `dispose[]`는 **선택**(없으면 폐기 탭이 "준비 중"). 있으면 각 항목은 `key/title/way/wasteType` 필수.
+- `wasteType`: `food`(음식물) · `general`(일반) · `recycle`(재활용). 지자체 기준이라 **정답형** — 출처(`source`) 붙일 수 있음.
+- 활용/폐기는 화면에서 세그먼트로 갈리지만, **둘 다 `handling` 안**에 둔다(같은 탭).
 
 ## related (함께 보면 좋은 콘텐츠)
 
@@ -196,6 +227,7 @@
 - `purchase.criteria[].source` — **필수**. `verified:false`면 검증 리포트에 경고.
 - `storage.methods[].source` — **필수**.
 - `handling.recipes[].source` — 선택.
+- `handling.dispose[]` — 선택. 있으면 `key/title/way/wasteType` 필수, `wasteType`은 `food|general|recycle` 중 하나.
 - `storage.methods[].tags`의 각 key는 `storage.filters[].key`에 존재해야 함(정합성).
 - `rating.dist` 합은 100 근사.
 - 모든 `id`/`key`는 영문 slug, 재료 내 유일.
