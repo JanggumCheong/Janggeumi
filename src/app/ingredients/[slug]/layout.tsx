@@ -1,8 +1,6 @@
 import { notFound } from "next/navigation";
 import { getIngredient, getIngredientSlugs } from "../_lib/ingredients";
-import { AppBar } from "../_components/AppBar";
 import { SegmentTabs } from "../_components/SegmentTabs";
-import { BottomTabBar } from "../_components/BottomTabBar";
 
 /** 존재하는 재료만 정적 생성. */
 export function generateStaticParams() {
@@ -10,11 +8,13 @@ export function generateStaticParams() {
 }
 
 /**
- * 재료 상세 공통 셸 (모바일 우선).
- * 앱바 + 세그먼트 탭 + [탭 콘텐츠] + 하단 탭바. 탭이 바뀌어도 이 셸은 유지된다.
+ * 재료 상세 공통 셸.
+ * 앱 공통 Header/TabBar는 루트 layout(src/app/layout.tsx)이 제공한다 —
+ * 여기선 상세 전용 SegmentTabs(구매/보관/처리)만 얹는다(이중 헤더/탭바 방지).
  *
- * 데스크탑 확장 여지: 지금은 폰 폭(max-w-md) 중앙 정렬.
- * 나중에 breakpoint(md:)로 좌 사이드바 + 우 요약 패널을 얹을 수 있게 구조를 열어둔다.
+ * Header 바로 아래에 세그먼트 탭이 자연스럽게 이어지도록:
+ * 루트 main의 상단 패딩(pt-5)·좌우 패딩(px-5)을 상쇄(-mt-5 -mx-5)해
+ * 탭을 화면 폭 끝까지 붙이고 Header 밑선과 밀착시킨다. (sticky는 추후)
  */
 export default async function IngredientLayout({
   children,
@@ -28,18 +28,14 @@ export default async function IngredientLayout({
   if (!ingredient) notFound();
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col bg-background">
-      {/* 상단 고정: 앱바 + 세그먼트 탭 */}
-      <div className="sticky top-0 z-20">
-        <AppBar title={ingredient.name} />
+    <div className="flex flex-1 flex-col">
+      {/* 세그먼트 탭 — Header 바로 아래 밀착, 좌우 엣지까지 */}
+      <div className="-mx-5 -mt-5">
         <SegmentTabs slug={slug} />
       </div>
 
-      {/* 탭 콘텐츠 (스크롤 영역) */}
-      <main className="flex flex-1 flex-col gap-4 p-4">{children}</main>
-
-      {/* 하단 탭바 */}
-      <BottomTabBar active="ingredients" />
+      {/* 탭 콘텐츠 */}
+      <div className="flex flex-1 flex-col gap-4 pt-4">{children}</div>
     </div>
   );
 }

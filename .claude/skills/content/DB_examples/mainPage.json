@@ -1,0 +1,86 @@
+{
+  "today_recommended_ingredient": {
+    "id": "watermelon",
+    "name": "수박",
+    "emoji": "🍉",
+    "catchphrase": "제철 맞은 달콤한 수박",
+    "summary": "맛있게 고르는 법부터 남김없이 활용하는 방법까지!",
+    "image_url": "https://example.com/images/watermelon.png",
+    "is_season": true,
+    "rating": {
+      "avg": 4.7,
+      "count": 1248
+    }
+  },
+  
+  "recent_views": [
+    {
+      "id": "potato",
+      "name": "감자",
+      "image_url": "https://example.com/images/potato.png",
+      "viewed_at": "2026-07-06T22:00:00Z"
+    },
+    {
+      "id": "onion",
+      "name": "양파",
+      "image_url": "https://example.com/images/onion.png",
+      "viewed_at": "2026-07-06T21:30:00Z"
+    },
+    {
+      "id": "watermelon",
+      "name": "수박",
+      "image_url": "https://example.com/images/watermelon.png",
+      "viewed_at": "2026-07-06T20:45:00Z"
+    },
+    {
+      "id": "green_onion",
+      "name": "대파",
+      "image_url": "https://example.com/images/green_onion.png",
+      "viewed_at": "2026-07-05T18:20:00Z"
+    },
+    {
+      "id": "tofu",
+      "name": "두부",
+      "image_url": "https://example.com/images/tofu.png",
+      "viewed_at": "2026-07-05T14:10:00Z"
+    }
+  ],
+  
+  "weekly_trending_ingredients": [
+    {
+      "rank": 1,
+      "id": "watermelon",
+      "name": "수박",
+      "image_url": "https://example.com/images/watermelon.png",
+      "trend_status": "인기 급상승"
+    },
+    {
+      "rank": 2,
+      "id": "corn",
+      "name": "옥수수",
+      "image_url": "https://example.com/images/corn.png",
+      "trend_status": "인기 급상승"
+    },
+    {
+      "rank": 3,
+      "id": "peach",
+      "name": "복숭아",
+      "image_url": "https://example.com/images/peach.png",
+      "trend_status": "지금 제철!"
+    },
+    {
+      "rank": 4,
+      "id": "cucumber",
+      "name": "오이",
+      "image_url": "https://example.com/images/cucumber.png",
+      "trend_status": "인기 급상승"
+    },
+    {
+      "rank": 5,
+      "id": "tomato",
+      "name": "토마토",
+      "image_url": "https://example.com/images/tomato.png",
+      "trend_status": "지금 제철!"
+    }
+  ]
+}

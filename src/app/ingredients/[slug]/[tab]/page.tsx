@@ -7,6 +7,7 @@ import {
 import { INGREDIENT_TABS } from "../../_lib/types";
 import { PurchaseSection } from "../../_components/sections/PurchaseSection";
 import { StorageSection } from "../../_components/sections/StorageSection";
+import { HandlingSection } from "../../_components/sections/HandlingSection";
 
 /** slug × tab 조합을 정적 생성. */
 export function generateStaticParams() {
@@ -44,16 +45,12 @@ export default async function IngredientTabPage({
           data={ingredient.storage}
         />
       )}
-      {tab === "handling" && <Placeholder label="처리" />}
+      {tab === "handling" && (
+        <HandlingSection
+          ingredientName={ingredient.name}
+          data={ingredient.handling}
+        />
+      )}
     </>
-  );
-}
-
-/** 아직 구현 안 된 탭 자리표시 (구매 완성 후 하나씩 교체). */
-function Placeholder({ label }: { label: string }) {
-  return (
-    <div className="rounded-[16px] border border-dashed border-border p-6 text-center text-sm text-jg-ink-sub">
-      {label} 콘텐츠가 들어갈 자리
-    </div>
   );
 }

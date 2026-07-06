@@ -62,11 +62,7 @@ export function StorageFilters({
               className="flex min-w-[150px] flex-col gap-0.5 rounded-[16px] border border-border bg-card p-1.5 shadow-[0_10px_30px_rgba(31,29,24,0.18)] ring-1 ring-black/5"
             >
               {/* 전체(선택 해제) — 맨 위 */}
-              <FilterOption
-                label="전체"
-                selected={!on}
-                onSelect={() => select(f.key, undefined)}
-              />
+              <FilterOption label="전체" selected={!on} onSelect={() => select(f.key, undefined)} />
               {f.options.map((opt) => (
                 <FilterOption
                   key={opt}
