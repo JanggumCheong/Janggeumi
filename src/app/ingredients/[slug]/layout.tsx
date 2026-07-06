@@ -14,7 +14,8 @@ export function generateStaticParams() {
  *
  * Header 바로 아래에 세그먼트 탭이 자연스럽게 이어지도록:
  * 루트 main의 상단 패딩(pt-5)·좌우 패딩(px-5)을 상쇄(-mt-5 -mx-5)해
- * 탭을 화면 폭 끝까지 붙이고 Header 밑선과 밀착시킨다. (sticky는 추후)
+ * 탭을 화면 폭 끝까지 붙이고 Header 밑선과 밀착시킨다.
+ * 세그먼트 탭은 스크롤과 함께 올라간다(sticky 아님) — 상단 고정은 확률 게이지만.
  */
 export default async function IngredientLayout({
   children,
@@ -29,7 +30,7 @@ export default async function IngredientLayout({
 
   return (
     <div className="flex flex-1 flex-col">
-      {/* 세그먼트 탭 — Header 바로 아래 밀착, 좌우 엣지까지 */}
+      {/* 세그먼트 탭 — Header 아래 밀착, 좌우 엣지까지. (sticky 아님 — 스크롤과 함께 올라감) */}
       <div className="-mx-5 -mt-5">
         <SegmentTabs slug={slug} />
       </div>

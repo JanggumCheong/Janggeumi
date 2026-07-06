@@ -4,8 +4,6 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { ChevronRight, MessageCircle, Search } from "lucide-react";
 
-const FONT = '-apple-system, "Apple SD Gothic Neo", "Pretendard", "Malgun Gothic", sans-serif';
-
 /* ── Mock 데이터 ────────────────────────────────────────── */
 type Category = "채소" | "과일" | "육류" | "수산" | "유제품" | "곡류";
 const CATEGORIES: Array<"전체" | Category> = [
@@ -119,16 +117,11 @@ export default function SearchPage() {
     return sorted;
   }, [category, sort, query]);
 
+  // 공통 layout(src/app/layout.tsx)이 Header·TabBar·main 셸을 제공한다.
+  // 여기선 셸 안 콘텐츠만 렌더한다(자체 min-h-screen·main 중복 금지).
   return (
-    <div className="flex min-h-screen justify-center" style={{ background: "#EDEDEA" }}>
-      {/* 모바일 앱 화면 */}
-      <div
-        className="relative flex w-full flex-col"
-        style={{ background: "var(--background)", color: "var(--foreground)" }}
-      >
-        {/* ── 스크롤 콘텐츠 ── */}
-        <main className="flex-1 overflow-y-auto">
-          {/* 검색바 */}
+    <div className="flex flex-col">
+      {/* 검색바 */}
           <div className="pb-1 pt-1">
             <div
               className="flex items-center gap-2 rounded-2xl px-4 py-3"
@@ -277,8 +270,6 @@ export default function SearchPage() {
               </p>
             )}
           </div>
-        </main>
-      </div>
     </div>
   );
 }

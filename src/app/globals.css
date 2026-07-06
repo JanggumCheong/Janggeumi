@@ -7,7 +7,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
+  /* 디자인 시스템 규정: 웹폰트 로드 없이 시스템 산세리프 스택 (한글 FOIT 깜빡임 방지). */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
+    Pretendard, "Malgun Gothic", "맑은 고딕", system-ui, sans-serif;
   --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);

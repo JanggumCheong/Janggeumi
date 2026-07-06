@@ -1,8 +1,9 @@
 import Link from "next/link";
+import { apiUrl } from "@/lib/api";
 
 async function getBackendStatus() {
   try {
-    const response = await fetch("http://127.0.0.1:8000/health", {
+    const response = await fetch(apiUrl("/health"), {
       cache: "no-store",
     });
 
@@ -19,15 +20,10 @@ async function getBackendStatus() {
 export default async function Home() {
   const backendStatus = await getBackendStatus();
 
+  // 공통 layout(src/app/layout.tsx)이 Header·TabBar·main 셸을 제공한다.
+  // 여기선 셸 안 콘텐츠만 렌더한다(자체 main·header 중복 금지 → 상단 잘림 방지).
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-4xl flex-col gap-8 p-8">
-      <header className="flex items-center justify-between">
-        <h1 className="text-3xl font-semibold">Janggeumi</h1>
-        <Link className="text-sm font-medium underline" href="/search">
-          검색
-        </Link>
-      </header>
-
+    <div className="flex flex-col gap-8">
       <section className="flex flex-col gap-4">
         <h2 className="text-xl font-semibold">홈</h2>
         <p className="text-foreground/70">
@@ -48,6 +44,6 @@ export default async function Home() {
           )}
         </p>
       </section>
-    </main>
+    </div>
   );
 }
