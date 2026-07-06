@@ -6,6 +6,7 @@ import {
 } from "../../_lib/ingredients";
 import { INGREDIENT_TABS } from "../../_lib/types";
 import { PurchaseSection } from "../../_components/sections/PurchaseSection";
+import { StorageSection } from "../../_components/sections/StorageSection";
 
 /** slug × tab 조합을 정적 생성. */
 export function generateStaticParams() {
@@ -37,7 +38,12 @@ export default async function IngredientTabPage({
           data={ingredient.purchase}
         />
       )}
-      {tab === "storage" && <Placeholder label="보관" />}
+      {tab === "storage" && (
+        <StorageSection
+          ingredientName={ingredient.name}
+          data={ingredient.storage}
+        />
+      )}
       {tab === "handling" && <Placeholder label="처리" />}
     </>
   );

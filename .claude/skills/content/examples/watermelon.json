@@ -251,7 +251,8 @@
             "thumbnail": null,
             "creator": "자취요리왕"
           }
-        ]
+        ],
+        "janggeumiComment": "사 온 날은 무조건 이 방법! 냉장 넣기 전 하루는 실온이 당도에 좋아요."
       },
       {
         "id": "fridge-cut-airtight",
@@ -300,7 +301,8 @@
           "verified": true,
           "lastReviewed": "2026-07-01"
         },
-        "media": []
+        "media": [],
+        "janggeumiComment": "자른 뒤엔 이게 제일 깔끔해요. 표면에 랩을 밀착시키면 더 오래가요."
       },
       {
         "id": "freeze-cubes",
@@ -349,7 +351,8 @@
           "verified": true,
           "lastReviewed": "2026-07-01"
         },
-        "media": []
+        "media": [],
+        "janggeumiComment": "남아서 못 먹을 것 같으면 얼려요! 여름 화채 만들 때 딱이에요."
       }
     ],
     "tip": "수박은 자른 후 시간이 지날수록 단맛이 떨어질 수 있어요. 최대한 빠르게 드시는 것이 가장 맛있습니다!"
