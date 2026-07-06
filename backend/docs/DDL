@@ -1,0 +1,109 @@
+-- WARNING: This schema is for context only and is not meant to be run.
+-- Table order and constraints may not be valid for execution.
+
+CREATE TABLE public.categories (
+  id character varying NOT NULL,
+  name character varying NOT NULL,
+  CONSTRAINT categories_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.ingredients (
+  id character varying NOT NULL,
+  category_id character varying,
+  name character varying NOT NULL UNIQUE,
+  catchphrase character varying,
+  description text,
+  image_url text,
+  peak_months ARRAY,
+  CONSTRAINT ingredients_pkey PRIMARY KEY (id),
+  CONSTRAINT ingredients_category_id_fkey FOREIGN KEY (category_id) REFERENCES public.categories(id)
+);
+CREATE TABLE public.filter_groups (
+  id character varying NOT NULL,
+  name character varying NOT NULL,
+  CONSTRAINT filter_groups_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.filter_options (
+  id character varying NOT NULL,
+  filter_group_id character varying,
+  option_name character varying NOT NULL,
+  CONSTRAINT filter_options_pkey PRIMARY KEY (id),
+  CONSTRAINT filter_options_filter_group_id_fkey FOREIGN KEY (filter_group_id) REFERENCES public.filter_groups(id)
+);
+CREATE TABLE public.category_filters (
+  category_id character varying NOT NULL,
+  filter_option_id character varying NOT NULL,
+  sort_order integer DEFAULT 1,
+  CONSTRAINT category_filters_pkey PRIMARY KEY (category_id, filter_option_id),
+  CONSTRAINT category_filters_category_id_fkey FOREIGN KEY (category_id) REFERENCES public.categories(id),
+  CONSTRAINT category_filters_filter_option_id_fkey FOREIGN KEY (filter_option_id) REFERENCES public.filter_options(id)
+);
+CREATE TABLE public.storage_methods (
+  id character varying NOT NULL,
+  ingredient_id character varying,
+  title character varying NOT NULL,
+  duration_text character varying,
+  is_recommended boolean DEFAULT false,
+  cached_rating numeric DEFAULT 0.00,
+  cached_review_cnt integer DEFAULT 0,
+  CONSTRAINT storage_methods_pkey PRIMARY KEY (id),
+  CONSTRAINT storage_methods_ingredient_id_fkey FOREIGN KEY (ingredient_id) REFERENCES public.ingredients(id)
+);
+CREATE TABLE public.storage_method_filters (
+  storage_method_id character varying NOT NULL,
+  filter_option_id character varying NOT NULL,
+  CONSTRAINT storage_method_filters_pkey PRIMARY KEY (storage_method_id, filter_option_id),
+  CONSTRAINT storage_method_filters_storage_method_id_fkey FOREIGN KEY (storage_method_id) REFERENCES public.storage_methods(id),
+  CONSTRAINT storage_method_filters_filter_option_id_fkey FOREIGN KEY (filter_option_id) REFERENCES public.filter_options(id)
+);
+CREATE TABLE public.storage_contents (
+  id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+  storage_method_id character varying,
+  content_type character varying NOT NULL CHECK (content_type::text = ANY (ARRAY['STEP'::character varying, 'GOOD'::character varying, 'BAD'::character varying, 'CAUTION'::character varying]::text[])),
+  sort_order integer NOT NULL,
+  text_content text NOT NULL,
+  CONSTRAINT storage_contents_pkey PRIMARY KEY (id),
+  CONSTRAINT storage_contents_storage_method_id_fkey FOREIGN KEY (storage_method_id) REFERENCES public.storage_methods(id)
+);
+CREATE TABLE public.reviews (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  storage_method_id character varying,
+  user_id character varying NOT NULL,
+  nickname character varying NOT NULL,
+  rating integer NOT NULL CHECK (rating >= 1 AND rating <= 5),
+  content text NOT NULL,
+  image_url text,
+  helpful_count integer DEFAULT 0,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT reviews_pkey PRIMARY KEY (id),
+  CONSTRAINT reviews_storage_method_id_fkey FOREIGN KEY (storage_method_id) REFERENCES public.storage_methods(id)
+);
+CREATE TABLE public.recent_views (
+  id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+  user_id character varying NOT NULL,
+  ingredient_id character varying,
+  viewed_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT recent_views_pkey PRIMARY KEY (id),
+  CONSTRAINT recent_views_ingredient_id_fkey FOREIGN KEY (ingredient_id) REFERENCES public.ingredients(id)
+);
+CREATE TABLE public.purchase_tips (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  ingredient_id character varying,
+  title text NOT NULL,
+  content text NOT NULL,
+  sort_order integer DEFAULT 0,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT purchase_tips_pkey PRIMARY KEY (id),
+  CONSTRAINT purchase_tips_ingredient_id_fkey FOREIGN KEY (ingredient_id) REFERENCES public.ingredients(id)
+);
+CREATE TABLE public.recipes (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  ingredient_id character varying,
+  title text NOT NULL,
+  category text,
+  image_url text,
+  likes_count integer DEFAULT 0,
+  comments_count integer DEFAULT 0,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT recipes_pkey PRIMARY KEY (id),
+  CONSTRAINT recipes_ingredient_id_fkey FOREIGN KEY (ingredient_id) REFERENCES public.ingredients(id)
+);
