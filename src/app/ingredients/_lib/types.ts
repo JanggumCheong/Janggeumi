@@ -45,33 +45,23 @@ export const PurchaseCriterionSchema = z.object({
 });
 
 /**
- * 현장 데이터 배지("이 마트 89%"). enabled 판별 유니온:
- * true면 값이 있고, false면 전부 null(현장 데이터 없는 재료).
+ * 좋은/피할 예시 대비 (BestWorst) — 초보가 눈으로 학습.
+ * image=실제 사진, hint=짧은 대비 포인트. 카피는 재료 무관이라 데이터엔 재료명 없음.
  */
-export const FieldDataSchema = z.discriminatedUnion("enabled", [
-  z.object({
-    enabled: z.literal(true),
-    label: z.string(),
-    value: z.number(),
-    unit: z.string(),
-    basis: z.string().nullable(),
-    sampleSize: z.number().nullable(),
-  }),
-  z.object({
-    enabled: z.literal(false),
-    label: z.null(),
-    value: z.null(),
-    unit: z.null(),
-    basis: z.null(),
-    sampleSize: z.null(),
-  }),
-]);
+export const BestWorstExampleSchema = z.object({
+  image: z.string().nullable().optional(),
+  hint: z.string().optional(),
+});
+export const BestWorstSchema = z.object({
+  good: BestWorstExampleSchema,
+  bad: BestWorstExampleSchema,
+});
 
 export const PurchaseSchema = z.object({
   headline: z.string(),
   intro: z.string().optional(),
+  bestWorst: BestWorstSchema.optional(),
   criteria: z.array(PurchaseCriterionSchema),
-  fieldData: FieldDataSchema.optional(),
 });
 
 // ── 보관 (합의형) ───────────────────────────────────────
@@ -205,7 +195,8 @@ export type Source = z.infer<typeof SourceSchema>;
 export type Media = z.infer<typeof MediaSchema>;
 export type Fact = z.infer<typeof FactSchema>;
 export type PurchaseCriterion = z.infer<typeof PurchaseCriterionSchema>;
-export type FieldData = z.infer<typeof FieldDataSchema>;
+export type BestWorstExample = z.infer<typeof BestWorstExampleSchema>;
+export type BestWorst = z.infer<typeof BestWorstSchema>;
 export type Purchase = z.infer<typeof PurchaseSchema>;
 export type StorageFilter = z.infer<typeof StorageFilterSchema>;
 export type Rating = z.infer<typeof RatingSchema>;
