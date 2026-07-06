@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Geist } from "next/font/google";
 import { cn } from "@/lib/utils";
+import { InstallPrompt } from "@/components/InstallPrompt";
 import { Header, TabBar } from "../../shared";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
@@ -39,6 +40,7 @@ export default function RootLayout({
           <Header />
           <main className="flex-1 overflow-y-auto px-5 pb-10 pt-5">{children}</main>
           <TabBar />
+          <InstallPrompt />
         </div>
       </body>
     </html>
