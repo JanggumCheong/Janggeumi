@@ -38,7 +38,7 @@ export function ProbabilityGauge({
 
   return (
     <div
-      className="sticky top-[108px] z-10 rounded-[20px] border p-4 shadow-[0_2px_10px_rgba(31,29,24,0.05)] transition-colors"
+      className="sticky top-0 z-10 rounded-[20px] border p-4 shadow-[0_2px_10px_rgba(31,29,24,0.05)] transition-colors"
       style={{ backgroundColor: c.box, borderColor: c.border }}
     >
       <div
