@@ -39,6 +39,16 @@
   "purchase": {
     "headline": "좋은 감자 고르는 법",
     "intro": "싹과 색만 확인하면 실패하지 않아요.",
+    "bestWorst": {
+      "good": {
+        "image": null,
+        "hint": "단단하고, 흠집 없고, 매끈한 것"
+      },
+      "bad": {
+        "image": null,
+        "hint": "싹 나거나, 초록빛 돌거나, 무른 것"
+      }
+    },
     "criteria": [
       {
         "key": "firmness",
@@ -96,15 +106,7 @@
           "lastReviewed": "2026-07-01"
         }
       }
-    ],
-    "fieldData": {
-      "enabled": false,
-      "label": null,
-      "value": null,
-      "unit": null,
-      "basis": null,
-      "sampleSize": null
-    }
+    ]
   },
   "storage": {
     "headline": "감자 보관 방법 비교",

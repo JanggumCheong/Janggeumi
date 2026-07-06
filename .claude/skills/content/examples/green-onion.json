@@ -41,6 +41,16 @@
   "purchase": {
     "headline": "좋은 대파 고르는 법",
     "intro": "뿌리와 잎 상태만 보면 신선도를 알 수 있어요.",
+    "bestWorst": {
+      "good": {
+        "image": null,
+        "hint": "흰 대 굵고, 잎 진초록, 뿌리 싱싱한 것"
+      },
+      "bad": {
+        "image": null,
+        "hint": "잎 누렇고, 무르고, 끝이 마른 것"
+      }
+    },
     "criteria": [
       {
         "key": "root",
@@ -98,15 +108,7 @@
           "lastReviewed": "2026-07-01"
         }
       }
-    ],
-    "fieldData": {
-      "enabled": false,
-      "label": null,
-      "value": null,
-      "unit": null,
-      "basis": null,
-      "sampleSize": null
-    }
+    ]
   },
   "storage": {
     "headline": "대파 보관 방법 비교",

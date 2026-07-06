@@ -37,6 +37,16 @@
   "purchase": {
     "headline": "좋은 수박 고르는 법",
     "intro": "이 6가지만 확인하면 실패 확률이 낮아져요.",
+    "bestWorst": {
+      "good": {
+        "image": null,
+        "hint": "배꼽 작고, 줄무늬 선명, 묵직한 것"
+      },
+      "bad": {
+        "image": null,
+        "hint": "배꼽 크고, 줄무늬 흐릿, 가벼운 것"
+      }
+    },
     "criteria": [
       {
         "key": "navel",
@@ -122,15 +132,7 @@
           "lastReviewed": "2026-07-01"
         }
       }
-    ],
-    "fieldData": {
-      "enabled": true,
-      "label": "이 마트 수박 평균 당도 예측",
-      "value": 89,
-      "unit": "%",
-      "basis": "최근 2주간 사용자 평가 기반",
-      "sampleSize": 2341
-    }
+    ]
   },
   "storage": {
     "headline": "수박 보관 방법 비교",
