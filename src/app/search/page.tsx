@@ -4,8 +4,6 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { ChevronRight, MessageCircle, Search } from "lucide-react";
 
-const FONT = '-apple-system, "Apple SD Gothic Neo", "Pretendard", "Malgun Gothic", sans-serif';
-
 /* ── Mock 데이터 ────────────────────────────────────────── */
 type Category = "채소" | "과일" | "육류" | "수산" | "유제품" | "곡류";
 const CATEGORIES: Array<"전체" | Category> = [
