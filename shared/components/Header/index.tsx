@@ -35,7 +35,7 @@ export function Header() {
     <header className="sticky top-0 z-20 flex h-14 w-full items-center justify-between px-2 bg-background">
       {isHome ? (
         <span>
-          <Image src={logo} alt="로고" className="h-14 w-auto" />
+          <Image src={logo} alt="로고" className="h-12 w-auto" />
         </span>
       ) : (
         <div className="flex items-center gap-1">
