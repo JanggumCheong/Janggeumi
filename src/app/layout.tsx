@@ -37,7 +37,7 @@ export default function RootLayout({
         {/* 모바일 앱 컨테이너 */}
         <div className="flex w-full flex-col bg-background sm:w-105">
           <Header />
-          <main className="flex-1 overflow-y-auto px-5 pb-24 pt-5">{children}</main>
+          <main className="flex-1 overflow-y-auto px-5 pb-10 pt-5">{children}</main>
           <TabBar />
         </div>
       </body>
