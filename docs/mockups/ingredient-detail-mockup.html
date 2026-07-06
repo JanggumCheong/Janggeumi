@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <!--
+  장금이 — 재료 상세 화면 목업 (모바일 우선)
+  기획서 느낌: 이미지(수박 상세)의 구매·보관·처리 3영역을 그대로 스펙으로 삼아 재현.
+  데이터는 .claude/skills/content/examples/watermelon.json 실제 값 기반.
+  각 영역은 정보 성격이 다르므로 화면 구조도 다르다 (같은 카드 3개 금지).
+    · 구매(정답형) = 정독형 기준 체크리스트 + 현장 데이터 배지
+    · 보관(합의형) = 필터칩 + 방법 카드 별점 정렬 + 장금이 팁
+    · 처리(확산형) = 레시피 카테고리칩 + 정렬 + UGC 피드 + 작성 버튼
+  Figma 오토레이아웃 이관 대비: flex column=세로 오토레이아웃, gap=itemSpacing.
+  -->
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>장금이 — 재료 상세 목업</title>
+    <style>
+      :root {
+        --jg-primary: #5c6e3d;
+        --jg-primary-strong: #47562f;
+        --jg-primary-soft: #eef1e6;
+        --jg-bg: #fbfbfa;
+        --jg-surface: #ffffff;
+        --jg-sunken: #f4f4f2;
+        --jg-ink: #1f1d18;
+        --jg-ink-sub: #6b675e;
+        --jg-ink-mute: #9b978c;
+        --jg-line: #e7e4dc;
+        --jg-buy: #1f804d;
+        --jg-buy-bg: #e9f6ee;
+        --jg-keep: #2f6e86;
+        --jg-keep-bg: #e8f2f6;
+        --jg-use: #c4712a;
+        --jg-use-bg: #fbf0e4;
+        --jg-star: #f0a93b;
+        --jg-danger: #c1453b;
+        --r-sm: 10px;
+        --r-md: 16px;
+        --r-lg: 20px;
+        --r-pill: 999px;
+        --shadow-card: 0 2px 10px rgba(31, 29, 24, 0.05);
+        --shadow-float: 0 6px 20px rgba(31, 29, 24, 0.1);
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--jg-bg);
+        color: var(--jg-ink);
+        font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
+          "Pretendard", "Malgun Gothic", sans-serif;
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+      }
+      .page { max-width: 1240px; margin: 0 auto; padding: 32px 24px 64px; overflow-x: hidden; }
+      .page-title { font-size: 30px; font-weight: 800; margin: 0 0 6px; }
+      .page-sub { color: var(--jg-ink-sub); font-size: 15px; margin: 0 0 24px; max-width: 720px; }
+
+      /* ── 기획서 2단 레이아웃 (재사용 표준) ─────────────────────────
+         .spec-layout   : 좌=목업 / 우=기획 패널 감싸는 flex 컨테이너
+         .spec-stage    : 좌측 목업 스테이지 (폰 프레임들)
+         .spec-panel    : 우측 기획 패널 — sticky + 내부만 상하 스크롤
+         .spec-card     : 패널 안 기획 블록 하나 (제목 + 표/설명)
+         다른 목업에서도 이 클래스 그대로 사용해 일관성 유지. */
+      /* 스테이지(폰 2개폭 상한) + 패널(고정폭)이 정확히 맞물리게. 스테이지가 무한정 안 늘어나도록 max-width 상한. */
+      /* 스테이지=좌측, 명세 패널=우측 끝. space-between으로 양 끝에 붙인다. */
+      .spec-layout { display: flex; gap: 28px; align-items: flex-start; justify-content: space-between; }
+      /* 폰 2개폭으로 제한 → 3번째(처리)는 자동으로 아랫줄로 wrap (페이지 구분처럼). 패널은 우측 고정. */
+      .spec-stage { flex: 0 1 auto; min-width: 0; max-width: 704px;
+        display: flex; flex-wrap: wrap; gap: 24px 24px; justify-content: center; align-items: flex-start; }
+      .spec-panel { width: 360px; flex: none; position: sticky; top: 24px;
+        max-height: calc(100vh - 48px); overflow-y: auto; display: flex; flex-direction: column; gap: 16px;
+        padding-right: 4px; }
+      /* 패널 전체 헤더 (sticky 패널 맨 위, 영역 구분 제목) */
+      .spec-head { padding: 2px 4px 4px; }
+      .spec-head-title { font-size: 18px; font-weight: 800; color: var(--jg-ink); }
+      .spec-head-sub { font-size: 12px; color: var(--jg-ink-sub); margin-top: 4px; line-height: 1.4; }
+      .spec-card { background: var(--jg-surface); border: 1px solid var(--jg-line); border-radius: var(--r-lg);
+        box-shadow: var(--shadow-card); padding: 18px 20px; }
+      .spec-card h2 { font-size: 15px; font-weight: 800; margin: 0 0 12px; letter-spacing: .2px; }
+      .spec-card table { border-collapse: collapse; width: 100%; font-size: 13px; }
+      .spec-card th, .spec-card td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--jg-line); vertical-align: top; }
+      .spec-card th { color: var(--jg-ink-sub); font-weight: 700; white-space: nowrap; }
+      .spec-card code { background: var(--jg-sunken); border-radius: 6px; padding: 1px 6px; font-size: 11px;
+        word-break: break-all; overflow-wrap: anywhere; }
+      .spec-card td:last-child { white-space: normal; }
+      /* 명세 패널은 항상 우측 유지(절대 상단으로 올리지 않음). 좁으면 스테이지만 줄어 폰이 wrap. */
+
+      /* 기획 메모 박스 */
+      .brief {
+        background: var(--jg-surface);
+        border: 1px solid var(--jg-line);
+        border-radius: var(--r-lg);
+        box-shadow: var(--shadow-card);
+        padding: 20px 22px;
+        margin-bottom: 32px;
+        max-width: 980px;
+      }
+      .brief h2 { font-size: 15px; font-weight: 800; margin: 0 0 12px; letter-spacing: .2px; }
+      .brief table { border-collapse: collapse; width: 100%; font-size: 13px; }
+      .brief th, .brief td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--jg-line); vertical-align: top; }
+      .brief th { color: var(--jg-ink-sub); font-weight: 700; white-space: nowrap; }
+      .brief code { background: var(--jg-sunken); border-radius: 6px; padding: 1px 6px; font-size: 12px; }
+      .tag-buy { color: var(--jg-buy); font-weight: 800; }
+      .tag-keep { color: var(--jg-keep); font-weight: 800; }
+      .tag-use { color: var(--jg-use); font-weight: 800; }
+
+      .stage { display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start; justify-content: center; }
+      .screen-wrap { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+      .screen-label { font-size: 13px; font-weight: 700; color: var(--jg-ink-sub); }
+
+      /* 폰 프레임 */
+      .phone {
+        width: 340px;
+        background: var(--jg-surface);
+        border: 10px solid #1f1d18;
+        border-radius: 42px;
+        overflow: hidden;
+        box-shadow: var(--shadow-float);
+      }
+      .status { height: 42px; background: var(--jg-surface); display: flex; align-items: center;
+        justify-content: space-between; padding: 0 22px; font-size: 12px; font-weight: 700; }
+      .app { background: var(--jg-bg); min-height: 640px; display: flex; flex-direction: column; }
+
+      /* 앱바 */
+      .appbar { display: flex; align-items: center; justify-content: space-between;
+        padding: 8px 16px 6px; background: var(--jg-surface); }
+      .appbar .center { font-size: 17px; font-weight: 800; }
+      .appbar .ic { font-size: 18px; color: var(--jg-ink-sub); width: 28px; text-align: center; }
+      .appbar .side { display: flex; gap: 2px; }
+
+      /* 세그먼트 탭 (구매/보관/처리) */
+      .segtabs { display: flex; background: var(--jg-surface); border-bottom: 1px solid var(--jg-line); }
+      .segtab { flex: 1; text-align: center; padding: 12px 0 11px; font-size: 15px; font-weight: 700;
+        color: var(--jg-ink-mute); position: relative; cursor: pointer; }
+      .segtab.on { color: var(--jg-ink); }
+      .segtab.on::after { content: ""; position: absolute; left: 20%; right: 20%; bottom: -1px;
+        height: 3px; border-radius: 3px 3px 0 0; background: var(--jg-primary); }
+
+      .scroll { padding: 16px; display: flex; flex-direction: column; gap: 14px; flex: 1; }
+
+      .card { background: var(--jg-surface); border-radius: var(--r-lg); box-shadow: var(--shadow-card);
+        border: 1px solid var(--jg-line); padding: 16px; }
+      .sub { color: var(--jg-ink-sub); font-size: 13px; }
+      .mute { color: var(--jg-ink-mute); }
+      h3 { font-size: 16px; font-weight: 700; margin: 0; }
+
+      /* 히어로 헤드라인 */
+      .hero-line { font-size: 22px; font-weight: 800; line-height: 1.35; margin: 2px 0 4px; }
+      .hero-emoji { font-size: 40px; line-height: 1; }
+
+      /* 히어로 — 토스식: 큰 카피가 주인공. 장금이는 카피 위 작은 화자 라벨. 삽화와 경쟁 X */
+      /* component: JanggeumiSpeaker (화자 표식, 카피 위 한 줄) */
+      .jg-speaker { display: inline-flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+      .jg-ava { width: 22px; height: 22px; flex: none; border-radius: 50%; background: var(--jg-primary-soft);
+        display: flex; align-items: center; justify-content: center; font-size: 13px; }
+      .jg-name { font-size: 12px; font-weight: 800; color: var(--jg-primary); }
+
+      /* 구매 — Best/Worst 대비 헤더. 색은 상단 라벨에만, 이미지 배경은 무채색(사진 선명하게). */
+      .bw { display: flex; gap: 10px; }
+      .bw-col { flex: 1; border-radius: var(--r-md); overflow: hidden; border: 1px solid var(--jg-line); }
+      .bw-cap { font-size: 12px; font-weight: 800; color: #fff; padding: 7px 10px; display: flex; align-items: center; gap: 5px; }
+      .bw-good .bw-cap { background: var(--jg-buy); }
+      .bw-bad .bw-cap { background: var(--jg-danger); }
+      .bw-img { height: 128px; display: flex; align-items: center; justify-content: center; font-size: 60px;
+        background: var(--jg-surface); }
+
+      /* 구매 — 확률 게이지 (상단 sticky).
+         재료 무관: '구매(정답형)' 시스템 색만 사용(재료색 아님).
+         상태로 색 변화: 0%=중립 회색 → 채울수록 초록. accent 변수를 상태 클래스가 덮어씀. */
+      .prob { --accent: var(--jg-ink-mute); --accent-bg: var(--jg-sunken); --accent-bar: #e3e1db;
+        background: var(--accent-bg); border: 1px solid var(--jg-line); border-radius: var(--r-lg); padding: 14px 16px;
+        position: sticky; top: 8px; z-index: 5; box-shadow: var(--shadow-card); transition: background .3s, border-color .3s; }
+      .prob.is-low  { --accent: #B0843A; --accent-bg: #FBF3E2; --accent-bar: #EBD9AE; border-color: #EBD9AE; }
+      .prob.is-mid  { --accent: var(--jg-buy); --accent-bg: var(--jg-buy-bg); --accent-bar: #CFE8DA; border-color: #CFE8DA; }
+      .prob.is-high { --accent: var(--jg-buy); --accent-bg: var(--jg-buy-bg); --accent-bar: #CFE8DA; border-color: #CFE8DA; }
+      .prob .lbl { font-size: 12px; font-weight: 700; color: var(--accent); transition: color .3s; }
+      .prob .row { display: flex; align-items: baseline; gap: 8px; margin-top: 2px; }
+      .prob .val { font-size: 34px; font-weight: 800; color: var(--accent); line-height: 1; transition: color .3s; }
+      .prob .cap { font-size: 12px; color: var(--jg-ink-sub); }
+      .bar { height: 9px; border-radius: var(--r-pill); background: var(--accent-bar); margin-top: 10px; overflow: hidden; transition: background .3s; }
+      .bar > i { display: block; height: 100%; background: var(--accent); border-radius: var(--r-pill);
+        width: 0; transition: width .3s ease, background .3s; }
+      .prob .hint { font-size: 11.5px; color: var(--jg-ink-sub); margin-top: 8px; }
+
+      /* 구매 — 기준: 원본 그대로. 2열 + 얇은 구분선(카드 테두리 없음) + 번호 + 텍스트 좌측·이미지 우측(박스 없음).
+         장식(동그라미·박스) 없이 여백으로 정돈. 선택=은은한 배경만(요소 추가 없음). 클릭=토글. */
+      .crit-grid { display: grid; grid-template-columns: 1fr 1fr; background: var(--jg-surface);
+        border: 1px solid var(--jg-line); border-radius: var(--r-lg); box-shadow: var(--shadow-card); overflow: hidden; }
+      /* component: CheckCriteriaItem (interactive) — 항목 전체 탭 = 토글.
+         원본 방식: 이미지는 우측 뒤 레이어, 텍스트는 앞 레이어(흰 배경). 겹쳐도 텍스트가 이미지를 덮어 잘 보임.
+         행 높이 통일(모든 칸 같은 높이). */
+      .crit-grid { grid-auto-rows: 1fr; }  /* 각 행 높이 동일 */
+      .crit { position: relative; padding: 14px 12px; cursor: pointer; transition: background .15s; user-select: none;
+        border-top: 1px solid var(--jg-line); border-left: 1px solid var(--jg-line); overflow: hidden;
+        min-height: 116px; }
+      .crit:nth-child(odd) { border-left: none; }   /* 좌열은 왼쪽 선 없음 */
+      .crit:nth-child(1), .crit:nth-child(2) { border-top: none; } /* 첫 줄은 위 선 없음 */
+      .crit:hover { background: rgba(0,0,0,.015); }
+      /* 텍스트: 앞 레이어(z-index 1) + 흰색 후광(text halo)으로 어떤 배경 위에서도 또렷. */
+      .crit .body { position: relative; z-index: 1;
+        text-shadow: 0 0 3px #fff, 0 0 3px #fff, 0 0 6px #fff, 0 0 6px #fff; }
+      .crit .no { font-size: 13.5px; font-weight: 800; color: var(--jg-ink); }
+      .crit .d { font-size: 11.5px; color: var(--jg-ink-sub); line-height: 1.45; margin-top: 5px; }
+      /* 이미지: 우하단 뒤 레이어(z-index 0). 겹침 줄이려 모서리로 밀고 살짝 옅게. */
+      .crit .c-img { position: absolute; right: 4px; bottom: 4px; z-index: 0; font-size: 42px;
+        opacity: .92; pointer-events: none; }
+      /* 선택 = 은은한 초록 배경만. 동그라미·박스 없음. 번호가 ✓로 바뀌어 선택 표시(폭 고정=안 밀림). */
+      .crit.on { background: var(--jg-buy-bg); }
+      .crit.on .no { color: var(--jg-buy); }
+      .crit.on .num { color: var(--jg-buy); }
+
+      /* 구매 — 출처(SEO·GEO 핵심): 요약 항상 노출 + 상세 CSS 토글 */
+      /* 출처: 무채색 배경(확률 게이지와 위계 분리). 행 전체가 토글(summary=클릭 영역). 색은 ✔·등급뱃지에만. */
+      .src-foot { font-size: 11.5px; color: var(--jg-ink-sub); background: var(--jg-sunken);
+        border: 1px solid var(--jg-line); border-radius: var(--r-md); padding: 0; }
+      .src-foot summary { display: flex; align-items: center; gap: 6px; font-weight: 600; cursor: pointer;
+        list-style: none; padding: 11px 12px; border-radius: var(--r-md); }
+      .src-foot summary::-webkit-details-marker { display: none; }
+      .src-foot summary:hover { background: rgba(0,0,0,.02); }
+      .src-foot .chk { color: var(--jg-buy); font-weight: 800; }
+      .src-foot .more { margin-left: auto; color: var(--jg-ink-mute); font-weight: 700; display: inline-flex; align-items: center; gap: 2px; }
+      .src-foot[open] .more::after { content: "▴"; }
+      .src-foot:not([open]) .more::after { content: "▾"; }
+      .src-list { margin: 0; padding: 2px 12px 11px; list-style: none; display: flex; flex-direction: column; gap: 7px; }
+      .src-list li { font-size: 11.5px; color: var(--jg-ink-sub); display: flex; align-items: center; gap: 6px; }
+      .s-tag { font-size: 10px; font-weight: 800; border-radius: var(--r-sm); padding: 1px 6px; flex: none; }
+      .s-tag.official { color: var(--jg-buy); background: #e2ebdb; }
+      .s-tag.media { color: var(--jg-use); background: var(--jg-use-bg); }
+
+      /* 필터칩 */
+      .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+      .chip { font-size: 13px; border-radius: var(--r-pill); padding: 7px 13px; border: 1px solid var(--jg-line);
+        background: var(--jg-surface); color: var(--jg-ink-sub); cursor: pointer; white-space: nowrap; }
+      .chip.on { background: var(--jg-primary); color: #fff; border-color: var(--jg-primary); }
+      .chip.dd::after { content: " ▾"; color: var(--jg-ink-mute); }
+
+      /* 보관 — 방법 카드. 상단 행(순위·썸네일·정보) + 하단 코멘트(전체 폭). */
+      .method { padding: 14px 0; border-top: 1px solid var(--jg-line); }
+      .method:first-child { border-top: none; padding-top: 2px; }
+      .m-row { display: flex; gap: 12px; align-items: flex-start; }
+      /* 썸네일: 큼직하게(방법을 사진으로 인지) + 순위를 좌상단에 겹침(별도 컬럼 제거 → 텍스트 폭 확보) */
+      .m-thumb { position: relative; width: 72px; height: 72px; flex: none; border-radius: var(--r-md);
+        background: var(--jg-sunken); display: flex; align-items: center; justify-content: center; font-size: 36px; }
+      .rank { position: absolute; top: -6px; left: -6px; width: 24px; height: 24px; border-radius: 50%;
+        background: var(--jg-surface); border: 1px solid var(--jg-line); box-shadow: var(--shadow-card);
+        color: var(--jg-ink-sub); font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+      .rank.top { background: #fbe9c9; border-color: #f0d9a8; color: #b07d24; }
+      .m-body { flex: 1; min-width: 0; }
+      .m-title { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+      .badge { display: inline-block; font-size: 10px; font-weight: 800; border-radius: var(--r-sm); padding: 2px 6px; }
+      .badge-best { background: var(--jg-primary-soft); color: var(--jg-primary-strong); }
+      .m-tags { display: flex; gap: 5px; margin: 5px 0 4px; flex-wrap: wrap; }
+      /* 태그: 원본대로 무채색 회색(색으로 튀지 않음). 메타 정보는 조용하게. */
+      .m-tag { font-size: 11px; color: var(--jg-ink-sub); background: var(--jg-sunken);
+        border-radius: var(--r-sm); padding: 2px 7px; font-weight: 700; }
+      .m-sum { font-size: 12px; color: var(--jg-ink-sub); line-height: 1.45; }
+      .stars { color: var(--jg-star); font-size: 12px; font-weight: 800; margin-top: 4px; }
+      .stars .cnt { color: var(--jg-ink-mute); font-weight: 500; }
+      /* 장금이 코멘트: 카드 하단 전체 폭 한 줄. 폭이 넓어 20~30자 들어가 안 잘림. 조용한 톤. */
+      .m-jg { display: flex; gap: 6px; margin-top: 10px; align-items: baseline;
+        padding-top: 10px; border-top: 1px dashed var(--jg-line); }
+      .m-jg .em { font-size: 12px; flex: none; }
+      .m-jg .txt { flex: 1; min-width: 0; font-size: 11.5px; color: var(--jg-ink-sub); line-height: 1.4;
+        display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+      .m-jg .txt b { font-weight: 800; color: var(--jg-primary); }
+
+      /* 장금이 팁 */
+      .tip { background: var(--jg-primary-soft); border-radius: var(--r-md); padding: 13px 14px; display: flex; gap: 10px; }
+      .tip .em { font-size: 18px; }
+      .tip .tt { font-size: 12px; color: var(--jg-primary-strong); font-weight: 700; }
+      .tip .td { font-size: 12px; color: var(--jg-ink-sub); line-height: 1.5; margin-top: 2px; }
+
+      /* 처리 — 활용/폐기 영역 세그먼트 (탭 내부 하위 전환) */
+      .subseg { display: flex; gap: 8px; background: var(--jg-sunken); border-radius: var(--r-pill); padding: 4px; }
+      .subseg .s { flex: 1; text-align: center; font-size: 13px; font-weight: 700; color: var(--jg-ink-sub);
+        padding: 8px 0; border-radius: var(--r-pill); cursor: pointer; }
+      .subseg .s.on { background: var(--jg-surface); color: var(--jg-use); box-shadow: var(--shadow-card); }
+
+      /* 처리 — 폐기 처리 카드 (분리배출 안내) */
+      .dispose { display: flex; gap: 12px; align-items: flex-start; padding: 13px 0; border-top: 1px solid var(--jg-line); }
+      .dispose:first-child { border-top: none; padding-top: 2px; }
+      .d-ic { width: 44px; height: 44px; flex: none; border-radius: var(--r-md); background: var(--jg-use-bg);
+        display: flex; align-items: center; justify-content: center; font-size: 22px; }
+      .d-body { flex: 1; }
+      .d-title { font-size: 14px; font-weight: 700; }
+      .d-way { font-size: 12px; color: var(--jg-ink-sub); line-height: 1.45; margin-top: 3px; }
+      .d-tag { display: inline-block; font-size: 11px; font-weight: 700; border-radius: var(--r-sm);
+        padding: 2px 8px; margin-top: 6px; }
+      .d-tag.food { color: var(--jg-buy); background: var(--jg-buy-bg); }
+      .d-tag.general { color: var(--jg-ink-sub); background: var(--jg-sunken); }
+
+      /* 처리 — UGC 피드 */
+      .sort-row { display: flex; align-items: center; justify-content: space-between; }
+      .recipe { display: flex; gap: 12px; align-items: center; padding: 12px 0; border-top: 1px solid var(--jg-line); }
+      .recipe:first-child { border-top: none; padding-top: 2px; }
+      .r-thumb { width: 60px; height: 60px; flex: none; border-radius: var(--r-md); background: var(--jg-use-bg);
+        display: flex; align-items: center; justify-content: center; font-size: 28px; }
+      .r-body { flex: 1; min-width: 0; }
+      .r-title { font-size: 14px; font-weight: 700; }
+      .r-desc { font-size: 12px; color: var(--jg-ink-sub); line-height: 1.4; margin: 2px 0 6px;
+        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+      .r-meta { display: flex; align-items: center; gap: 10px; font-size: 11px; color: var(--jg-ink-mute); }
+      .r-author { display: flex; align-items: center; gap: 5px; }
+      .r-ava { width: 16px; height: 16px; border-radius: 50%; background: var(--jg-primary-soft); font-size: 9px;
+        display: flex; align-items: center; justify-content: center; }
+
+      /* 하단 채움/탭 */
+      .cta { padding: 12px 16px 14px; background: var(--jg-surface); border-top: 1px solid var(--jg-line); }
+      .btn { width: 100%; border: none; cursor: pointer; font-weight: 800; font-size: 14px; border-radius: var(--r-md);
+        padding: 14px; font-family: inherit; background: var(--jg-primary); color: #fff;
+        display: flex; align-items: center; justify-content: center; gap: 6px; }
+      .tabbar { display: flex; justify-content: space-around; align-items: center; background: var(--jg-surface);
+        border-top: 1px solid var(--jg-line); padding: 8px 6px 10px; }
+      .tabitem { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 10px; color: var(--jg-ink-mute); }
+      .tabitem.on { color: var(--jg-primary); }
+      .tabitem .ti { font-size: 18px; }
+      .fab { width: 46px; height: 46px; border-radius: 50%; background: var(--jg-primary); color: #fff;
+        display: flex; align-items: center; justify-content: center; margin-top: -22px; box-shadow: var(--shadow-float);
+        border: 3px solid var(--jg-surface); font-size: 13px; font-weight: 800; }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <h1 class="page-title">🍉 재료 상세 — 구매 · 보관 · 처리</h1>
+      <p class="page-sub">
+        참조 이미지(수박 상세)를 그대로 스펙으로 삼은 모바일 목업. 세 영역은 정보 성격이 달라 화면 구조도
+        다르게 간다 — 같은 카드 3개로 만들지 않는다. 데이터는 <code>watermelon.json</code> 실제 값.
+      </p>
+
+      <!-- 2단: 좌=목업 스테이지 / 우=기획 패널 (재사용 표준 클래스) -->
+      <div class="spec-layout">
+      <div class="spec-stage">
+        <!-- ================= 화면 1: 구매 (정답형) ================= -->
+        <div class="screen-wrap">
+          <div class="screen-label">① 구매 · 정답형</div>
+          <div class="phone">
+            <div class="status"><span>9:41</span><span>●●● 📶 🔋</span></div>
+            <div class="app">
+              <!-- component: AppBar -->
+              <div class="appbar">
+                <span class="ic">←</span>
+                <span class="center">수박</span>
+                <span class="side"><span class="ic">♡</span><span class="ic">↑</span></span>
+              </div>
+              <!-- component: SegTabs (variant: 구매 active) -->
+              <div class="segtabs">
+                <div class="segtab on">구매</div>
+                <div class="segtab">보관</div>
+                <div class="segtab">처리</div>
+              </div>
+              <div class="scroll">
+                <!-- 히어로: 토스식 — 큰 카피가 주인공. 장금이는 카피 위 작은 화자 라벨. 삽화 경쟁 제거 -->
+                <!-- component: HeroJanggeumi -->
+                <div>
+                  <!-- 화자: 장금이 (작게, 카피 위 한 줄) -->
+                  <div class="jg-speaker"><span class="jg-ava">👩‍🍳</span><span class="jg-name">장금이 왈,</span></div>
+                  <!-- SEO: 실제 h1은 검색어 포함. 화면엔 작게. -->
+                  <h1 style="font-size:11px;font-weight:700;color:var(--jg-ink-mute);margin:0 0 2px">수박 고르는 법</h1>
+                  <!-- 몰입 카피: 폭 전체를 시원하게 (주인공) -->
+                  <div class="hero-line">좋은 수박은<br />이렇게 고르는 것이옵니다</div>
+                  <div class="sub">기준을 하나씩 확인하면 확률이 올라가요</div>
+                </div>
+
+                <!-- component: ProbabilityGauge — 상단 sticky. 체크 결과 실시간 반영. 0%=중립→채울수록 초록 -->
+                <div class="prob" id="prob">
+                  <div class="lbl">이 수박이 좋은 수박일 확률</div>
+                  <div class="row">
+                    <span class="val" id="prob-val">0%</span>
+                    <span class="cap" id="prob-cap">기준을 확인해보세요</span>
+                  </div>
+                  <div class="bar"><i id="prob-bar"></i></div>
+                  <div class="hint">✔ <span id="prob-cnt">0</span> / 6 기준 충족</div>
+                </div>
+
+                <!-- component: BestWorstHeader — 눈을 먼저 학습시킨다 (이미지만) -->
+                <!-- 카피는 재료 무관(재료명 하드코딩 X). 데이터로 재료 확장 시 그대로 재사용. -->
+                <div class="bw">
+                  <div class="bw-col bw-good">
+                    <div class="bw-cap">👍 이런 걸 고르세요</div>
+                    <div class="bw-img">🍉</div>
+                  </div>
+                  <div class="bw-col bw-bad">
+                    <div class="bw-cap">👎 이건 피하세요</div>
+                    <div class="bw-img" style="filter:grayscale(.4)">🍈</div>
+                  </div>
+                </div>
+
+                <!-- component: CheckCriteriaCard — 2열 카드 + 큰 이미지(원본 방식). 카드 탭=토글. -->
+                <!-- .c-img는 실제 기준 사진 자리(배꼽·줄무늬·손 두드림 등). 지금은 이모지 자리표시. -->
+                <div class="crit-grid" id="crit-grid">
+                  <div class="crit" onclick="toggleCrit(this)">
+                    <div class="body"><div class="no"><span class="num">1.</span> 배꼽 확인</div>
+                      <div class="d">배꼽이 작고 오목할수록 잘 익은 수박이에요.</div></div>
+                    <span class="c-img">🍈</span>
+                  </div>
+                  <div class="crit" onclick="toggleCrit(this)">
+                    <div class="body"><div class="no"><span class="num">2.</span> 줄무늬 선명도</div>
+                      <div class="d">줄무늬가 선명하고 대비가 뚜렷한 것이 좋아요.</div></div>
+                    <span class="c-img">🍉</span>
+                  </div>
+                  <div class="crit" onclick="toggleCrit(this)">
+                    <div class="body"><div class="no"><span class="num">3.</span> 두드린 소리</div>
+                      <div class="d">통통 울리는 맑은 소리가 잘 익은 수박이에요.</div></div>
+                    <span class="c-img">✋</span>
+                  </div>
+                  <div class="crit" onclick="toggleCrit(this)">
+                    <div class="body"><div class="no"><span class="num">4.</span> 겉면의 마모</div>
+                      <div class="d">바닥면이 노랗게 마모된 흔적이 크고 선명할수록 잘 익었어요.</div></div>
+                    <span class="c-img">🟡</span>
+                  </div>
+                  <div class="crit" onclick="toggleCrit(this)">
+                    <div class="body"><div class="no"><span class="num">5.</span> 모양</div>
+                      <div class="d">둥글고 균형 잡힌 모양이 속이 꽉 찬 수박이에요.</div></div>
+                    <span class="c-img">⚪</span>
+                  </div>
+                  <div class="crit" onclick="toggleCrit(this)">
+                    <div class="body"><div class="no"><span class="num">6.</span> 무게감</div>
+                      <div class="d">크기에 비해 묵직할수록 과육이 꽉 차 있어요.</div></div>
+                    <span class="c-img">⚖️</span>
+                  </div>
+                </div>
+
+                <!-- 출처 (신뢰 = SEO·GEO 핵심). 요약은 항상 노출, 상세는 CSS 토글(HTML엔 존재→크롤러 읽음) -->
+                <!-- component: SourceSummary (dynamic: criteria별 유니크 출처 집계) -->
+                <details class="src-foot">
+                  <summary><span class="chk">✔</span> 농촌진흥청 등 <b>2곳</b>의 출처를 바탕으로 해요 <span class="more">자세히</span></summary>
+                  <ul class="src-list">
+                    <li><span class="s-tag official">공식</span> 농촌진흥청 농사로 · 검증 2026.07.01</li>
+                    <li><span class="s-tag media">영상</span> ▶ 백종원의 요리비책 · 유튜브</li>
+                  </ul>
+                </details>
+              </div>
+
+              <!-- component: TabBar -->
+              <div class="tabbar">
+                <div class="tabitem"><span class="ti">🏠</span>홈</div>
+                <div class="tabitem on"><span class="ti">🥕</span>재료</div>
+                <div class="fab">장금이</div>
+                <div class="tabitem"><span class="ti">💬</span>커뮤니티</div>
+                <div class="tabitem"><span class="ti">👤</span>마이</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= 화면 2: 보관 (합의형) ================= -->
+        <div class="screen-wrap">
+          <div class="screen-label">② 보관 · 합의형</div>
+          <div class="phone">
+            <div class="status"><span>9:41</span><span>●●● 📶 🔋</span></div>
+            <div class="app">
+              <div class="appbar">
+                <span class="ic">←</span>
+                <span class="center">수박</span>
+                <span class="side"><span class="ic">♡</span><span class="ic">↑</span></span>
+              </div>
+              <div class="segtabs">
+                <div class="segtab">구매</div>
+                <div class="segtab on">보관</div>
+                <div class="segtab">처리</div>
+              </div>
+              <div class="scroll">
+                <!-- 히어로: 구매 탭처럼 장금이 화자 -->
+                <div>
+                  <div class="jg-speaker"><span class="jg-ava">👩‍🍳</span><span class="jg-name">장금이 왈,</span></div>
+                  <h1 style="font-size:11px;font-weight:700;color:var(--jg-ink-mute);margin:0 0 2px">수박 보관법</h1>
+                  <div class="hero-line" style="font-size:20px">수박은 이렇게<br />보관하는 것이옵니다</div>
+                  <div class="sub">내 상황에 맞는 방법을 골라보세요</div>
+                </div>
+
+                <!-- component: FilterChips — watermelon.json storage.filters 3축(form/place/period)과 1:1.
+                     '선호도'는 데이터에 없어 제거. 모두 드롭다운으로 통일. -->
+                <div class="chips">
+                  <span class="chip dd on">상태</span>       <!-- form: 통째로/자른 뒤 -->
+                  <span class="chip dd">보관 장소</span>       <!-- place: 실온/냉장/냉동 -->
+                  <span class="chip dd">보관 기간</span>       <!-- period: 단기/장기 -->
+                </div>
+
+                <!-- component: MethodList -->
+                <div class="card" style="padding:14px 16px">
+                  <!-- component: MethodCard (variant: recommended) -->
+                  <div class="method">
+                    <!-- watermelon.json storage.methods[0] — tags: 통째로/실온/단기 -->
+                    <div class="m-row">
+                      <div class="m-thumb"><span class="rank top">1</span>🍉</div>
+                      <div class="m-body">
+                        <div class="m-title">서늘한 실온 보관 <span class="badge badge-best">추천</span></div>
+                        <div class="m-tags"><span class="m-tag">통째로</span><span class="m-tag">실온</span><span class="m-tag">단기</span></div>
+                        <div class="m-sum">통풍 잘 되는 서늘한 곳에 두면 당도가 더 올라가요.</div>
+                        <div class="stars">★ 4.6 <span class="cnt">(1,248)</span></div>
+                      </div>
+                    </div>
+                    <!-- 장금이 코멘트: 카드 하단 전체 폭 한 줄(안 잘림). 후기 대신, 로그인 불필요. -->
+                    <div class="m-jg"><span class="em">👩‍🍳</span>
+                      <div class="txt"><b>장금이</b> 사 온 날은 무조건 이 방법! 냉장 넣기 전 하루는 실온이 당도에 좋아요.</div></div>
+                  </div>
+                  <div class="method">
+                    <!-- methods[1] — tags: 자른 뒤/냉장/단기 -->
+                    <div class="m-row">
+                      <div class="m-thumb"><span class="rank">2</span>🧊</div>
+                      <div class="m-body">
+                        <div class="m-title">잘라서 밀폐용기 보관</div>
+                        <div class="m-tags"><span class="m-tag">자른 뒤</span><span class="m-tag">냉장</span><span class="m-tag">단기</span></div>
+                        <div class="m-sum">랩이나 밀폐용기에 담으면 수분 손실을 줄여요.</div>
+                        <div class="stars">★ 4.3 <span class="cnt">(982)</span></div>
+                      </div>
+                    </div>
+                    <div class="m-jg"><span class="em">👩‍🍳</span>
+                      <div class="txt"><b>장금이</b> 자른 뒤엔 이게 제일 깔끔해요. 표면에 랩을 밀착시키면 더 오래가요.</div></div>
+                  </div>
+                  <div class="method">
+                    <!-- methods[2] — tags: 자른 뒤/냉동/장기 (장기 보관용) -->
+                    <div class="m-row">
+                      <div class="m-thumb"><span class="rank">3</span>🧊</div>
+                      <div class="m-body">
+                        <div class="m-title">한입 크기로 냉동</div>
+                        <div class="m-tags"><span class="m-tag">자른 뒤</span><span class="m-tag">냉동</span><span class="m-tag">장기</span></div>
+                        <div class="m-sum">한입 크기로 잘라 얼리면 화채·스무디용으로 오래 써요.</div>
+                        <div class="stars">★ 3.9 <span class="cnt">(756)</span></div>
+                      </div>
+                    </div>
+                    <div class="m-jg"><span class="em">👩‍🍳</span>
+                      <div class="txt"><b>장금이</b> 남아서 못 먹을 것 같으면 얼려요! 여름 화채 만들 때 딱이에요.</div></div>
+                  </div>
+                </div>
+
+                <!-- component: JanggeumiTip -->
+                <div class="tip">
+                  <span class="em">💡</span>
+                  <div>
+                    <div class="tt">장금이의 팁</div>
+                    <div class="td">수박은 자른 뒤 시간이 지날수록 단맛이 떨어져요. 최대한 빨리 드시는 게 가장 맛있어요!</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="tabbar">
+                <div class="tabitem"><span class="ti">🏠</span>홈</div>
+                <div class="tabitem on"><span class="ti">🥕</span>재료</div>
+                <div class="fab">장금이</div>
+                <div class="tabitem"><span class="ti">💬</span>커뮤니티</div>
+                <div class="tabitem"><span class="ti">👤</span>마이</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 화면 3: 처리 (확산형) -->
+        <div class="screen-wrap">
+          <div class="screen-label">③ 처리 · 확산형</div>
+          <div class="phone">
+            <div class="status"><span>9:41</span><span>●●● 📶 🔋</span></div>
+            <div class="app">
+              <div class="appbar">
+                <span class="ic">←</span>
+                <span class="center">수박</span>
+                <span class="side"><span class="ic">♡</span><span class="ic">↑</span></span>
+              </div>
+              <div class="segtabs">
+                <div class="segtab">구매</div>
+                <div class="segtab">보관</div>
+                <div class="segtab on">처리</div>
+              </div>
+              <div class="scroll">
+                <!-- 히어로: 구매·보관 탭처럼 장금이 화자 -->
+                <div>
+                  <div class="jg-speaker"><span class="jg-ava">👩‍🍳</span><span class="jg-name">장금이 왈,</span></div>
+                  <h1 style="font-size:11px;font-weight:700;color:var(--jg-ink-mute);margin:0 0 2px">수박 활용 레시피</h1>
+                  <div class="hero-line" style="font-size:20px">남은 수박으로<br />무엇이든 지어보아요</div>
+                  <div class="sub">먹고 남았는지, 다 쓰고 버릴 차례인지</div>
+                </div>
+
+                <!-- component: HandlingSubSegment — 활용 vs 폐기 갈림 -->
+                <div class="subseg">
+                  <div class="s on">🍽 활용 처리</div>
+                  <div class="s">🗑 폐기 처리</div>
+                </div>
+
+                <!-- ===== 활용 처리 (레시피 UGC) ===== -->
+                <!-- 카테고리 필터 제거: 확산형은 피드 탐색이 자연스러움. 정렬만 유지. -->
+                <div class="sort-row">
+                  <span class="sub">레시피 24개</span>
+                  <span class="chip dd" style="padding:5px 11px">인기순</span>
+                </div>
+                <!-- component: RecipeFeed (UGC) -->
+                <div class="card" style="padding:14px 16px">
+                  <div class="recipe">
+                    <div class="r-thumb">🍹</div>
+                    <div class="r-body">
+                      <div class="r-title">시원한 수박 화채</div>
+                      <div class="r-desc">남은 수박과 탄산수로 만드는 여름 별미!</div>
+                      <div class="r-meta">
+                        <span class="r-author"><span class="r-ava">지</span>요리하는_지니</span>
+                        <span>♡ 1.2k</span><span>💬 87</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="recipe">
+                    <div class="r-thumb">🥤</div>
+                    <div class="r-body">
+                      <div class="r-title">수박 주스</div>
+                      <div class="r-desc">믹서에 갈아 레몬즙 살짝! 갈증 해소 끝판왕.</div>
+                      <div class="r-meta">
+                        <span class="r-author"><span class="r-ava">자</span>자취요리왕</span>
+                        <span>♡ 932</span><span>💬 56</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- ===== 폐기 처리 (분리배출 안내) — 목업이라 함께 노출 ===== -->
+                <div class="screen-label" style="margin-top:6px">↓ '폐기 처리' 탭 내용</div>
+                <div class="card" style="padding:14px 16px">
+                  <!-- component: DisposeCard -->
+                  <div class="dispose">
+                    <div class="d-ic">🍉</div>
+                    <div class="d-body">
+                      <div class="d-title">수박 껍질</div>
+                      <div class="d-way">잘게 잘라 물기를 빼고 배출해요. 흰 속껍질은 무침·장아찌로도 쓸 수 있어요.</div>
+                      <span class="d-tag food">음식물 쓰레기</span>
+                    </div>
+                  </div>
+                  <div class="dispose">
+                    <div class="d-ic">🌰</div>
+                    <div class="d-body">
+                      <div class="d-title">수박씨</div>
+                      <div class="d-way">소량은 음식물로 배출 가능. 말려서 간식으로 볶아 먹기도 해요.</div>
+                      <span class="d-tag food">음식물 쓰레기</span>
+                    </div>
+                  </div>
+                  <div class="dispose">
+                    <div class="d-ic">🕸</div>
+                    <div class="d-body">
+                      <div class="d-title">포장 랩·스티커</div>
+                      <div class="d-way">과일에 붙은 스티커와 비닐 랩은 음식물이 아니에요. 일반 쓰레기로.</div>
+                      <span class="d-tag general">일반 쓰레기</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- component: CreateCTA (활용 탭에서만 노출) -->
+              <div class="cta">
+                <button class="btn">✍️ 나만의 수박 활용법 공유하기</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /spec-stage -->
+
+      <!-- 우측 기획 패널: sticky + 내부만 상하 스크롤 -->
+      <aside class="spec-panel">
+        <!-- 패널 전체 헤더 (이 영역이 기획 명세임을 알림) -->
+        <div class="spec-head">
+          <div class="spec-head-title">📋 기획 명세</div>
+          <div class="spec-head-sub">이 화면의 데이터·라우팅·기능 요구사항. 논의로 확정된 내용을 반영.</div>
+        </div>
+        <div class="spec-card">
+          <h2>데이터 매핑 · 라우팅</h2>
+          <table>
+            <tr><th>영역</th><th>성격</th><th>화면 구조 / 데이터</th><th>라우트</th></tr>
+            <tr>
+              <td><span class="tag-buy">구매</span></td>
+              <td>정답형</td>
+              <td>Best/Worst + 확률 게이지 + 체크 기준<br /><code>purchase.criteria</code></td>
+              <td><code>/[slug]/purchase</code></td>
+            </tr>
+            <tr>
+              <td><span class="tag-keep">보관</span></td>
+              <td>합의형</td>
+              <td>3축 필터(<code>storage.filters</code>) + 방법 카드(<code>storage.methods</code>, 각 <code>tags</code>로 필터링)</td>
+              <td><code>/[slug]/storage</code></td>
+            </tr>
+            <tr>
+              <td><span class="tag-use">처리</span></td>
+              <td>확산형</td>
+              <td>활용(레시피 UGC) / 폐기(분리배출)<br /><code>handling.recipes·dispose</code></td>
+              <td><code>/[slug]/handling</code></td>
+            </tr>
+          </table>
+          <p class="sub" style="margin:12px 0 0">
+            탭 전환 = URL 경로. 탭 <b>내부</b> 필터/정렬은 쿼리스트링으로 <code>nuqs</code> 동기화
+            (<code>?place=냉장&sort=popular</code>).
+          </p>
+        </div>
+
+        <div class="spec-card">
+          <h2>구매 탭 — 기능 요구사항</h2>
+          <table>
+            <tr><th>#</th><th>요구사항</th><th>이유</th></tr>
+            <tr><td>R1</td><td><b>확률 게이지 상단 sticky.</b> 기준 체크 시 확률 실시간 상승, 스크롤해도 고정.</td><td>토스식 — 핵심 숫자 위 고정 + 즉시 피드백.</td></tr>
+            <tr><td>R2</td><td><b>확률 색 = 상태 기반.</b> 재료 무관 구매색. 0%=중립 회색 → 채울수록 초록(≤33% 주의황).</td><td>재료(수박·양파…) 바뀌어도 일관. 상태를 색으로.</td></tr>
+            <tr><td>R3</td><td><b>기준 = 2열 원본식.</b> 카드 테두리 없이 구분선+번호, 이미지 우측 뒤 레이어(텍스트가 앞). 행 높이 통일.</td><td>가벼운 편집 디자인. 텍스트 안 가려지고 정돈됨.</td></tr>
+            <tr><td>R4</td><td><b>기준 선택 = 은은한 배경.</b> 동그라미·박스 없이 카드 토글. 클릭 시 확률 연동.</td><td>장식 최소. 판정 도구에 폼 체크박스 부적합.</td></tr>
+            <tr><td>R5</td><td><b>Best/Worst 재료 무관 카피.</b> "이런 걸 고르세요/이건 피하세요". 이미지 배경 무채색(사진 선명).</td><td>재료명 하드코딩 금지. 색은 라벨에만.</td></tr>
+            <tr><td>R6</td><td><b>출처: 무채색 배경 + 행 전체 토글.</b> 요약 항상 노출, 상세만 접기. 유니크 출처 집계, 등급(공식/영상) 구분.</td><td>E-E-A-T 핵심. 농진청 하드코딩 금지. 확률과 위계 분리.</td></tr>
+            <tr><td>R7</td><td><b>SEO/GEO.</b> h1=검색어, 화면=장금이 몰입 카피. 접힌 출처도 SSR로 DOM에 존재 + JSON-LD(citation).</td><td>접기는 CSS만 — 크롤러·AI가 읽음. GEO 강화.</td></tr>
+            <tr><td>R8</td><td><b>확률 계산.</b> 현재 6개 균등. 가중치 도입 미정.</td><td>기준별 중요도 차이 → 논의 필요.</td></tr>
+          </table>
+        </div>
+
+        <div class="spec-card">
+          <h2>보관 탭 — 기능 요구사항</h2>
+          <table>
+            <tr><th>#</th><th>요구사항</th><th>이유</th></tr>
+            <tr><td>K1</td><td><b>신뢰 = 장금이 코멘트.</b> 사용자 후기 대신(로그인·UGC 후속). 카드 하단 전체 폭 한 줄.</td><td>합의형 근거 필요하나 로그인 전. 검증된 큐레이션이 서비스 가치.</td></tr>
+            <tr><td>K2</td><td><b>방법 비교 우선.</b> 썸네일 크게(72px)로 사진 인지, 순위는 썸네일 좌상단 오버레이. 코멘트는 보조.</td><td>보관 핵심 = 빠른 방법 비교·선택. 코멘트가 시선 뺏으면 안 됨.</td></tr>
+            <tr><td>K3</td><td><b>태그 무채색.</b> 기간·장소 태그 회색(영역색으로 튀지 않음). 별점은 목업 임시(0 표시 무관).</td><td>메타 정보는 조용히. 별점은 후속 UGC.</td></tr>
+            <tr><td>K4</td><td><b>필터 = 데이터 3축(form·place·period) 드롭다운.</b> <code>storage.filters</code>와 1:1. '선호도' 등 데이터 없는 필터 금지. 각 방법의 <code>tags</code>로 필터링.</td><td>필터·콘텐츠 정합성. 재료마다 축이 다름(동적).</td></tr>
+            <tr><td>K5</td><td><b>필터 개수 정책.</b> 5개까지 2줄, 6개+ 혼합/가로스크롤/바텀시트. (수박=3축이라 한 줄)</td><td>가로 스크롤은 뒤 필터가 숨음. 조합하려면 다 보여야.</td></tr>
+            <tr><td>K6</td><td><b>히어로 = 장금이 화자.</b> 구매 탭과 톤 통일("~보관하는 것이옵니다"). h1은 SEO 검색어.</td><td>브랜드 몰입 일관 + SEO 병행.</td></tr>
+          </table>
+        </div>
+
+        <div class="spec-card">
+          <h2>처리 탭 — 기능 요구사항</h2>
+          <table>
+            <tr><th>#</th><th>요구사항</th><th>이유</th></tr>
+            <tr><td>H1</td><td><b>활용 / 폐기 2영역.</b> 상단 세그먼트로 갈림. 활용=레시피 UGC, 폐기=분리배출 안내(<code>handling.dispose</code> 신설).</td><td>"남은 재료 활용"과 "다 쓰고 버리기"는 다른 고민.</td></tr>
+            <tr><td>H2</td><td><b>활용 = 정렬만, 카테고리 필터 없음.</b> "인기순" 등 정렬. 전체/음료/디저트… 칩 제거.</td><td>확산형은 피드 탐색이 자연스러움. 필터가 탐색 방해.</td></tr>
+            <tr><td>H3</td><td><b>작성 CTA 하단 고정.</b> "나만의 활용법 공유하기". UGC 유도.</td><td>확산형 = 참여로 콘텐츠가 늘어남.</td></tr>
+            <tr><td>H4</td><td><b>히어로 = 장금이 화자.</b> 구매·보관과 톤 통일.</td><td>세 탭 브랜드 일관.</td></tr>
+          </table>
+        </div>
+
+        <div class="spec-card">
+          <h2>확정 사항 (디자인)</h2>
+          <table>
+            <tr><th>항목</th><th>결정</th></tr>
+            <tr><td>브랜드 색</td><td>세이지 그린 <code>#5C6E3D</code> (후보 비교 후 확정)</td></tr>
+            <tr><td>영역 액센트</td><td>구매 초록 / 보관 청록 / 처리 주황</td></tr>
+            <tr><td>기준 이미지</td><td>실제 사진 필요 (현재 이모지 자리표시)</td></tr>
+          </table>
+        </div>
+      </aside>
+      </div><!-- /spec-layout -->
+    </div>
+    <script>
+      // 목업 인터랙션: 기준 체크 → "좋은 수박일 확률" 실시간 반영
+      const TOTAL = 6;
+      function toggleCrit(el) {
+        el.classList.toggle("on");
+        const on = document.querySelectorAll("#crit-grid .crit.on").length;
+        const pct = Math.round((on / TOTAL) * 100);
+        document.getElementById("prob-val").textContent = pct + "%";
+        document.getElementById("prob-bar").style.width = pct + "%";
+        document.getElementById("prob-cnt").textContent = on;
+        const cap = document.getElementById("prob-cap");
+        if (on === 0) cap.textContent = "기준을 확인해보세요";
+        else if (pct <= 33) cap.textContent = "조금 더 살펴봐요";
+        else if (pct <= 66) cap.textContent = "괜찮은 편이에요";
+        else if (pct < 100) cap.textContent = "좋은 수박이에요!";
+        else cap.textContent = "완벽한 수박이에요! 🎉";
+        // 상태 색: 0%=중립 / ~33%=주의(황) / 그 이상=초록(구매색). 재료 무관.
+        const prob = document.getElementById("prob");
+        prob.classList.remove("is-low", "is-mid", "is-high");
+        if (on === 0) { /* 중립 기본값 유지 */ }
+        else if (pct <= 33) prob.classList.add("is-low");
+        else if (pct <= 66) prob.classList.add("is-mid");
+        else prob.classList.add("is-high");
+      }
+    </script>
+  </body>
+</html>

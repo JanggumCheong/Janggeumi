@@ -1,0 +1,164 @@
+{
+  "$comment": "장금이 식재료 마스터 카탈로그. 목록 화면(홈·검색) 렌더링용 경량 메타만 담는다. 상세(구매·보관·처리)는 examples/<id>.json 참조. 필드는 schema.md의 상단 메타와 동일 규약을 따른다.",
+  "version": "0.1.0",
+  "lastReviewed": "2026-07-05",
+  "categories": [
+    { "key": "vegetable", "label": "채소" },
+    { "key": "fruit", "label": "과일" },
+    { "key": "meat", "label": "육류" },
+    { "key": "seafood", "label": "수산" },
+    { "key": "grain", "label": "곡물·견과" }
+  ],
+  "statusLegend": {
+    "published": "상세 콘텐츠 공개됨",
+    "draft": "상세 콘텐츠 작성 중",
+    "planned": "목록에만 등록, 상세 미작성"
+  },
+  "items": [
+    {
+      "id": "watermelon",
+      "name": "수박",
+      "aliases": ["watermelon"],
+      "category": "fruit",
+      "emoji": "🍉",
+      "summary": "수분 가득! 달콤한 과즙이 일품인 여름 대표 과일",
+      "seasonMonths": [6, 7, 8],
+      "status": "published",
+      "hasContent": true,
+      "order": 1
+    },
+    {
+      "id": "potato",
+      "name": "감자",
+      "aliases": ["potato"],
+      "category": "vegetable",
+      "emoji": "🥔",
+      "summary": "든든한 탄수화물 채소. 보관만 잘하면 몇 주씩 두고 먹을 수 있어요.",
+      "seasonMonths": [6, 7, 8, 9, 10],
+      "status": "published",
+      "hasContent": true,
+      "order": 2
+    },
+    {
+      "id": "green-onion",
+      "name": "대파",
+      "aliases": ["파", "green onion", "welsh onion"],
+      "category": "vegetable",
+      "emoji": "🌿",
+      "summary": "국·볶음·양념 어디에나 들어가는 기본 채소. 잘 보관하면 오래 쓸 수 있어요.",
+      "seasonMonths": [11, 12, 1, 2, 3],
+      "status": "published",
+      "hasContent": true,
+      "order": 3
+    },
+
+    {
+      "id": "onion",
+      "name": "양파",
+      "aliases": ["onion"],
+      "category": "vegetable",
+      "emoji": "🧅",
+      "summary": "거의 모든 요리의 기본. 통째로는 오래가지만 자르면 관리가 필요해요.",
+      "seasonMonths": [4, 5, 6],
+      "status": "planned",
+      "hasContent": false,
+      "order": 4
+    },
+    {
+      "id": "garlic",
+      "name": "마늘",
+      "aliases": ["garlic", "깐마늘"],
+      "category": "vegetable",
+      "emoji": "🧄",
+      "summary": "한식 양념의 핵심. 깐마늘·통마늘 상태에 따라 보관법이 갈려요.",
+      "seasonMonths": [6, 7],
+      "status": "planned",
+      "hasContent": false,
+      "order": 5
+    },
+    {
+      "id": "carrot",
+      "name": "당근",
+      "aliases": ["carrot"],
+      "category": "vegetable",
+      "emoji": "🥕",
+      "summary": "국·볶음·반찬 두루 쓰는 뿌리채소. 수분 관리가 신선도의 관건이에요.",
+      "seasonMonths": [10, 11, 12],
+      "status": "planned",
+      "hasContent": false,
+      "order": 6
+    },
+    {
+      "id": "cabbage",
+      "name": "양배추",
+      "aliases": ["cabbage"],
+      "category": "vegetable",
+      "emoji": "🥬",
+      "summary": "한 통 사면 다 못 쓰기 쉬운 채소. 자른 뒤 보관·활용이 핵심이에요.",
+      "seasonMonths": [4, 5, 11, 12],
+      "status": "planned",
+      "hasContent": false,
+      "order": 7
+    },
+    {
+      "id": "tomato",
+      "name": "토마토",
+      "aliases": ["tomato"],
+      "category": "fruit",
+      "emoji": "🍅",
+      "summary": "실온·냉장 논쟁이 있는 재료. 익힘 정도에 따라 보관을 달리해요.",
+      "seasonMonths": [6, 7, 8, 9],
+      "status": "planned",
+      "hasContent": false,
+      "order": 8
+    },
+    {
+      "id": "strawberry",
+      "name": "딸기",
+      "aliases": ["strawberry"],
+      "category": "fruit",
+      "emoji": "🍓",
+      "summary": "물러지기 쉬운 과일. 씻는 시점과 보관법이 신선도를 좌우해요.",
+      "seasonMonths": [1, 2, 3, 4],
+      "status": "planned",
+      "hasContent": false,
+      "order": 9
+    },
+    {
+      "id": "apple",
+      "name": "사과",
+      "aliases": ["apple"],
+      "category": "fruit",
+      "emoji": "🍎",
+      "summary": "오래 두고 먹는 과일. 다른 채소·과일과 함께 두면 안 되는 이유가 있어요.",
+      "seasonMonths": [9, 10, 11],
+      "status": "planned",
+      "hasContent": false,
+      "order": 10
+    },
+    {
+      "id": "egg",
+      "name": "달걀",
+      "aliases": ["egg", "계란"],
+      "category": "meat",
+      "emoji": "🥚",
+      "summary": "냉장고 필수템. 세척 여부·보관 위치로 신선도가 크게 달라져요.",
+      "seasonMonths": [],
+      "status": "planned",
+      "hasContent": false,
+      "order": 11
+    },
+    {
+      "id": "pork-belly",
+      "name": "삼겹살",
+      "aliases": ["pork belly", "돼지고기"],
+      "category": "meat",
+      "emoji": "🥓",
+      "summary": "자주 사는 육류. 냉장·냉동 시점과 소분이 맛과 안전을 가릅니다.",
+      "seasonMonths": [],
+      "status": "planned",
+      "hasContent": false,
+      "order": 12
+    }
+  ]
+}
