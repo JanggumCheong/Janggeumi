@@ -1,0 +1,36 @@
+
+{
+  "ingredient": {
+    "id": "ing_watermelon",
+    "name": "수박",
+    "catchphrase": "구매부터 보관, 처리까지 헤매지 말고 한 번에 해결!",
+    "description": "여름철 대표 과일로, 수분 보충과 갈증 해소에 탁월합니다.",
+    "image_url": "https://example.com/images/watermelon.png"
+  },
+  "purchase_tips": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "ingredient_id": "ing_watermelon",
+      "filter_option_id": "fo_whole",
+      "title": "배꼽(꼭지) 확인하기",
+      "content": "수박 아래쪽의 배꼽(꼭지 흔적) 크기가 작고 사방으로 갈라지지 않고 오목하게 들어간 것이 당도가 높고 잘 익은 수박입니다.",
+      "sort_order": 1
+    },
+    {
+      "id": "610e8400-e29b-41d4-a716-446655441111",
+      "ingredient_id": "ing_watermelon",
+      "filter_option_id": "fo_whole",
+      "title": "줄무늬 선명도 체크",
+      "content": "검은색 줄무늬와 바탕이 되는 초록색의 경계가 흐릿하지 않고 뚜렷하며, 색이 짙을수록 햇빛을 잘 받아 맛있는 수박입니다.",
+      "sort_order": 2
+    },
+    {
+      "id": "720e8400-e29b-41d4-a716-446655442222",
+      "ingredient_id": "ing_watermelon",
+      "filter_option_id": "fo_whole",
+      "title": "맑은 둔탁음 구별",
+      "content": "손가락이나 손바닥으로 가볍게 두드렸을 때, '깡깡'하는 금속음보다는 '통통'하며 맑고 공명감 있는 소리가 나는 것이 속이 꽉 찬 수박입니다.",
+      "sort_order": 3
+    }
+  ]
+}

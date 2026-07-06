@@ -1,0 +1,71 @@
+{
+  "storage_headline": {
+    "title": "수박 보관 방법 비교",
+    "intro": "내 상황에 맞는 방법을 찾아보세요.",
+    "janggeumi_tip": "수박은 자른 후 시간이 지날수록 단맛이 떨어질 수 있어요. 최대한 빠르게 드시는 것이 가장 맛있습니다! 💡"
+  },
+  "storage_filters": [
+    {
+      "section_id": "fs_cut_status",
+      "label": "자름 유무",
+      "options": [
+        {
+          "option_id": "fo_trimmed",
+          "option_name": "자름"
+        },
+        {
+          "option_id": "fo_whole",
+          "option_name": "안자름"
+        }
+      ]
+    },
+    {
+      "section_id": "fs_storage_location",
+      "label": "보관 장소",
+      "options": [
+        {
+          "option_id": "fo_room",
+          "option_name": "실온"
+        },
+        {
+          "option_id": "fo_fridge",
+          "option_name": "냉장"
+        },
+        {
+          "option_id": "fo_freezer",
+          "option_name": "냉동"
+        }
+      ]
+    }
+  ],
+  "storage_methods": [
+    {
+      "id": "c6cd63b1-733a-4810-95f3-8500aaaf17f7",
+      "title": "실온",
+      "is_recommended": true,
+      "tags": {
+        "storage_location_option_id": "fo_room"
+      },
+      "summary": "장금이 표준 가이드: 직사광선을 피해 서늘한 실온(10~15℃)에 통째로 보관하세요. 통째로 두면 당도가 더 올라갑니다.",
+      "duration": "7~10일 보관 가능",
+      "rating": {
+        "avg": 5,
+        "count": 1248
+      }
+    },
+    {
+      "id": "c28c1f83-2e1c-4396-ae25-a82565305714",
+      "title": "냉장",
+      "is_recommended": false,
+      "tags": {
+        "storage_location_option_id": "fo_fridge"
+      },
+      "summary": "장금이 표준 가이드: 랩 보관은 세균 폭증의 원인! 반드시 반으로 자르지 말고 깍둑썰기하여 밀폐용기에 담아 냉장 보관하세요.",
+      "duration": "2~3일 보관 가능",
+      "rating": {
+        "avg": 5,
+        "count": 982
+      }
+    }
+  ]
+}
