@@ -34,6 +34,25 @@ export const FactSchema = z.object({
   value: z.string(),
 });
 
+/**
+ * 화자 — 코멘트·레시피의 작성 주체.
+ * type으로 화자 종류 구분: curator(장금이 큐레이션) / ugc(유저) / official(전문가·기관).
+ * 지금 데이터는 대부분 curator(장금이)지만, 로그인·UGC 후속에서 ugc·official로 확장된다.
+ */
+export const AuthorSchema = z.object({
+  name: z.string(),
+  type: z.enum(["ugc", "official", "curator"]),
+});
+
+/**
+ * 코멘트 — 방법·레시피에 붙는 한마디(후기 대체 신뢰 근거).
+ * 화자(author)를 데이터로 들고 있어, 화면이 화자명을 하드코딩하지 않고 유저·전문가로 확장 가능.
+ */
+export const CommentSchema = z.object({
+  author: AuthorSchema,
+  text: z.string(),
+});
+
 // ── 구매 (정답형) ───────────────────────────────────────
 
 export const PurchaseCriterionSchema = z.object({
@@ -59,7 +78,6 @@ export const BestWorstSchema = z.object({
 
 export const PurchaseSchema = z.object({
   headline: z.string(),
-  intro: z.string().optional(),
   bestWorst: BestWorstSchema.optional(),
   criteria: z.array(PurchaseCriterionSchema),
 });
@@ -103,8 +121,8 @@ export const StorageMethodSchema = z.object({
   rating: RatingSchema.optional(),
   source: SourceSchema.optional(),
   media: z.array(MediaSchema).optional(),
-  /** 장금이 코멘트(후기 대체 — 로그인 전 검증된 큐레이션). */
-  janggeumiComment: z.string().optional(),
+  /** 코멘트(후기 대체 — 검증된 큐레이션). 화자(author)를 데이터로 — 지금은 장금이(curator), 향후 유저·전문가 확장. */
+  comment: CommentSchema.optional(),
 });
 
 export const StorageSchema = z.object({
@@ -117,11 +135,6 @@ export const StorageSchema = z.object({
 
 // ── 처리 (확산형) ───────────────────────────────────────
 
-export const RecipeAuthorSchema = z.object({
-  name: z.string(),
-  type: z.enum(["ugc", "official", "curator"]),
-});
-
 /** 활용 처리 — 레시피 UGC 하나. */
 export const RecipeSchema = z.object({
   id: z.string(),
@@ -129,7 +142,7 @@ export const RecipeSchema = z.object({
   category: z.string().optional(),
   desc: z.string(),
   image: z.string().nullable().optional(),
-  author: RecipeAuthorSchema,
+  author: AuthorSchema,
   reaction: z.object({ likes: z.number(), comments: z.number() }).optional(),
   source: SourceSchema.nullable().optional(),
   media: z.array(MediaSchema).optional(),
@@ -211,7 +224,8 @@ export type Rating = z.infer<typeof RatingSchema>;
 export type StorageStep = z.infer<typeof StorageStepSchema>;
 export type StorageMethod = z.infer<typeof StorageMethodSchema>;
 export type Storage = z.infer<typeof StorageSchema>;
-export type RecipeAuthor = z.infer<typeof RecipeAuthorSchema>;
+export type Author = z.infer<typeof AuthorSchema>;
+export type Comment = z.infer<typeof CommentSchema>;
 export type Recipe = z.infer<typeof RecipeSchema>;
 export type DisposeItem = z.infer<typeof DisposeItemSchema>;
 export type Handling = z.infer<typeof HandlingSchema>;
