@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>장금이 메인 페이지 명세 목업</title>
+    <style>
+      :root {
+        --jg-bg: #fbfbfa;
+        --jg-surface: #ffffff;
+        --jg-surface-sunken: #f4f4f2;
+        --jg-primary: #5c6e3d;
+        --jg-primary-strong: #47562f;
+        --jg-primary-soft: #eef1e6;
+        --jg-ink: #1f1d18;
+        --jg-ink-sub: #6b675e;
+        --jg-ink-mute: #9b978c;
+        --jg-line: #e7e4dc;
+        --shadow-card: 0 4px 16px rgba(31, 29, 24, 0.05);
+        --shadow-float: 0 10px 28px rgba(31, 29, 24, 0.1);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: #f3f2ee;
+        color: var(--jg-ink);
+        font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
+          "Pretendard", "Malgun Gothic", sans-serif;
+        line-height: 1.5;
+      }
+
+      a,
+      button,
+      input {
+        font: inherit;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      button {
+        cursor: pointer;
+      }
+
+      .stage {
+        display: grid;
+        min-height: 100vh;
+        place-items: center;
+        padding: 24px;
+      }
+
+      .phone {
+        display: flex;
+        width: min(100%, 420px);
+        height: min(880px, calc(100vh - 48px));
+        overflow: hidden;
+        flex-direction: column;
+        border: 1px solid var(--jg-line);
+        border-radius: 28px;
+        background: var(--jg-bg);
+        box-shadow: var(--shadow-float);
+      }
+
+      .app-header {
+        display: flex;
+        height: 56px;
+        flex: none;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+      }
+
+      .brand-logo img {
+        display: block;
+        width: auto;
+        height: 44px;
+      }
+
+      .icon-button {
+        display: inline-flex;
+        width: 36px;
+        height: 36px;
+        align-items: center;
+        justify-content: center;
+        border: 0;
+        border-radius: 999px;
+        background: transparent;
+        color: var(--jg-ink-sub);
+      }
+
+      .icon {
+        width: 22px;
+        height: 22px;
+        fill: none;
+        stroke: currentColor;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 2;
+      }
+
+      .app-main {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        padding: 18px 20px 36px;
+        scrollbar-width: none;
+      }
+
+      .app-main::-webkit-scrollbar {
+        display: none;
+      }
+
+      .search-box {
+        display: flex;
+        min-height: 46px;
+        align-items: center;
+        gap: 12px;
+        border: 2px solid var(--jg-primary);
+        border-radius: 17px;
+        background: var(--jg-surface);
+        padding: 0 16px;
+      }
+
+      .search-button {
+        display: inline-flex;
+        width: 20px;
+        height: 20px;
+        flex: none;
+        align-items: center;
+        justify-content: center;
+        border: 0;
+        background: transparent;
+        color: var(--jg-ink);
+        padding: 0;
+      }
+
+      .search-button .icon {
+        width: 20px;
+        height: 20px;
+        stroke-width: 2;
+      }
+
+      .search-box input {
+        min-width: 0;
+        flex: 1;
+        border: 0;
+        outline: 0;
+        background: transparent;
+        color: var(--jg-ink);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .search-box input::placeholder {
+        color: #8c8c8c;
+        opacity: 1;
+      }
+
+      .banner {
+        position: relative;
+        display: flex;
+        min-height: 148px;
+        overflow: hidden;
+        align-items: center;
+        margin-top: 18px;
+        border: 1px solid #e4e9dc;
+        border-radius: 8px;
+        background: var(--jg-surface);
+        box-shadow: 0 8px 22px rgba(62, 76, 47, 0.08);
+      }
+
+      .banner::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          linear-gradient(
+            90deg,
+            rgba(255, 252, 243, 0.98) 0%,
+            rgba(255, 252, 243, 0.9) 43%,
+            rgba(255, 252, 243, 0.08) 76%
+          ),
+          var(--banner-image) center / cover no-repeat;
+      }
+
+      .banner-copy {
+        position: relative;
+        z-index: 1;
+        max-width: 230px;
+        padding: 20px 18px;
+      }
+
+      .banner-copy h2 {
+        margin: 0;
+        color: #27331e;
+        font-size: 19px;
+        font-weight: 900;
+        line-height: 1.25;
+      }
+
+      .banner-copy p {
+        margin: 8px 0 0;
+        color: var(--jg-ink-sub);
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .banner-cta {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 14px;
+        border-radius: 999px;
+        background: var(--jg-primary);
+        color: #ffffff;
+        padding: 8px 14px;
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .section {
+        margin-top: 22px;
+      }
+
+      .section-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 10px;
+      }
+
+      .section-head h2 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 900;
+        letter-spacing: 0;
+      }
+
+      .section-more {
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
+        color: var(--jg-ink-sub);
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .section-more .icon {
+        width: 14px;
+        height: 14px;
+        stroke-width: 2.5;
+      }
+
+      .ingredient-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 7px;
+      }
+
+      .ingredient-card {
+        display: grid;
+        gap: 5px;
+        border: 1px solid var(--jg-line);
+        border-radius: 8px;
+        background: var(--jg-surface);
+        padding: 6px;
+        box-shadow: var(--shadow-card);
+      }
+
+      .ingredient-card.is-hidden {
+        display: none;
+      }
+
+      .ingredient-image {
+        display: grid;
+        aspect-ratio: 1 / 1;
+        place-items: center;
+        border-radius: 7px;
+        background: linear-gradient(145deg, #fbfbfa 0%, #edf1e5 100%);
+        font-size: 28px;
+      }
+
+      .ingredient-card strong {
+        overflow: hidden;
+        color: var(--jg-ink);
+        font-size: 11px;
+        font-weight: 900;
+        line-height: 1.2;
+        text-align: center;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .pager {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .pager-button {
+        display: inline-flex;
+        width: 30px;
+        height: 30px;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--jg-line);
+        border-radius: 999px;
+        background: var(--jg-surface);
+        color: var(--jg-primary);
+        font-size: 16px;
+        font-weight: 900;
+      }
+
+      .pager-dots {
+        display: flex;
+        gap: 6px;
+      }
+
+      .pager-dot {
+        width: 7px;
+        height: 7px;
+        border: 0;
+        border-radius: 999px;
+        background: #d4d8ca;
+        padding: 0;
+      }
+
+      .pager-dot.is-active {
+        width: 18px;
+        background: var(--jg-primary);
+      }
+
+      .recent-empty {
+        display: grid;
+        justify-items: center;
+        gap: 7px;
+        border: 1px dashed #d9ded1;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.72);
+        padding: 15px 16px;
+        text-align: center;
+      }
+
+      .recent-empty-icon {
+        display: grid;
+        width: 36px;
+        height: 36px;
+        place-items: center;
+        border-radius: 999px;
+        background: var(--jg-primary-soft);
+        color: var(--jg-primary);
+      }
+
+      .recent-list {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 9px;
+        border: 1px dashed #d9ded1;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.72);
+        padding: 14px 12px 12px;
+      }
+
+      .recent-item {
+        display: grid;
+        justify-items: center;
+        gap: 5px;
+      }
+
+      .recent-circle {
+        display: grid;
+        width: 54px;
+        height: 54px;
+        place-items: center;
+        border: 1px solid var(--jg-line);
+        border-radius: 999px;
+        background: var(--jg-surface);
+        box-shadow: var(--shadow-card);
+        font-size: 25px;
+      }
+
+      .recent-item span {
+        max-width: 58px;
+        overflow: hidden;
+        color: var(--jg-ink);
+        font-size: 11px;
+        font-weight: 900;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .service-banner {
+        --banner-image: url("../../assets/images/main/fresh-ingredients-banner.webp");
+        min-height: 140px;
+      }
+
+      .bottom-tabbar {
+        display: flex;
+        flex: none;
+        border-top: 1px solid var(--jg-line);
+        background: var(--jg-surface);
+      }
+
+      .tab-item {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        padding: 8px 4px;
+        color: var(--jg-ink-mute);
+        font-size: 11px;
+        font-weight: 800;
+      }
+
+      .tab-item.is-active {
+        color: var(--jg-primary);
+      }
+
+      .tab-item .icon {
+        width: 23px;
+        height: 23px;
+      }
+
+      @media (max-width: 520px) {
+        .stage {
+          padding: 0;
+        }
+
+        .phone {
+          width: 100%;
+          height: 100vh;
+          border: 0;
+          border-radius: 0;
+          box-shadow: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="stage">
+      <div class="phone">
+        <header class="app-header">
+          <a class="brand-logo" href="#" aria-label="장금이 홈">
+            <img src="../../assets/images/logo.webp" alt="장금이" />
+          </a>
+          <button class="icon-button" type="button" aria-label="로그인">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="8" r="4" />
+              <path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" />
+            </svg>
+          </button>
+        </header>
+
+        <main class="app-main">
+          <label class="search-box">
+            <button class="search-button" type="button" aria-label="검색 실행">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+              </svg>
+            </button>
+            <input
+              type="search"
+              aria-label="재료 검색"
+              placeholder="재료를 검색해보세요 (예: 수박, 양파)"
+            />
+          </label>
+
+          <section
+            class="banner"
+            aria-label="장금이 소개"
+            style="--banner-image: url('../../assets/images/main/janggeumi-banner-character.webp')"
+          >
+            <div class="banner-copy">
+              <h2>장금이와<br />신선한 하루 시작!</h2>
+              <p>재료 고르기부터 보관까지 필요한 정보를 쉽게 알려드릴게요.</p>
+              <a class="banner-cta" href="#">재료 찾기</a>
+            </div>
+          </section>
+
+          <section class="section" aria-label="인기 상승 재료">
+            <div class="section-head">
+              <h2>인기 상승 재료 🔥</h2>
+              <a class="section-more" href="#">
+                전체보기
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m9 18 6-6-6-6" />
+                </svg>
+              </a>
+            </div>
+
+            <div class="ingredient-grid">
+              <a class="ingredient-card" href="#" data-page="1">
+                <div class="ingredient-image" aria-hidden="true">🥔</div>
+                <strong>감자</strong>
+              </a>
+              <a class="ingredient-card" href="#" data-page="1">
+                <div class="ingredient-image" aria-hidden="true">🧅</div>
+                <strong>양파</strong>
+              </a>
+              <a class="ingredient-card" href="#" data-page="1">
+                <div class="ingredient-image" aria-hidden="true">🥒</div>
+                <strong>오이</strong>
+              </a>
+              <a class="ingredient-card" href="#" data-page="1">
+                <div class="ingredient-image" aria-hidden="true">🍅</div>
+                <strong>토마토</strong>
+              </a>
+              <a class="ingredient-card" href="#" data-page="2">
+                <div class="ingredient-image" aria-hidden="true">🍎</div>
+                <strong>사과</strong>
+              </a>
+              <a class="ingredient-card" href="#" data-page="2">
+                <div class="ingredient-image" aria-hidden="true">🥬</div>
+                <strong>양배추</strong>
+              </a>
+              <a class="ingredient-card" href="#" data-page="2">
+                <div class="ingredient-image" aria-hidden="true">🥕</div>
+                <strong>당근</strong>
+              </a>
+              <a class="ingredient-card" href="#" data-page="2">
+                <div class="ingredient-image" aria-hidden="true">🍌</div>
+                <strong>바나나</strong>
+              </a>
+              <a class="ingredient-card" href="#" data-page="3">
+                <div class="ingredient-image" aria-hidden="true">🌿</div>
+                <strong>대파</strong>
+              </a>
+              <a class="ingredient-card" href="#" data-page="3">
+                <div class="ingredient-image" aria-hidden="true">◻️</div>
+                <strong>두부</strong>
+              </a>
+              <a class="ingredient-card" href="#" data-page="3">
+                <div class="ingredient-image" aria-hidden="true">🥚</div>
+                <strong>달걀</strong>
+              </a>
+              <a class="ingredient-card" href="#" data-page="3">
+                <div class="ingredient-image" aria-hidden="true">🍄</div>
+                <strong>버섯</strong>
+              </a>
+            </div>
+
+            <div class="pager" aria-label="인기 상승 재료 페이지">
+              <button class="pager-button" type="button" data-prev aria-label="이전 페이지">‹</button>
+              <div class="pager-dots">
+                <button class="pager-dot is-active" type="button" data-page-target="1" aria-label="1페이지"></button>
+                <button class="pager-dot" type="button" data-page-target="2" aria-label="2페이지"></button>
+                <button class="pager-dot" type="button" data-page-target="3" aria-label="3페이지"></button>
+              </div>
+              <button class="pager-button" type="button" data-next aria-label="다음 페이지">›</button>
+            </div>
+          </section>
+
+          <section class="section" aria-label="최근 본 재료">
+            <div class="section-head">
+              <h2>최근 본 재료</h2>
+            </div>
+
+            <div class="recent-list" aria-label="최근 본 재료 목록">
+              <a class="recent-item" href="/ingredients/apple">
+                <div class="recent-circle" aria-hidden="true">🍎</div>
+                <span>사과</span>
+              </a>
+              <a class="recent-item" href="/ingredients/potato">
+                <div class="recent-circle" aria-hidden="true">🥔</div>
+                <span>감자</span>
+              </a>
+              <a class="recent-item" href="/ingredients/onion">
+                <div class="recent-circle" aria-hidden="true">🧅</div>
+                <span>양파</span>
+              </a>
+              <a class="recent-item" href="/ingredients/tomato">
+                <div class="recent-circle" aria-hidden="true">🍅</div>
+                <span>토마토</span>
+              </a>
+              <a class="recent-item" href="/ingredients/cucumber">
+                <div class="recent-circle" aria-hidden="true">🥒</div>
+                <span>오이</span>
+              </a>
+            </div>
+          </section>
+
+          <section class="banner service-banner" aria-label="식자재 관리 안내">
+            <div class="banner-copy">
+              <h2>사고 끝이 아니라,<br />신선함까지 챙기는 장금이</h2>
+              <p>장보기부터 냉장고 보관까지 재료의 좋은 순간을 놓치지 않게 도와드려요.</p>
+            </div>
+          </section>
+        </main>
+
+        <nav class="bottom-tabbar" aria-label="하단 탭">
+          <a class="tab-item is-active" href="#" aria-current="page">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m3 10.5 9-7 9 7" />
+              <path d="M5 10v10h14V10" />
+              <path d="M9 20v-6h6v6" />
+            </svg>
+            홈
+          </a>
+          <a class="tab-item" href="#">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.3-4.3" />
+            </svg>
+            검색
+          </a>
+          <a class="tab-item" href="#">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="8" r="4" />
+              <path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" />
+            </svg>
+            로그인
+          </a>
+        </nav>
+      </div>
+    </div>
+
+    <script>
+      const cards = document.querySelectorAll(".ingredient-card");
+      const dots = document.querySelectorAll("[data-page-target]");
+      const prev = document.querySelector("[data-prev]");
+      const next = document.querySelector("[data-next]");
+      const totalPages = dots.length;
+      let currentPage = 1;
+
+      function renderPage(page) {
+        currentPage = page > totalPages ? 1 : page < 1 ? totalPages : page;
+
+        cards.forEach((card) => {
+          card.classList.toggle(
+            "is-hidden",
+            Number(card.dataset.page) !== currentPage
+          );
+        });
+
+        dots.forEach((dot) => {
+          dot.classList.toggle(
+            "is-active",
+            Number(dot.dataset.pageTarget) === currentPage
+          );
+        });
+      }
+
+      prev.addEventListener("click", () => renderPage(currentPage - 1));
+      next.addEventListener("click", () => renderPage(currentPage + 1));
+      dots.forEach((dot) => {
+        dot.addEventListener("click", () =>
+          renderPage(Number(dot.dataset.pageTarget))
+        );
+      });
+
+      renderPage(1);
+    </script>
+  </body>
+</html>
