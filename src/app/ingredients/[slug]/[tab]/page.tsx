@@ -41,12 +41,14 @@ export default async function IngredientTabPage({
       )}
       {tab === "storage" && (
         <StorageSection
+          slug={slug}
           ingredientName={ingredient.name}
           data={ingredient.storage}
         />
       )}
       {tab === "handling" && (
         <HandlingSection
+          slug={slug}
           ingredientName={ingredient.name}
           data={ingredient.handling}
         />
