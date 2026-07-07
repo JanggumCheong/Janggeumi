@@ -27,7 +27,11 @@ export function CriteriaChecklist({
     // next를 먼저 계산 → setDraft와 onCheckedChange를 각각 호출.
     // (setDraft 업데이터 안에서 부모 setState를 부르면 "render 중 setState" 경고)
     const next = new Set(checked);
-    next.has(key) ? next.delete(key) : next.add(key);
+    if (next.has(key)) {
+      next.delete(key);
+    } else {
+      next.add(key);
+    }
 
     setDraft(next);
     onCheckedChange?.(next.size);
