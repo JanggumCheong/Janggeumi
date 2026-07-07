@@ -1,4 +1,6 @@
-from typing import Any, List, Optional
+from datetime import datetime
+from typing import Any, Dict, List, Optional
+from pydantic import HttpUrl
 
 from ..database import get_db
 
@@ -13,12 +15,12 @@ def _execute_query(query):
 
 
 def get_categories() -> Any:
-    """Fetch all categories."""
+    """모든 카테고리를 조회합니다."""
     return _execute_query(supabase.table("categories").select("*").order("name"))
 
 
 def get_category_filters(category_id: str) -> Any:
-    """Fetch filter sections and their options for a category."""
+    """카테고리에 해당하는 필터 섹션과 옵션들을 조회합니다."""
     return _execute_query(
         supabase.table("category_filters")
         .select(
@@ -30,7 +32,7 @@ def get_category_filters(category_id: str) -> Any:
 
 
 def get_ingredients_by_category(category_id: str, filter_options: Optional[List[str]] = None) -> Any:
-    """Fetch ingredients in a category, optionally filtered by detail option IDs."""
+    """카테고리 내 식재료 목록을 조회하며, 옵션 필터링을 지원합니다."""
     query = supabase.table("ingredients").select("*").eq("category_id", category_id)
 
     if filter_options:
@@ -54,8 +56,8 @@ def get_ingredients_by_category(category_id: str, filter_options: Optional[List[
 
 
 def _get_ingredient_row(ingredient_id: str, fallback_name: Optional[str] = None) -> Optional[dict[str, Any]]:
-    """Fetch one ingredient by id, slug-like id, or fallback name."""
-    select_query = "id, category_id, name, catchphrase, description, image_url,good_case, bad_case,source"
+    """식재료 ID, slug 형태의 ID 또는 대체용 이름으로 단건 정보를 조회합니다."""
+    select_query = "id, category_id, name, catchphrase, description, image_url, good_case, bad_case, peak_months"
 
     candidate_ids = [ingredient_id]
 
@@ -86,7 +88,7 @@ def _get_ingredient_row(ingredient_id: str, fallback_name: Optional[str] = None)
 
 
 def _get_category_filter_option_ids(category_id: Optional[str], tab_type: str) -> list[str]:
-    """Fetch option IDs allowed by the category's filter sections for a tab."""
+    """카테고리 필터 섹션에서 허용하는 옵션 ID 리스트를 가져옵니다."""
     if not category_id:
         return []
 
@@ -122,67 +124,32 @@ def _get_category_filter_option_ids(category_id: Optional[str], tab_type: str) -
     return [row["id"] for row in options if row.get("id")]
 
 
-# def get_ingredient_detail(ingredient_id: str, fallback_name: Optional[str] = None) -> Any:
-#     """Fetch ingredient detail shaped for the frontend detail page."""
-#     row = _get_ingredient_row(ingredient_id, fallback_name)
-#     if not row:
-#         return None
-
-#     # 1. 테이블명을 ingredient_filter_details로 변경하고 존재하는 컬럼들만 select 합니다.
-#     purchase_posts = _execute_query(
-#         supabase.table("ingredient_filter_details")
-#         .select("id, ingredient_id, option_id, description, created_at")
-#         .eq("ingredient_id", row["id"])
-#         .eq("tab_type", "purchase")
-#         .order("created_at")
-#     )
-
-#     return {
-#         "ingredient": {
-#             "id": row.get("id"),
-#             "name": row.get("name"),
-#             "catchphrase": row.get("catchphrase"),
-#             "description": row.get("description"),
-#             "image_url": row.get("image_url"),
-#         },
-#         "purchase_tips": [
-#             {
-#                 "id": post.get("id"),
-#                 "ingredient_id": post.get("ingredient_id"),
-#                 "filter_option_id": post.get("option_id"),
-#                 # 💡 만약 DB의 description에 "배꼽 확인하기\n수박 아래쪽의..." 형태로 
-#                 # 제목과 내용이 함께 들어있다면 아래처럼 split하여 나누어 줄 수 있습니다.
-#                 "title": post.get("description", "").split("\n")[0] if "\n" in post.get("description", "") else "꿀팁",
-#                 "content": post.get("description", "").split("\n", 1)[1] if "\n" in post.get("description", "") else post.get("description"),
-#                 "sort_order": index,
-#             }
-#             for index, post in enumerate(purchase_posts, start=1)
-#         ],
-#     }
 def get_ingredient_detail(ingredient_id: str, fallback_name: Optional[str] = None) -> Any:
-    """Fetch ingredient detail shaped for the frontend detail page."""
+    """
+    [구매 탭] 상세 정보 조회
+    - sources 필드를 { "source": "...", "updated_at": "..." } 객체 배열로 반환합니다.
+    """
     row = _get_ingredient_row(ingredient_id, fallback_name)
     if not row:
         return None
 
     purchase_posts = _execute_query(
         supabase.table("ingredient_filter_details")
-        .select("id, ingredient_id, option_id, title, description, created_at")
+        .select("id, ingredient_id, option_id, title, description, source, updated_at, rating_value")
         .eq("ingredient_id", row["id"])
         .eq("tab_type", "purchase")
-        .order("created_at")
+        .order("rating_value")
     )
 
     return {
         "ingredient": {
             "id": row.get("id"),
             "name": row.get("name"),
-            "good_case":row.get("good_case"),
-            "bad_case":row.get("bad_case"),
+            "good_case": row.get("good_case"),
+            "bad_case": row.get("bad_case"),
             "catchphrase": row.get("catchphrase"),
             "description": row.get("description"),
-            "image_url": row.get("image_url"),
-            "source":row.get("source")
+            "image_url": row.get("image_url")
         },
         "purchase_tips": [
             {
@@ -191,14 +158,23 @@ def get_ingredient_detail(ingredient_id: str, fallback_name: Optional[str] = Non
                 "filter_option_id": post.get("option_id"),
                 "title": post.get("title") or "꿀팁",
                 "content": post.get("description"),
-                "sort_order": index,
+                "sort_order": post.get("rating_value") or index,
+                # 💡 콤마로 분리된 출처별로 각각 updated_at을 매핑한 JSON 객체 리스트 생성
+                "sources": [
+                    {
+                        "source": s.strip(),
+                        "updated_at": post.get("updated_at")
+                    }
+                    for s in (post.get("source").split(",") if post.get("source") else [])
+                ]
             }
             for index, post in enumerate(purchase_posts, start=1)
         ],
     }
-    
+
+
 def get_recent_views_for_user(user_id: str) -> Any:
-    """Fetch recent ingredient views for a user."""
+    """사용자의 최근 본 식재료 목록을 조회합니다."""
     return _execute_query(
         supabase.table("recent_views")
         .select(
@@ -211,16 +187,11 @@ def get_recent_views_for_user(user_id: str) -> Any:
     )
 
 
-from datetime import datetime
-from typing import Any, Dict
-
 def get_home_data(ingredient_id: str = "ing_watermelon") -> Dict[str, Any]:
-    """메인 홈 화면에 필요한 추천 식재료, 최근 본 식재료, 주간 트렌딩 데이터를 한 번에 반환합니다."""
+    """메인 홈 화면에 필요한 컴포넌트 데이터를 가져옵니다."""
     try:
-        # 1. 현재 시스템의 '이번 달'을 숫자로 구함 (예: 7월이면 7)
         current_month = datetime.now().month
 
-        # 2. 오늘의 추천 식재료 상세 조회
         recommend_row = supabase.table("ingredients") \
             .select("id, name, catchphrase, description, image_url, peak_months") \
             .eq("id", ingredient_id) \
@@ -231,7 +202,6 @@ def get_home_data(ingredient_id: str = "ing_watermelon") -> Dict[str, Any]:
         today_recommended = {}
         
         if recommend_data:
-            # integer[] 배열 안에 현재 월이 들어있는지 체크
             is_season = current_month in (recommend_data.get("peak_months") or [])
             
             today_recommended = {
@@ -248,7 +218,6 @@ def get_home_data(ingredient_id: str = "ing_watermelon") -> Dict[str, Any]:
                 }
             }
 
-        # 3. 최근 본 식재료 목록 조회 (최대 5개)
         recent_rows = supabase.table("recent_views") \
             .select("viewed_at, ingredients(id, name, image_url)") \
             .order("viewed_at", desc=True) \
@@ -266,8 +235,6 @@ def get_home_data(ingredient_id: str = "ing_watermelon") -> Dict[str, Any]:
                     "viewed_at": row.get("viewed_at")
                 })
 
-        # 4. 주간 트렌딩 식재료 조회 (오류 해결용 포스트그레스큐엘 오버랩 Filter 문법 적용)
-        # peak_months 배열에 이번 달이 포함된 행을 안전하게 필터링합니다.
         trending_rows = supabase.table("ingredients") \
             .select("id, name, image_url, peak_months") \
             .filter("peak_months", "cs", f"{{{current_month}}}") \
@@ -284,7 +251,6 @@ def get_home_data(ingredient_id: str = "ing_watermelon") -> Dict[str, Any]:
                 "trend_status": "지금 제철!"
             })
 
-        # 5. 최종 JSON 구조 반환
         return {
             "today_recommended_ingredient": today_recommended,
             "recent_views": recent_views,
@@ -293,19 +259,14 @@ def get_home_data(ingredient_id: str = "ing_watermelon") -> Dict[str, Any]:
 
     except Exception as e:
         raise Exception(f"Failed to fetch home data: {str(e)}")
-    
 
-    from typing import Any, Dict
-
-from typing import Dict, Any, List
 
 def get_ingredient_storage_data(ingredient_id: str, fallback_name: str = None) -> Dict[str, Any]:
     """
-    Supabase의 filter_sections, filter_options, ingredient_filter_details 테이블을
-    정확히 쿼리하여 실제 매핑된 데이터 구조를 가공하여 반환합니다.
+    [보관 탭] 가이드 조회
+    - sources 필드를 { "source": "...", "updated_at": "..." } 객체 배열로 반환합니다.
     """
     try:
-        # 1. 식재료 정보 가져오기 (마스터 데이터)
         ing_query = supabase.table("ingredients") \
             .select("name") \
             .eq("id", ingredient_id) \
@@ -314,15 +275,12 @@ def get_ingredient_storage_data(ingredient_id: str, fallback_name: str = None) -
         
         ing_name = ing_query.data.get("name") if ing_query.data else (fallback_name or "식재료")
 
-        # 2. 보관 메인 헤드라인 가공
         storage_headline = {
             "title": f"{ing_name} 보관 방법 비교",
             "intro": "내 상황에 맞는 방법을 찾아보세요.",
             "janggeumi_tip": f"{ing_name}은 자른 후 시간이 지날수록 단맛이 떨어질 수 있어요. 최대한 빠르게 드시는 것이 가장 맛있습니다! 💡"
         }
 
-        # 3. DB 기준의 보관 탭 필터 목록 가져오기 (fs_cut_status, fs_storage_location)
-        # 보관(storage) 및 공통에 쓰이는 섹션과 옵션들을 실제 DB에서 정제하여 빌드합니다.
         sections_query = supabase.table("filter_sections") \
             .select("id, section_name, filter_options(id, option_name)") \
             .in_("id", ["fs_cut_status", "fs_storage_location"]) \
@@ -341,16 +299,12 @@ def get_ingredient_storage_data(ingredient_id: str, fallback_name: str = None) -
                 ]
             })
 
-        # 4. 상세 보관 가이드 정보 가져오기 (tab_type = 'storage')
-        # option_id와 매핑 관계가 들어있는 details 테이블 데이터를 가져옵니다.
         details_query = supabase.table("ingredient_filter_details") \
-            .select("id, option_id, description, rating_value, filter_options(section_id, option_name)") \
+            .select("id, option_id, description, rating_value, source, updated_at, filter_options(section_id, option_name)") \
             .eq("ingredient_id", ingredient_id) \
             .eq("tab_type", "storage") \
             .execute()
 
-        # DB에 저장된 각 가이드들이 어떤 옵션 조합(태그)을 가졌는지 묶어내기 위한 그룹화 작업
-        # 동일한 설명(description)이나 아이디 기준으로 유연하게 가공이 가능합니다.
         methods_map = {}
         
         for row in details_query.data:
@@ -363,29 +317,33 @@ def get_ingredient_storage_data(ingredient_id: str, fallback_name: str = None) -
             option_id = row.get("option_id")
             option_name = opt_data.get("option_name")
 
-            # 보관법 마스터 키 정의 (설명문 기준 혹은 고유 ID 매핑에 따라 그룹화 가능)
-            # 여기서는 하나의 데이터 세트로 정렬합니다.
             if detail_id not in methods_map:
                 methods_map[detail_id] = {
                     "id": detail_id,
-                    "title": option_name, # DB의 매핑된 옵션 명을 가이드의 대표 타이틀로 지정
-                    "is_recommended": True if option_id == "fo_room" else False, # DB id 매칭 조건식 분기
+                    "title": option_name, 
+                    "is_recommended": True if option_id == "fo_room" else False,
                     "tags": {},
                     "summary": desc,
                     "duration": "7~10일 보관 가능" if option_id == "fo_room" else "2~3일 보관 가능",
                     "rating": {
                         "avg": float(rating_val),
                         "count": 1248 if option_id == "fo_room" else 982
-                    }
+                    },
+                    # 💡 보관 데이터 가이드도 동일한 객체 포맷으로 매핑
+                    "sources": [
+                        {
+                            "source": s.strip(),
+                            "updated_at": row.get("updated_at")
+                        }
+                        for s in (row.get("source").split(",") if row.get("source") else [])
+                    ]
                 }
             
-            # DB의 section_id에 맞춰 tags 정보에 매핑 데이터를 주입합니다 (fs_cut_status, fs_storage_location)
             if section_id == "fs_cut_status":
                 methods_map[detail_id]["tags"]["cut_status_option_id"] = option_id
             elif section_id == "fs_storage_location":
                 methods_map[detail_id]["tags"]["storage_location_option_id"] = option_id
 
-        # 5. 최종 결과 패킹 및 리턴
         return {
             "storage_headline": storage_headline,
             "storage_filters": storage_filters,
@@ -394,16 +352,14 @@ def get_ingredient_storage_data(ingredient_id: str, fallback_name: str = None) -
 
     except Exception as e:
         raise Exception(f"Failed to aggregate database storage data: {str(e)}")
-    
-from typing import Dict, Any
+
 
 def get_ingredient_handling_data(supabase_client, ingredient_id: str, fallback_name: str = None) -> Dict[str, Any]:
     """
-    해당 식재료가 ingredient_filter_details에 실제로 가지고 있는 'processing' 옵션들만 파싱하여
-    불필요한 타 카테고리(육류, 수산물) 섹션을 완전히 제외하고 화면을 구성합니다.
+    [처리(레시피/배출) 탭] 가이드 조회
+    - sources 필드를 { "source": "...", "updated_at": "..." } 객체 배열로 반환합니다.
     """
     try:
-        # 1. 식재료 기본 정보 조회
         ing_query = supabase_client.table("ingredients") \
             .select("name") \
             .eq("id", ingredient_id) \
@@ -417,7 +373,6 @@ def get_ingredient_handling_data(supabase_client, ingredient_id: str, fallback_n
             "intro": "다양한 레시피와 아이디어 모음"
         }
         
-        # 2. 이 식재료가 실제 'processing' 탭에서 사용하는 연관 옵션들만 조회 (fo_waste_recipe, fo_waste_yes 등)
         active_details = supabase_client.table("ingredient_filter_details") \
             .select("option_id") \
             .eq("ingredient_id", ingredient_id) \
@@ -426,7 +381,6 @@ def get_ingredient_handling_data(supabase_client, ingredient_id: str, fallback_n
             
         active_option_ids = [row.get("option_id") for row in active_details.data if row.get("option_id")]
 
-        # 3. '처리' 탭에 속하는 섹션들 중 실제 연관된 옵션이 있는 것만 빌드
         sections_query = supabase_client.table("filter_sections") \
             .select("id, section_name, filter_options(id, option_name)") \
             .eq("main_tab", "처리") \
@@ -438,7 +392,6 @@ def get_ingredient_handling_data(supabase_client, ingredient_id: str, fallback_n
         for section in sections_query.data:
             section_id = section.get("id")
             
-            # 현재 식재료가 가진 옵션들만 걸러내기
             filtered_options = [
                 {
                     "option_id": opt.get("id"),
@@ -448,7 +401,6 @@ def get_ingredient_handling_data(supabase_client, ingredient_id: str, fallback_n
                 if opt.get("id") in active_option_ids
             ]
             
-            # 매핑된 옵션이 있는 섹션만 유효화 (수산물, 육류 섹션 자동 제거됨)
             if filtered_options:
                 handling_main_sections.append({
                     "section_id": section_id,
@@ -456,12 +408,10 @@ def get_ingredient_handling_data(supabase_client, ingredient_id: str, fallback_n
                     "options": filtered_options
                 })
 
-                # 상단 필터 칩 카테고리는 실제 매핑된 옵션명들로만 동적 구성
                 for opt in filtered_options:
                     if opt.get("option_name") not in categories:
                         categories.append(opt.get("option_name"))
 
-        # 4. 유저 포스트(UGC 레시피) 리스트 조회 및 수동 매핑
         posts_query = supabase_client.table("user_posts") \
             .select("id, title, content, rating_value, option_id, filter_options(option_name)") \
             .eq("ingredient_id", ingredient_id) \
@@ -477,7 +427,6 @@ def get_ingredient_handling_data(supabase_client, ingredient_id: str, fallback_n
                 opt_data = post.get("filter_options") or {}
                 title = post.get("title", "")
                 
-                # 작성자 수동 조인 (에러 회피)
                 author_name = "요리하는_지니" if "화채" in title else "자취요리왕"
                 matched_profile = profile_map.get(author_name, {})
 
@@ -498,9 +447,8 @@ def get_ingredient_handling_data(supabase_client, ingredient_id: str, fallback_n
                     }
                 })
 
-        # 5. 쓰레기 분리배출 가이드 상세 매핑
         dispose_query = supabase_client.table("ingredient_filter_details") \
-            .select("id, option_id, description, filter_options(section_id, option_name)") \
+            .select("id, option_id, description, source, updated_at, filter_options(section_id, option_name)") \
             .eq("ingredient_id", ingredient_id) \
             .eq("tab_type", "processing") \
             .execute()
@@ -509,8 +457,6 @@ def get_ingredient_handling_data(supabase_client, ingredient_id: str, fallback_n
         for row in dispose_query.data:
             opt_id = row.get("option_id")
             opt_data = row.get("filter_options") or {}
-            
-            # 쓰레기 분류 여부 자동 바인딩
             waste_type = "general" if opt_id == "fo_waste_yes" else "food"
                 
             dispose_list.append({
@@ -518,7 +464,15 @@ def get_ingredient_handling_data(supabase_client, ingredient_id: str, fallback_n
                 "title": opt_data.get("option_name", "배출 안내"),
                 "way": row.get("description", ""),
                 "wasteType": waste_type,
-                "image": None
+                "image": None,
+                # 💡 배출 안내 데이터의 sources도 객체 배열 형태로 포맷 매핑
+                "sources": [
+                    {
+                        "source": s.strip(),
+                        "updated_at": row.get("updated_at")
+                    }
+                    for s in (row.get("source").split(",") if row.get("source") else [])
+                ]
             })
 
         return {
