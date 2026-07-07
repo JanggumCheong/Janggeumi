@@ -25,9 +25,11 @@ import type { HandlingArea } from "../handling/area";
  * 봇과 사용자가 같은 HTML을 받고 사용자는 탭으로 접근 가능.
  */
 export function HandlingSection({
+  slug,
   ingredientName,
   data,
 }: {
+  slug: string;
   ingredientName: string;
   data: Handling;
 }) {
@@ -66,7 +68,7 @@ export function HandlingSection({
         hidden={recipeInactive}
         className="flex flex-col gap-4"
       >
-        <RecipeFeed recipes={data.recipes} />
+        <RecipeFeed slug={slug} recipes={data.recipes} />
         <CreateCTA ingredientName={ingredientName} />
       </div>
 
@@ -79,7 +81,7 @@ export function HandlingSection({
           aria-hidden={disposeInactive}
           hidden={disposeInactive}
         >
-          <DisposeList items={data.dispose ?? []} />
+          <DisposeList slug={slug} items={data.dispose ?? []} />
         </div>
       )}
     </div>

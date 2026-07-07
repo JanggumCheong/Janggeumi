@@ -6,7 +6,13 @@ import { MethodCard } from "./MethodCard";
  * 순위는 목록 인덱스(추천/별점 정렬은 데이터 순서를 신뢰 — 정렬 로직은 추후).
  * 필터 결과가 0개면 안내.
  */
-export function MethodList({ methods }: { methods: StorageMethod[] }) {
+export function MethodList({
+  slug,
+  methods,
+}: {
+  slug: string;
+  methods: StorageMethod[];
+}) {
   if (methods.length === 0) {
     return (
       <div className="rounded-[20px] border border-border bg-card p-8 text-center text-sm text-jg-ink-sub">
@@ -22,7 +28,12 @@ export function MethodList({ methods }: { methods: StorageMethod[] }) {
           key={m.id}
           className="px-2 not-first:border-t not-first:border-border"
         >
-          <MethodCard method={m} rank={i + 1} thumbEmoji={thumbFor(m)} />
+          <MethodCard
+            method={m}
+            rank={i + 1}
+            thumbEmoji={thumbFor(m)}
+            href={`/ingredients/${slug}/storage/methods/${m.id}`}
+          />
         </div>
       ))}
     </div>

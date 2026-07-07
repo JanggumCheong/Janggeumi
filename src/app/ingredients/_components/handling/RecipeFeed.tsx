@@ -10,7 +10,13 @@ import { sortRecipes, type RecipeSortKey } from "./recipe-sort";
  * 활용 처리 — 레시피 UGC 피드 (H2: 카테고리 필터 없이 정렬만).
  * 정렬 선택(draft)을 소유하고, 정렬은 순수 함수로. 확산형이라 목록이 주인공.
  */
-export function RecipeFeed({ recipes }: { recipes: Recipe[] }) {
+export function RecipeFeed({
+  slug,
+  recipes,
+}: {
+  slug: string;
+  recipes: Recipe[];
+}) {
   const [sort, setSort] = useState<RecipeSortKey>("popular");
   const visible = sortRecipes(recipes, sort);
 
@@ -36,7 +42,10 @@ export function RecipeFeed({ recipes }: { recipes: Recipe[] }) {
             key={r.id}
             className="px-2 not-first:border-t not-first:border-border"
           >
-            <RecipeCard recipe={r} />
+            <RecipeCard
+              recipe={r}
+              href={`/ingredients/${slug}/handling/recipes/${r.id}`}
+            />
           </div>
         ))}
       </div>

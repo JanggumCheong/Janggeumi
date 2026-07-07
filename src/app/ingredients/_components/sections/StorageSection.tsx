@@ -20,9 +20,11 @@ import { JanggeumiTip } from "../JanggeumiTip";
  * 결과 방법 목록을 MethodList가 받는다.
  */
 export function StorageSection({
+  slug,
   ingredientName,
   data,
 }: {
+  slug: string;
   ingredientName: string;
   data: Storage;
 }) {
@@ -49,7 +51,7 @@ export function StorageSection({
         onChange={(next) => setSelection(next)}
       />
 
-      <MethodList methods={visible} />
+      <MethodList slug={slug} methods={visible} />
 
       {data.tip && <JanggeumiTip tip={data.tip} />}
     </div>

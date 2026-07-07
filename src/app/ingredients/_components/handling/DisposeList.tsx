@@ -5,7 +5,13 @@ import { DisposeCard } from "./DisposeCard";
  * 폐기 처리 목록 — 부위별 분리배출 안내를 카드에 담고 항목 사이 구분선.
  * 데이터가 없으면 안내(폐기 정보 미비 재료 대응).
  */
-export function DisposeList({ items }: { items: DisposeItem[] }) {
+export function DisposeList({
+  slug,
+  items,
+}: {
+  slug: string;
+  items: DisposeItem[];
+}) {
   if (items.length === 0) {
     return (
       <div className="rounded-[20px] border border-border bg-card p-8 text-center text-sm text-jg-ink-sub">
@@ -21,7 +27,10 @@ export function DisposeList({ items }: { items: DisposeItem[] }) {
           key={item.key}
           className="px-2 not-first:border-t not-first:border-border"
         >
-          <DisposeCard item={item} />
+          <DisposeCard
+            item={item}
+            href={`/ingredients/${slug}/handling/dispose/${item.key}`}
+          />
         </div>
       ))}
     </div>
