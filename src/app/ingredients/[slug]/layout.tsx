@@ -1,11 +1,13 @@
 import { notFound } from "next/navigation";
-import { getIngredient, getIngredientSlugs } from "../_lib/ingredients";
+import { getIngredientSlugs } from "../_lib/ingredients";
+import { fetchIngredientMeta } from "../_lib/queries/ingredient-meta";
 import { SegmentTabs } from "../_components/SegmentTabs";
 
-/** 존재하는 재료만 정적 생성. */
+/** 알려진 재료는 프리렌더, 그 외(API에만 있는 재료)는 요청 시 동적 생성. */
 export function generateStaticParams() {
   return getIngredientSlugs().map((slug) => ({ slug }));
 }
+export const dynamicParams = true;
 
 /**
  * 재료 상세 공통 셸.
@@ -25,8 +27,9 @@ export default async function IngredientLayout({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const ingredient = getIngredient(slug);
-  if (!ingredient) notFound();
+  // 존재 확인은 API로 (하드코딩 목록 아님) — API에만 있는 재료도 통과(peach 등).
+  const meta = await fetchIngredientMeta(slug);
+  if (!meta) notFound();
 
   return (
     <div className="flex flex-1 flex-col">

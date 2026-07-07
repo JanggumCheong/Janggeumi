@@ -21,11 +21,9 @@ import { SourceSummary } from "../purchase/SourceSummary";
  */
 export function PurchaseSection({
   ingredientName,
-  emoji,
   data,
 }: {
   ingredientName: string;
-  emoji: string;
   data: Purchase;
 }) {
   const [checkedCount, setCheckedCount] = useState(0);
@@ -50,8 +48,8 @@ export function PurchaseSection({
         total={data.criteria.length}
       />
 
-      {/* 좋은/피할 대비 (데이터 있을 때만). good 자리표시는 재료 이모지. */}
-      {data.bestWorst && <BestWorst data={data.bestWorst} goodEmoji={emoji} />}
+      {/* 좋은/피할 대비 (데이터 있을 때만). 이미지는 API good_case/bad_case. */}
+      {data.bestWorst && <BestWorst data={data.bestWorst} />}
 
       {/* 체크리스트: criteria+체크 상태 소유. 체크 수만 위로 알림. */}
       <CriteriaChecklist criteria={data.criteria} onCheckedChange={setCheckedCount} />
