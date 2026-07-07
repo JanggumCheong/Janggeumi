@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>처리 디테일 화면 기획</title>
+    <style>
+      :root {
+        --jg-primary: #5c6e3d;
+        --jg-primary-soft: #eef1e6;
+        --jg-bg: #fbfbfa;
+        --jg-surface: #ffffff;
+        --jg-line: #e7e4dc;
+        --jg-ink: #1f1d18;
+        --jg-ink-sub: #6b675e;
+        --jg-ink-mute: #9b978c;
+        --jg-use: #c4712a;
+        --jg-use-bg: #fbf0e4;
+        --jg-keep: #2f6e86;
+        --jg-keep-bg: #e8f2f6;
+        --shadow-card: 0 2px 10px rgba(31, 29, 24, 0.05);
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--jg-bg);
+        color: var(--jg-ink);
+        font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", Pretendard, "Malgun Gothic", sans-serif;
+      }
+      main {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 48px 24px 72px;
+      }
+      .hero {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 24px;
+        align-items: stretch;
+      }
+      .panel {
+        background: var(--jg-surface);
+        border: 1px solid var(--jg-line);
+        border-radius: 24px;
+        box-shadow: var(--shadow-card);
+        padding: 28px;
+      }
+      .eyebrow {
+        display: inline-flex;
+        border-radius: 999px;
+        padding: 7px 12px;
+        background: var(--jg-use-bg);
+        color: var(--jg-use);
+        font-size: 13px;
+        font-weight: 800;
+      }
+      h1 {
+        margin: 18px 0 12px;
+        font-size: 36px;
+        line-height: 1.2;
+        letter-spacing: 0;
+      }
+      h2 {
+        margin: 0 0 16px;
+        font-size: 20px;
+      }
+      p {
+        margin: 0;
+        color: var(--jg-ink-sub);
+        line-height: 1.7;
+      }
+      .values {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 20px;
+      }
+      .badge {
+        border-radius: 999px;
+        background: var(--jg-primary-soft);
+        color: var(--jg-primary);
+        padding: 8px 12px;
+        font-size: 13px;
+        font-weight: 800;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 24px;
+      }
+      .card {
+        background: var(--jg-surface);
+        border: 1px solid var(--jg-line);
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: var(--shadow-card);
+      }
+      .card strong {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 16px;
+      }
+      .flow {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .step {
+        border-radius: 18px;
+        background: #f4f4f2;
+        padding: 16px;
+      }
+      .step b {
+        display: block;
+        margin-bottom: 6px;
+      }
+      .wireframes {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-top: 24px;
+      }
+      .phone {
+        min-height: 420px;
+        border: 8px solid #1f1d18;
+        border-radius: 38px;
+        background: var(--jg-bg);
+        padding: 18px;
+        box-shadow: 0 14px 30px rgba(31, 29, 24, 0.12);
+      }
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 18px;
+        font-size: 13px;
+        font-weight: 800;
+      }
+      .mini-tab {
+        display: flex;
+        justify-content: space-around;
+        border-bottom: 1px solid var(--jg-line);
+        margin: 0 -18px 18px;
+        padding-bottom: 10px;
+        color: var(--jg-ink-mute);
+        font-weight: 800;
+      }
+      .mini-tab span:last-child {
+        color: var(--jg-ink);
+        border-bottom: 3px solid var(--jg-primary);
+        padding-bottom: 9px;
+        margin-bottom: -13px;
+      }
+      .phone h3 {
+        margin: 10px 0 8px;
+        font-size: 22px;
+        line-height: 1.25;
+      }
+      .list-card {
+        border-radius: 20px;
+        background: var(--jg-surface);
+        border: 1px solid var(--jg-line);
+        padding: 14px;
+        margin-top: 12px;
+      }
+      .pill {
+        display: inline-flex;
+        border-radius: 999px;
+        background: var(--jg-use-bg);
+        color: var(--jg-use);
+        padding: 6px 10px;
+        font-size: 12px;
+        font-weight: 800;
+        margin-bottom: 10px;
+      }
+      .spec {
+        margin-top: 28px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      ul {
+        margin: 0;
+        padding-left: 18px;
+        color: var(--jg-ink-sub);
+        line-height: 1.7;
+      }
+      @media (max-width: 900px) {
+        .hero, .grid, .flow, .wireframes, .spec {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="hero">
+        <div class="panel">
+          <span class="eyebrow">처리 디테일 화면</span>
+          <h1>카드 탐색에서 실행 가능한 처리 상세로 이어진다</h1>
+          <p>
+            처리 탭의 활용 카드와 폐기 카드를 누르면 각각 레시피 상세와 분리배출 상세로 이동한다.
+            활용은 UGC 정보, 폐기는 근거 기반 안내를 중심으로 정보 위계를 분리한다.
+          </p>
+          <div class="values">
+            <span class="badge">빠른 확신</span>
+            <span class="badge">믿음</span>
+            <span class="badge">끝까지</span>
+          </div>
+        </div>
+        <div class="panel">
+          <h2>참조 이미지 반영</h2>
+          <p>
+            보관 카드, 활용 처리 카드, 폐기 처리 카드를 클릭했을 때 나오는 상세 화면을 만든다.
+            처리 영역은 보관 예시와 유사한 상세 구조를 쓰되, 활용과 폐기의 정보 성격을 나눈다.
+          </p>
+        </div>
+      </section>
+
+      <section class="panel" style="margin-top:24px">
+        <h2>참조 이미지</h2>
+        <p>
+          아래 이미지는 구현 에셋이 아니라 상세 페이지의 화면 구조와 정보 위계를
+          맞추기 위한 기획 레퍼런스다.
+        </p>
+        <div class="grid" style="grid-template-columns:1fr 1fr">
+          <div class="card">
+            <strong>디테일 화면 3종 구조</strong>
+            <img
+              src="./assets/detail-reference-overview.png"
+              alt="보관, 활용 처리, 폐기 처리 디테일 화면 구조"
+              style="margin-top:12px;width:100%;border-radius:18px;border:1px solid var(--jg-line)"
+            />
+            <p style="margin-top:12px">
+              보관 카드, 활용 처리 카드, 폐기 처리 카드를 누르면 각각 별도 상세
+              화면으로 이동한다.
+            </p>
+          </div>
+          <div class="card">
+            <strong>보관 방법 상세 레퍼런스</strong>
+            <img
+              src="./assets/storage-detail-reference.png"
+              alt="보관 방법 상세 화면 레퍼런스"
+              style="margin-top:12px;width:100%;border-radius:18px;border:1px solid var(--jg-line)"
+            />
+            <p style="margin-top:12px">
+              보관 상세는 방법 히어로, 추천/비추천 상황, 단계, 주의사항, 적정
+              온도, 후기 요약, 다른 보관법, 다음 활용, 참고 링크로 구성한다.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="grid">
+        <div class="card">
+          <strong>보관 방법 상세</strong>
+          <p>방법명, 요약, 기간, 온도, 추천/비추천 조건, 단계, 주의사항, 후기 요약, 다른 보관법, 다음 활용, 참고 링크를 보여준다.</p>
+        </div>
+        <div class="card">
+          <strong>활용 처리 상세</strong>
+          <p>레시피 제목, 설명, 작성자, 반응, 참고 영상을 보여준다. 상세 단계는 데이터 확정 후 확장한다.</p>
+        </div>
+        <div class="card">
+          <strong>폐기 처리 상세</strong>
+          <p>배출 분류, 배출 방법, 이유, 단계, 주의점, 지역 차이, 출처를 보여준다.</p>
+        </div>
+      </section>
+
+      <section class="panel" style="margin-top:24px">
+        <h2>사용자 흐름</h2>
+        <div class="flow">
+          <div class="step"><b>1. 목록 카드 선택</b><p>보관/활용/폐기 카드 중 하나를 누른다.</p></div>
+          <div class="step"><b>2. 상세 확인</b><p>실행에 필요한 단계와 근거를 확인한다.</p></div>
+          <div class="step"><b>3. 목록 복귀</b><p>다른 방법을 비교하거나 처리 탭으로 돌아간다.</p></div>
+        </div>
+      </section>
+
+      <section class="wireframes">
+        <div class="phone">
+          <div class="topbar"><span>←</span><span>수박</span><span>♡ ↑</span></div>
+          <div class="mini-tab"><span>구매</span><span>보관</span><span>처리</span></div>
+          <span class="pill" style="background:var(--jg-keep-bg);color:var(--jg-keep)">수박 보관 방법</span>
+          <h3>서늘한 실온 보관</h3>
+          <p>직사광선 피해 통풍 잘 되는 곳에 두면 당도가 올라가요.</p>
+          <div class="list-card">권장 기간 · 7~10일<br />권장 온도 · 15~20℃</div>
+          <div class="list-card">1. 서늘한 곳 확보<br />2. 통풍 되게 두기<br />3. 3~4일 내 섭취</div>
+          <div class="list-card">후기 요약 · 4.6 / 5<br />다른 보관법 · 다음 활용 추천</div>
+        </div>
+        <div class="phone">
+          <div class="topbar"><span>←</span><span>수박</span><span>♡ ↑</span></div>
+          <div class="mini-tab"><span>구매</span><span>보관</span><span>처리</span></div>
+          <span class="pill">수박 활용 처리</span>
+          <h3>시원한 수박 화채</h3>
+          <p>남은 수박과 탄산수로 만드는 여름 별미!</p>
+          <div class="list-card">작성자 · 요리하는_지니<br />좋아요 1.2k · 댓글 87</div>
+          <div class="list-card">같이 보면 좋아요<br />수박화채 만들기</div>
+        </div>
+        <div class="phone">
+          <div class="topbar"><span>←</span><span>수박</span><span>♡ ↑</span></div>
+          <div class="mini-tab"><span>구매</span><span>보관</span><span>처리</span></div>
+          <span class="pill">수박 폐기 처리</span>
+          <h3>수박 껍질</h3>
+          <p>잘게 잘라 물기를 빼고 배출해요.</p>
+          <div class="list-card">배출 분류 · 음식물 쓰레기</div>
+          <div class="list-card">상세 배출 단계는 출처 확인 후 추가합니다.</div>
+        </div>
+      </section>
+
+      <section class="spec">
+        <div class="card">
+          <strong>라우팅</strong>
+          <ul>
+            <li>/ingredients/[slug]/storage/methods/[methodId]</li>
+            <li>/ingredients/[slug]/handling/recipes/[recipeId]</li>
+            <li>/ingredients/[slug]/handling/dispose/[key]</li>
+          </ul>
+        </div>
+        <div class="card">
+          <strong>미정 및 리스크</strong>
+          <ul>
+            <li>docs/foundation.md 부재</li>
+            <li>레시피 단계 스키마 미정</li>
+            <li>개별 사용자 후기 스키마 미정</li>
+            <li>폐기 상세 출처 데이터 보강 필요</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

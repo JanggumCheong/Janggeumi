@@ -168,13 +168,14 @@
 - **활용 처리(`recipes`)** = 남은 재료를 뭘로 만들까 (레시피·UGC, 확산형).
 - **폐기 처리(`dispose`)** = 다 쓰고 어떻게 버릴까 (분리배출 안내, 정답형에 가까움).
 
-화면도 상단 세그먼트로 활용/폐기를 나눈다. `categories`는 데이터엔 남겨도 되지만 **화면 필터로는 쓰지 않는다**(확산형은 피드 탐색 — 정렬만). → [[design-notes]], design-system.md 8-4.
+화면도 상단 세그먼트로 활용/폐기를 나눈다. 활용은 **정렬만**(카테고리 필터 없음 — 확산형은 피드 탐색). → [[design-notes]], design-system.md 8-4.
+
+> ⚠️ **`categories`·`contribution`은 제거됨.** 기획이 "카테고리 필터 없이 정렬만"으로 확정되며 `categories`(상단 카테고리 배열)와 `contribution`(참여 보상)은 화면에서 빠졌다 → **UI 없는 데이터**라 스키마에서 삭제(구매 `fieldData` 제거와 동일). 레시피 그룹핑은 각 `recipe.category`(개별 필드)로만 표현한다.
 
 ```jsonc
 "handling": {
   "headline": "남은 수박으로 무엇이든 지어보세요!",
   "intro": "다양한 레시피와 아이디어 모음",
-  "categories": ["전체", "음료", "디저트", "요리", "김치/절임"],  // 데이터용(화면 필터 X)
 
   // ── 활용 처리: 레시피 UGC ──
   "recipes": [
@@ -191,13 +192,29 @@
   ],
 
   // ── 폐기 처리: 분리배출 안내 (정답형 — 지자체 기준) ──
+  //   카드 = 요약(way 한 줄 + wasteType). 상세는 별도 페이지(detailHref)에서 깊게.
+  //   상세 필드(steps/cautions/reason/source/detailHref)는 전부 선택 — 출처 확보 전엔 비운다.
   "dispose": [
     {
       "key": "rind",
       "title": "수박 껍질",
-      "way": "잘게 잘라 물기를 빼고 배출해요. 흰 속껍질은 무침·장아찌로도 쓸 수 있어요.",
+      "way": "잘게 잘라 물기를 빼고 배출해요. 흰 속껍질은 무침·장아찌로도 쓸 수 있어요.", // 카드 요약 1줄
       "wasteType": "food",        // food | general | recycle
-      "image": null
+      "image": null,
+
+      // ↓ 여기부터 상세 페이지용 (모두 선택 — 근거 있는 것만 채운다)
+      "reason": "수박 껍질은 수분이 많아 음식물로 분류돼요. 물기를 빼야 처리가 쉬워요.", // 왜 이렇게?
+      "steps": [                  // 배출 단계 (보관 steps와 동일 구조)
+        { "no": 1, "title": "잘게 자르기", "desc": "부피를 줄여 배출량을 아껴요.", "image": null },
+        { "no": 2, "title": "물기 빼기", "desc": "음식물 처리 시설에 부담이 적어요.", "image": null }
+      ],
+      "cautions": ["스티커가 붙어 있으면 떼고 배출", "너무 큰 덩어리는 잘라서"], // 주의점
+      "regionNote": "지자체마다 음식물 분류 기준이 달라요. 애매하면 관할 규정 확인.", // 지역차 안내(정답형 함정)
+      "source": {                 // 지자체 기준이라 정답형 — 근거 있으면 붙인다
+        "org": "환경부 내 손안의 분리배출", "type": "official",
+        "url": "https://...", "verified": true, "lastReviewed": "2026-07-01"
+      },
+      "detailHref": null          // 상세 페이지 라우트 (없으면 카드 Link는 준비중 #)
     },
     {
       "key": "wrap",
@@ -205,15 +222,18 @@
       "way": "과일에 붙은 스티커와 비닐 랩은 음식물이 아니에요. 일반 쓰레기로.",
       "wasteType": "general",
       "image": null
+      // 상세 필드는 근거 확보 후 채운다 (지금은 요약만)
     }
-  ],
-
-  "contribution": { "enabled": true, "reward": "가챠권" }  // 활용(UGC) 작성 보상
+  ]
 }
 ```
 
-- `dispose[]`는 **선택**(없으면 폐기 탭이 "준비 중"). 있으면 각 항목은 `key/title/way/wasteType` 필수.
-- `wasteType`: `food`(음식물) · `general`(일반) · `recycle`(재활용). 지자체 기준이라 **정답형** — 출처(`source`) 붙일 수 있음.
+- `dispose[]`는 **선택**(없으면 폐기 탭이 "준비 중"). 있으면 각 항목은 `key/title/way/wasteType` **필수**.
+- `wasteType`: `food`(음식물) · `general`(일반) · `recycle`(재활용). 지자체 기준이라 **정답형**.
+- **카드 = 요약, 상세 = 별도 페이지.** 카드엔 `way`(한 줄) + `wasteType` 배지만. 상세 필드는 **전부 선택**:
+  - `reason`(왜 이렇게 버리나) · `steps[]`(배출 단계, 보관 steps와 동일 구조) · `cautions[]`(주의점) · `regionNote`(지자체 차이 안내) · `source`(근거) · `detailHref`(상세 라우트).
+  - ⚠️ **분리배출은 지자체·환경부 기준이라 임의로 지어내면 안 된다**(추측 금지 — [[janggeumi-data-from-image-only]]). 상세 필드는 **근거 있는 것만** 채우고, 없으면 비운다(빈 필드는 UI 미노출).
+  - "한 줄 `way`만으로 다 이해되지 않는다" — 물기·오분류·지역차 등은 상세에서. 그래서 카드를 **Link로 감싼다**(레시피·방법 카드와 동일). `detailHref` 없으면 준비중 `#`.
 - 활용/폐기는 화면에서 세그먼트로 갈리지만, **둘 다 `handling` 안**에 둔다(같은 탭).
 
 ## related (함께 보면 좋은 콘텐츠)
@@ -231,7 +251,7 @@
 - `purchase.criteria[].source` — **필수**. `verified:false`면 검증 리포트에 경고.
 - `storage.methods[].source` — **필수**.
 - `handling.recipes[].source` — 선택.
-- `handling.dispose[]` — 선택. 있으면 `key/title/way/wasteType` 필수, `wasteType`은 `food|general|recycle` 중 하나.
+- `handling.dispose[]` — 선택. 있으면 `key/title/way/wasteType` 필수, `wasteType`은 `food|general|recycle` 중 하나. 상세 필드(`reason/steps/cautions/regionNote/source/detailHref`)는 선택 — **근거 없으면 비운다**(추측 금지).
 - `storage.methods[].tags`의 각 key는 `storage.filters[].key`에 존재해야 함(정합성).
 - `rating.dist` 합은 100 근사.
 - 모든 `id`/`key`는 영문 slug, 재료 내 유일.

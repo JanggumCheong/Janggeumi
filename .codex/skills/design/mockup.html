@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <!--
+  장금이 목업 시작 템플릿 (design 스킬)
+  - :root의 CSS 변수 = 디자인 토큰. design-system.md와 동기화. 이 값만 사용.
+  - 폰 프레임(.phone) 안에 화면을 그린다. 여러 화면은 .stage에 가로로 나란히.
+  - 반복 요소엔 "component: 이름" 형태의 HTML 주석으로 Figma 컴포넌트 후보 표시.
+  - flex column = Figma 세로 오토레이아웃, gap = itemSpacing, padding = 오토레이아웃 패딩.
+  -->
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>장금이 — 목업</title>
+    <style>
+      :root {
+        /* 브랜드 (세이지 그린) */
+        --jg-primary: #5c6e3d;
+        --jg-primary-strong: #47562f;
+        --jg-primary-soft: #eef1e6;
+        /* 배경 (따뜻한 아이보리) */
+        --jg-bg: #f7f5f0;
+        --jg-surface: #ffffff;
+        --jg-sunken: #f1efe9;
+        /* 텍스트 */
+        --jg-ink: #1f1d18;
+        --jg-ink-sub: #6b675e;
+        --jg-ink-mute: #9b978c;
+        /* 경계 */
+        --jg-line: #e7e4dc;
+        /* 영역 액센트 */
+        --jg-buy: #1f804d;
+        --jg-buy-bg: #e9f6ee;
+        --jg-keep: #2f6e86;
+        --jg-keep-bg: #e8f2f6;
+        --jg-use: #c4712a;
+        --jg-use-bg: #fbf0e4;
+        /* 상태 */
+        --jg-star: #f0a93b;
+        --jg-danger: #c1453b;
+        /* 반경 */
+        --r-sm: 10px;
+        --r-md: 16px;
+        --r-lg: 20px;
+        --r-pill: 999px;
+        /* 그림자 */
+        --shadow-card: 0 2px 10px rgba(31, 29, 24, 0.05);
+        --shadow-float: 0 6px 20px rgba(31, 29, 24, 0.1);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--jg-bg);
+        color: var(--jg-ink);
+        font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
+          "Pretendard", "Malgun Gothic", sans-serif;
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+      }
+      .page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 32px 20px 64px;
+      }
+      .page-title {
+        font-size: 30px;
+        font-weight: 800;
+        margin: 0 0 4px;
+      }
+      .page-sub {
+        color: var(--jg-ink-sub);
+        font-size: 15px;
+        margin: 0 0 28px;
+      }
+
+      /* 여러 화면 나란히 */
+      .stage {
+        display: flex;
+        gap: 28px;
+        flex-wrap: wrap;
+        align-items: flex-start;
+      }
+      .screen-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+      }
+      .screen-label {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--jg-ink-sub);
+      }
+
+      /* 폰 프레임 */
+      .phone {
+        width: 320px;
+        background: var(--jg-surface);
+        border: 9px solid #1f1d18;
+        border-radius: 38px;
+        overflow: hidden;
+        box-shadow: var(--shadow-float);
+      }
+      .status {
+        height: 40px;
+        background: var(--jg-surface);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--jg-ink);
+      }
+      .app {
+        background: var(--jg-bg);
+        min-height: 560px;
+        padding: 16px;
+      }
+
+      /* 컴포넌트: 검색바 */
+      .searchbar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--jg-sunken);
+        border-radius: var(--r-pill);
+        padding: 11px 16px;
+        color: var(--jg-ink-mute);
+        font-size: 14px;
+        margin-bottom: 16px;
+      }
+
+      /* 컴포넌트: 버튼 */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        border: none;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 14px;
+        border-radius: var(--r-md);
+        padding: 13px 18px;
+        font-family: inherit;
+      }
+      .btn-primary {
+        background: var(--jg-primary);
+        color: #fff;
+      }
+      .btn-secondary {
+        background: var(--jg-surface);
+        color: var(--jg-primary);
+        border: 1px solid var(--jg-line);
+      }
+      .btn-block {
+        width: 100%;
+      }
+
+      /* 컴포넌트: 카드 */
+      .card {
+        background: var(--jg-surface);
+        border-radius: var(--r-lg);
+        box-shadow: var(--shadow-card);
+        border: 1px solid var(--jg-line);
+        padding: 16px;
+      }
+
+      /* 컴포넌트: 필터칩 */
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .chip {
+        font-size: 13px;
+        border-radius: var(--r-pill);
+        padding: 7px 13px;
+        border: 1px solid var(--jg-line);
+        background: var(--jg-surface);
+        color: var(--jg-ink-sub);
+        cursor: pointer;
+      }
+      .chip.on {
+        background: var(--jg-primary);
+        color: #fff;
+        border-color: var(--jg-primary);
+      }
+
+      /* 별점 */
+      .stars {
+        color: var(--jg-star);
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .stars .cnt {
+        color: var(--jg-ink-mute);
+        font-weight: 500;
+      }
+
+      /* 뱃지 */
+      .badge {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 800;
+        border-radius: var(--r-sm);
+        padding: 2px 7px;
+      }
+      .badge-best {
+        background: var(--jg-primary);
+        color: #fff;
+      }
+
+      h1 {
+        font-size: 24px;
+        font-weight: 800;
+        margin: 0;
+      }
+      h2 {
+        font-size: 19px;
+        font-weight: 700;
+        margin: 0;
+      }
+      h3 {
+        font-size: 16px;
+        font-weight: 700;
+        margin: 0;
+      }
+      .sub {
+        color: var(--jg-ink-sub);
+        font-size: 13px;
+      }
+      .mute {
+        color: var(--jg-ink-mute);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <h1 class="page-title">화면 제목</h1>
+      <p class="page-sub">부제</p>
+      <div class="stage">
+        <!-- screen-wrap 반복 -->
+      </div>
+    </div>
+  </body>
+</html>

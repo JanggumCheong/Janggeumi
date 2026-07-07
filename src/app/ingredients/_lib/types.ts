@@ -135,24 +135,32 @@ export const RecipeSchema = z.object({
   media: z.array(MediaSchema).optional(),
 });
 
-/** 폐기 처리 — 분리배출 안내 하나 (schema 신설 필드). */
+/**
+ * 폐기 처리 — 분리배출 안내 하나.
+ * 카드 = 요약(way + wasteType). 상세 필드는 전부 선택(근거 있는 것만 채움 — 추측 금지).
+ * steps는 보관과 동일 구조(StorageStepSchema 재사용).
+ */
 export const DisposeItemSchema = z.object({
   key: z.string(),
   title: z.string(),
   way: z.string(),
   wasteType: z.enum(["food", "general", "recycle"]),
   image: z.string().nullable().optional(),
+  // ↓ 상세 페이지용 (모두 선택)
+  reason: z.string().optional(),
+  steps: z.array(StorageStepSchema).optional(),
+  cautions: z.array(z.string()).optional(),
+  regionNote: z.string().optional(),
+  source: SourceSchema.optional(),
+  detailHref: z.string().nullable().optional(),
 });
 
 export const HandlingSchema = z.object({
   headline: z.string(),
   intro: z.string().optional(),
-  /** 레시피 카테고리(현재 화면에선 필터 미노출 — 정렬만). */
-  categories: z.array(z.string()).optional(),
   recipes: z.array(RecipeSchema),
   /** 폐기 처리 안내 (신설). 없을 수 있음. */
   dispose: z.array(DisposeItemSchema).optional(),
-  contribution: z.unknown().optional(),
 });
 
 // ── 재료 상세 (루트) ────────────────────────────────────
