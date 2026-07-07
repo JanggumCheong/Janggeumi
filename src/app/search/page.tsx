@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { ChevronRight, MessageCircle, Search } from "lucide-react";
+import { Search } from "lucide-react";
 
 /* ── Mock 데이터 ────────────────────────────────────────── */
 type Category = "채소" | "과일" | "육류" | "수산" | "유제품" | "곡류";
@@ -16,8 +16,8 @@ const CATEGORIES: Array<"전체" | Category> = [
   "곡류",
 ];
 
-type SortKey = "인기순" | "가나다순" | "제철순";
-const SORTS: SortKey[] = ["인기순", "가나다순", "제철순"];
+type SortKey = "인기순" | "가나다순";
+const SORTS: SortKey[] = ["인기순", "가나다순"];
 
 type Ingredient = {
   slug: string;
@@ -36,7 +36,7 @@ const SEASONAL: Array<Ingredient & { season: string }> = [
     rating: 4.7,
     category: "과일",
     inSeason: true,
-    season: "6~8월",
+    season: "6·8월",
   },
   {
     slug: "corn",
@@ -45,7 +45,7 @@ const SEASONAL: Array<Ingredient & { season: string }> = [
     rating: 4.6,
     category: "곡류",
     inSeason: true,
-    season: "6~9월",
+    season: "6·9월",
   },
   {
     slug: "peach",
@@ -54,7 +54,7 @@ const SEASONAL: Array<Ingredient & { season: string }> = [
     rating: 4.5,
     category: "과일",
     inSeason: true,
-    season: "6~8월",
+    season: "6·8월",
   },
   {
     slug: "cucumber",
@@ -63,7 +63,7 @@ const SEASONAL: Array<Ingredient & { season: string }> = [
     rating: 4.4,
     category: "채소",
     inSeason: true,
-    season: "4~9월",
+    season: "4·9월",
   },
 ];
 
@@ -92,11 +92,8 @@ const INGREDIENTS: Ingredient[] = [
 /* ── 별점 ──────────────────────────────────────────────── */
 function Rating({ value }: { value: number }) {
   return (
-    <span
-      className="inline-flex items-center gap-0.5 text-[12px] font-semibold"
-      style={{ color: "var(--muted-foreground)" }}
-    >
-      <span style={{ color: "var(--jg-star)" }}>★</span>
+    <span className="flex items-center gap-0.5 text-xs font-semibold text-muted-foreground">
+      <span className="text-jg-star">★</span>
       {value.toFixed(1)}
     </span>
   );
@@ -120,156 +117,117 @@ export default function SearchPage() {
   // 공통 layout(src/app/layout.tsx)이 Header·TabBar·main 셸을 제공한다.
   // 여기선 셸 안 콘텐츠만 렌더한다(자체 min-h-screen·main 중복 금지).
   return (
-    <div className="flex flex-col">
+    // 전체 컨테이너
+    <div className="flex flex-col gap-4">
       {/* 검색바 */}
-          <div className="pb-1 pt-1">
-            <div
-              className="flex items-center gap-2 rounded-2xl px-4 py-3"
-              style={{ background: "var(--muted)" }}
-            >
-              <Search size={20} strokeWidth={1.8} style={{ color: "var(--jg-ink-mute)" }} />
-              <input
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="재료 이름으로 검색해보세요"
-                className="w-full bg-transparent text-[15px] outline-none placeholder:text-[color:var(--ph)]"
-                style={{ color: "var(--foreground)", ["--ph" as string]: "var(--jg-ink-mute)" }}
-                type="search"
-                aria-label="재료 검색"
-              />
-            </div>
-          </div>
+      <div>
+        <div className="flex items-center gap-2 rounded-2xl px-4 py-3 bg-muted">
+          <Search size={20} strokeWidth={1.8} className="text-jg-ink-mute" />
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="재료 이름으로 검색해보세요"
+            className="w-full bg-transparent text-sm outline-none placeholder:text-jg-ink-mute text-foreground "
+            type="search"
+            aria-label="재료 검색"
+          />
+        </div>
+      </div>
 
-          {/* 카테고리 필터칩 */}
-          <div className="flex gap-2 overflow-x-auto py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {CATEGORIES.map((c) => {
-              const active = c === category;
+      {/* 카테고리 필터칩 */}
+      <div className="flex gap-2 overflow-x-auto scrollbar-none [&::-webkit-scrollbar]:hidden">
+        {CATEGORIES.map((c) => {
+          const active = c === category;
+          return (
+            <button
+              key={c}
+              type="button"
+              onClick={() => setCategory(c)}
+              className={`shrink-0 rounded-full px-4 py-2 text-[14px] font-semibold transition-colors ${active ? "bg-primary text-primary-foreground" : "bg-secondary text-primary"}`}
+            >
+              {c}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* 지금 제철 재료 */}
+      <section>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-bold">지금 제철 재료</h2>
+        </div>
+        <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-none [&::-webkit-scrollbar]:hidden">
+          {SEASONAL.map((item) => (
+            <Link
+              key={item.slug}
+              href={`/ingredients/${item.slug}`}
+              className="flex w-31 shrink-0 flex-col gap-1 rounded-lg p-3 bg-card border border-border shadow-xs shadow-gray-100"
+            >
+              <div className="grid h-23 place-items-center rounded-sm text-4xl bg-muted">
+                {item.emoji}
+              </div>
+              <span className="text-sm font-semibold">{item.name}</span>
+              <span className="w-fit items-center py-0.5 text-xs font-semibold text-jg-buy flex gap-1">
+                <span className="bg-jg-buy-bg rounded-full px-2 py-0.5">제철</span>
+                <span>{item.season}</span>
+              </span>
+              <span>
+                <Rating value={item.rating} />
+              </span>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section>
+        {/* 정렬 탭 */}
+        <div className="flex items-center justify-between border-b border-b-border">
+          <div className="flex gap-5">
+            {SORTS.map((option) => {
+              const active = option === sort;
               return (
                 <button
-                  key={c}
+                  key={option}
                   type="button"
-                  onClick={() => setCategory(c)}
-                  className="shrink-0 rounded-full px-4 py-2 text-[14px] font-semibold transition-colors"
-                  style={{
-                    background: active ? "var(--primary)" : "var(--secondary)",
-                    color: active ? "var(--primary-foreground)" : "var(--primary)",
-                  }}
+                  onClick={() => setSort(option)}
+                  className={`relative pb-2 text-[15px] transition-colors ${active ? "text-foreground text-semibold" : "text-jg-ink-mute text-medium"}`}
                 >
-                  {c}
+                  {option}
+                  {active && (
+                    <span className="absolute inset-x-0 -bottom-px h-[2.5px] rounded-full bg-primary" />
+                  )}
                 </button>
               );
             })}
           </div>
+        </div>
 
-          {/* 지금 제철 재료 */}
-          <section className="pt-2">
-            <div className="flex items-center justify-between pb-3">
-              <h2 className="text-[17px] font-bold">지금 제철 재료</h2>
-              <button
-                type="button"
-                className="flex items-center gap-0.5 text-[13px] font-semibold"
-                style={{ color: "var(--jg-ink-mute)" }}
-              >
-                더보기 <ChevronRight size={14} strokeWidth={1.8} />
-              </button>
-            </div>
-            <div className="flex gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {SEASONAL.map((item) => (
-                <Link
-                  key={item.slug}
-                  href={`/ingredients/${item.slug}`}
-                  className="flex w-[124px] shrink-0 flex-col rounded-2xl p-3"
-                  style={{
-                    background: "var(--card)",
-                    border: "1px solid var(--border)",
-                    boxShadow: "0 2px 10px rgba(31,29,24,.05)",
-                  }}
-                >
-                  <div
-                    className="mb-2 grid h-[92px] place-items-center rounded-xl text-4xl"
-                    style={{ background: "var(--muted)" }}
-                  >
-                    {item.emoji}
-                  </div>
-                  <span className="text-[15px] font-bold">{item.name}</span>
-                  <span
-                    className="mt-1 inline-flex w-fit items-center rounded-full px-2 py-0.5 text-[11px] font-semibold"
-                    style={{ background: "var(--jg-buy-bg)", color: "var(--jg-buy)" }}
-                  >
-                    제철 {item.season}
-                  </span>
-                  <span className="mt-1.5">
-                    <Rating value={item.rating} />
-                  </span>
-                </Link>
-              ))}
-            </div>
-          </section>
-
-          {/* 정렬 탭 */}
-          <div
-            className="mt-4 flex items-center justify-between"
-            style={{ borderBottom: "1px solid var(--border)" }}
-          >
-            <div className="flex gap-5">
-              {SORTS.map((s) => {
-                const active = s === sort;
-                return (
-                  <button
-                    key={s}
-                    type="button"
-                    onClick={() => setSort(s)}
-                    className="relative pb-2 text-[15px] transition-colors"
-                    style={{
-                      color: active ? "var(--foreground)" : "var(--jg-ink-mute)",
-                      fontWeight: active ? 700 : 500,
-                    }}
-                  >
-                    {s}
-                    {active && (
-                      <span
-                        className="absolute inset-x-0 -bottom-px h-[2.5px] rounded-full"
-                        style={{ background: "var(--primary)" }}
-                      />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-            <button type="button" aria-label="의견" className="pb-2">
-              <MessageCircle size={18} strokeWidth={1.8} style={{ color: "var(--jg-ink-mute)" }} />
-            </button>
-          </div>
-
-          {/* 재료 그리드 */}
-          <div className="grid grid-cols-4 gap-x-2 gap-y-5 pt-5">
-            {list.map((item) => (
-              <Link
-                key={item.slug}
-                href={`/ingredients/${item.slug}`}
-                className="flex flex-col items-center text-center"
-              >
-                <div
-                  className="grid aspect-square w-full place-items-center rounded-full text-3xl"
-                  style={{ background: "var(--card)", border: "1px solid var(--border)" }}
-                >
-                  {item.emoji}
-                </div>
-                <span className="mt-2 text-[13px] font-bold">{item.name}</span>
-                <span className="mt-0.5">
+        {/* 재료 그리드 */}
+        <div className="grid grid-cols-4 gap-x-2 gap-y-5 pt-5">
+          {list.map((item) => (
+            <Link
+              key={item.slug}
+              href={`/ingredients/${item.slug}`}
+              className="flex flex-col items-center text-center overflow-hidden border rounded-sm bg-card"
+            >
+              <div className="grid aspect-square w-full place-items-center text-3xl">
+                {item.emoji}
+              </div>
+              <div className="flex flex-col items-center bg-background w-full p-2">
+                <span className="text-sm font-semibold">{item.name}</span>
+                <span>
                   <Rating value={item.rating} />
                 </span>
-              </Link>
-            ))}
-            {list.length === 0 && (
-              <p
-                className="col-span-4 py-10 text-center text-[14px]"
-                style={{ color: "var(--jg-ink-mute)" }}
-              >
-                조건에 맞는 재료가 없어요.
-              </p>
-            )}
-          </div>
+              </div>
+            </Link>
+          ))}
+          {list.length === 0 && (
+            <p className="col-span-4 py-10 text-center text-sm text-jg-ink-mute">
+              조건에 맞는 재료가 없어요.
+            </p>
+          )}
+        </div>
+      </section>
     </div>
   );
 }
