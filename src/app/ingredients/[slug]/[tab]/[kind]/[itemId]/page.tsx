@@ -6,12 +6,12 @@ import {
   Heart,
   MessageCircle,
   PlayCircle,
-  Share2,
   Star,
   ThumbsUp,
 } from "lucide-react";
 import { getIngredient, getIngredientSlugs } from "../../../../_lib/ingredients";
 import type { Rating, StorageMethod } from "../../../../_lib/types";
+import { DetailActions } from "./DetailActions";
 
 export function generateStaticParams() {
   return getIngredientSlugs().flatMap((slug) => {
@@ -100,10 +100,7 @@ function StorageMethodDetail({
               <ChevronRight className="size-3" />
               <span>보관 방법</span>
             </div>
-            <div className="flex gap-2 text-muted-foreground">
-              <Heart className="size-5" />
-              <Share2 className="size-5" />
-            </div>
+            <DetailActions />
           </div>
 
           {method.recommended && (
@@ -188,10 +185,7 @@ function RecipeDetail({
               <ChevronRight className="size-3" />
               <span>활용 처리</span>
             </div>
-            <div className="flex gap-2 text-muted-foreground">
-              <Heart className="size-5" />
-              <Share2 className="size-5" />
-            </div>
+            <DetailActions />
           </div>
 
           {recipe.category && (
@@ -237,26 +231,11 @@ function RecipeDetail({
         </p>
       </section>
 
-      {recipe.media && recipe.media.length > 0 && (
-        <section className="rounded-[20px] border border-border bg-card p-5">
-          <h2 className="text-base font-extrabold">같이 보면 좋아요</h2>
-          <div className="mt-3 flex flex-col gap-2">
-            {recipe.media.map((media) => (
-              <Link
-                key={media.url}
-                href={media.url}
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center gap-2 rounded-[14px] bg-muted p-3 text-sm font-bold"
-              >
-                <PlayCircle className="size-4 text-jg-use" />
-                <span className="min-w-0 flex-1 truncate">{media.title ?? "참고 영상"}</span>
-                <ExternalLink className="size-4 text-muted-foreground" />
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
+      <YoutubeSearchList
+        ingredientName={ingredient.name}
+        recipeTitle={recipe.title}
+        category={recipe.category}
+      />
 
       <Link
         href={`/ingredients/${slug}/handling`}
@@ -265,6 +244,50 @@ function RecipeDetail({
         처리 목록으로 돌아가기
       </Link>
     </article>
+  );
+}
+
+function YoutubeSearchList({
+  ingredientName,
+  recipeTitle,
+  category,
+}: {
+  ingredientName: string;
+  recipeTitle: string;
+  category?: string;
+}) {
+  const queries = [
+    `${ingredientName} ${recipeTitle}`,
+    `${ingredientName} ${category ?? "활용"} 레시피`,
+    `${recipeTitle} 만드는 법`,
+  ];
+
+  return (
+    <section className="rounded-[20px] border border-border bg-card p-5">
+      <h2 className="text-base font-extrabold">같이 보면 좋아요</h2>
+      <div className="mt-3 flex flex-col gap-2">
+        {queries.map((query) => (
+          <Link
+            key={query}
+            href={`https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`}
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-3 rounded-[14px] bg-muted p-3 text-sm font-bold"
+          >
+            <span className="flex size-9 flex-none items-center justify-center rounded-full bg-white">
+              <PlayCircle className="size-5 text-jg-use" />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block truncate">{query}</span>
+              <span className="mt-0.5 block text-xs font-medium text-muted-foreground">
+                YouTube 검색 결과 보기
+              </span>
+            </span>
+            <ExternalLink className="size-4 flex-none text-muted-foreground" />
+          </Link>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -294,7 +317,7 @@ function DisposeDetail({
               <ChevronRight className="size-3" />
               <span>폐기 처리</span>
             </div>
-            <Share2 className="size-5 text-muted-foreground" />
+            <DetailActions />
           </div>
 
           <span className="mb-2 inline-flex rounded-full bg-jg-use px-2.5 py-1 text-[11px] font-extrabold text-white">
