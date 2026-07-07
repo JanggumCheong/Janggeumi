@@ -15,7 +15,6 @@ class CategoryCreate(BaseModel):
     id: str
     name: str
 
-
 class IngredientCreate(BaseModel):
     id: str
     category_id: Optional[str] = None
@@ -24,7 +23,9 @@ class IngredientCreate(BaseModel):
     description: Optional[str] = None
     image_url: Optional[str] = None
     peak_months: Optional[List[str]] = None
-
+    good_case: Optional[str] = None
+    bad_case: Optional[str] = None
+    source: Optional[str] = None
 
 class ProfileCreate(BaseModel):
     """Request body schema for creating a profile."""
@@ -56,10 +57,10 @@ class IngredientFilterDetailCreate(BaseModel):
     id: Optional[str] = None
     ingredient_id: Optional[str] = None
     option_id: Optional[str] = None
+    title: Optional[str] = None
     description: str
     rating_value: Optional[int] = None
     tab_type: TabType = "purchase"
-
 
 class UserPostCreate(BaseModel):
     id: Optional[str] = None

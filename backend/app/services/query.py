@@ -55,7 +55,8 @@ def get_ingredients_by_category(category_id: str, filter_options: Optional[List[
 
 def _get_ingredient_row(ingredient_id: str, fallback_name: Optional[str] = None) -> Optional[dict[str, Any]]:
     """Fetch one ingredient by id, slug-like id, or fallback name."""
-    select_query = "id, category_id, name, catchphrase, description, image_url"
+    select_query = "id, category_id, name, catchphrase, description, image_url,good_case, bad_case,source"
+
     candidate_ids = [ingredient_id]
 
     if not ingredient_id.startswith("ing_"):
@@ -127,18 +128,14 @@ def _get_category_filter_option_ids(category_id: Optional[str], tab_type: str) -
 #     if not row:
 #         return None
 
-#     option_ids = _get_category_filter_option_ids(row.get("category_id"), "purchase")
-#     purchase_posts = []
-
-#     if option_ids:
-#         purchase_posts = _execute_query(
-#             supabase.table("user_posts")
-#             .select("id, ingredient_id, option_id, title, content, created_at")
-#             .eq("ingredient_id", row["id"])
-#             .eq("tab_type", "purchase")
-#             .in_("option_id", option_ids)
-#             .order("created_at")
-#         )
+#     # 1. 테이블명을 ingredient_filter_details로 변경하고 존재하는 컬럼들만 select 합니다.
+#     purchase_posts = _execute_query(
+#         supabase.table("ingredient_filter_details")
+#         .select("id, ingredient_id, option_id, description, created_at")
+#         .eq("ingredient_id", row["id"])
+#         .eq("tab_type", "purchase")
+#         .order("created_at")
+#     )
 
 #     return {
 #         "ingredient": {
@@ -153,24 +150,24 @@ def _get_category_filter_option_ids(category_id: Optional[str], tab_type: str) -
 #                 "id": post.get("id"),
 #                 "ingredient_id": post.get("ingredient_id"),
 #                 "filter_option_id": post.get("option_id"),
-#                 "title": post.get("title"),
-#                 "content": post.get("content"),
+#                 # 💡 만약 DB의 description에 "배꼽 확인하기\n수박 아래쪽의..." 형태로 
+#                 # 제목과 내용이 함께 들어있다면 아래처럼 split하여 나누어 줄 수 있습니다.
+#                 "title": post.get("description", "").split("\n")[0] if "\n" in post.get("description", "") else "꿀팁",
+#                 "content": post.get("description", "").split("\n", 1)[1] if "\n" in post.get("description", "") else post.get("description"),
 #                 "sort_order": index,
 #             }
 #             for index, post in enumerate(purchase_posts, start=1)
 #         ],
 #     }
-
 def get_ingredient_detail(ingredient_id: str, fallback_name: Optional[str] = None) -> Any:
     """Fetch ingredient detail shaped for the frontend detail page."""
     row = _get_ingredient_row(ingredient_id, fallback_name)
     if not row:
         return None
 
-    # 1. 테이블명을 ingredient_filter_details로 변경하고 존재하는 컬럼들만 select 합니다.
     purchase_posts = _execute_query(
         supabase.table("ingredient_filter_details")
-        .select("id, ingredient_id, option_id, description, created_at")
+        .select("id, ingredient_id, option_id, title, description, created_at")
         .eq("ingredient_id", row["id"])
         .eq("tab_type", "purchase")
         .order("created_at")
@@ -180,111 +177,25 @@ def get_ingredient_detail(ingredient_id: str, fallback_name: Optional[str] = Non
         "ingredient": {
             "id": row.get("id"),
             "name": row.get("name"),
+            "good_case":row.get("good_case"),
+            "bad_case":row.get("bad_case"),
             "catchphrase": row.get("catchphrase"),
             "description": row.get("description"),
             "image_url": row.get("image_url"),
+            "source":row.get("source")
         },
         "purchase_tips": [
             {
                 "id": post.get("id"),
                 "ingredient_id": post.get("ingredient_id"),
                 "filter_option_id": post.get("option_id"),
-                # 💡 만약 DB의 description에 "배꼽 확인하기\n수박 아래쪽의..." 형태로 
-                # 제목과 내용이 함께 들어있다면 아래처럼 split하여 나누어 줄 수 있습니다.
-                "title": post.get("description", "").split("\n")[0] if "\n" in post.get("description", "") else "꿀팁",
-                "content": post.get("description", "").split("\n", 1)[1] if "\n" in post.get("description", "") else post.get("description"),
+                "title": post.get("title") or "꿀팁",
+                "content": post.get("description"),
                 "sort_order": index,
             }
             for index, post in enumerate(purchase_posts, start=1)
         ],
     }
-
-# def get_home_data(ingredient_id: str = "ing_watermelon") -> Any:
-#     """Fetch the home page payload for the selected featured ingredient."""
-#     fallback_name = ingredient_id.replace("-", " ")
-#     return get_ingredient_detail(ingredient_id, fallback_name)
-
-# from datetime import datetime
-# from typing import Any, Dict
-
-# def get_home_data(ingredient_id: str = "ing_watermelon") -> Dict[str, Any]:
-#     """메인 홈 화면에 필요한 추천 식재료, 최근 본 식재료, 주간 트렌딩 데이터를 한 번에 반환합니다."""
-#     try:
-#         # 1. 오늘의 추천 식재료 상세 조회
-#         recommend_row = supabase.table("ingredients") \
-#             .select("id, name, catchphrase, description, image_url, peak_months") \
-#             .eq("id", ingredient_id) \
-#             .single() \
-#             .execute()
-            
-#         recommend_data = recommend_row.data
-#         today_recommended = {}
-        
-#         if recommend_data:
-#             # 현재 달(Month) 기준으로 제철(is_season) 여부 판별
-#             current_month = datetime.now().month
-#             is_season = current_month in (recommend_data.get("peak_months") or [])
-            
-#             today_recommended = {
-#                 "id": recommend_data.get("id"),
-#                 "name": recommend_data.get("name"),
-#                 "emoji": "🍉" if "수박" in recommend_data.get("name", "") else "✨", # 이름 기반 임시 이모지
-#                 "catchphrase": recommend_data.get("catchphrase"),
-#                 "summary": recommend_data.get("description"),
-#                 "image_url": recommend_data.get("image_url"),
-#                 "is_season": is_season,
-#                 "rating": {
-#                     "avg": 4.7,    # 💡 추후 user_posts 등에서 평점 평균 연산 가능
-#                     "count": 1248  # 💡 추후 user_posts 등에서 리뷰 개수 카운트 가능
-#                 }
-#             }
-
-#         # 2. 최근 본 식재료 목록 조회 (최대 5개)
-#         # 테이블 관계 조인을 사용해 recent_views와 ingredients를 한 번에 묶어옵니다.
-#         recent_rows = supabase.table("recent_views") \
-#             .select("viewed_at, ingredients(id, name, image_url)") \
-#             .order("viewed_at", desc=True) \
-#             .limit(5) \
-#             .execute()
-            
-#         recent_views = []
-#         for row in recent_rows.data:
-#             ing = row.get("ingredients")
-#             if ing:
-#                 recent_views.append({
-#                     "id": ing.get("id"),
-#                     "name": ing.get("name"),
-#                     "image_url": ing.get("image_url"),
-#                     "viewed_at": row.get("viewed_at")
-#                 })
-
-#         # 3. 주간 트렌딩 식재료 조회 (상위 5개)
-#         trending_rows = supabase.table("ingredients") \
-#             .select("id, name, image_url") \
-#             .limit(5) \
-#             .execute()
-            
-#         weekly_trending = []
-#         status_pool = ["인기 급상승", "지금 제철!"]
-        
-#         for index, row in enumerate(trending_rows.data, start=1):
-#             weekly_trending.append({
-#                 "rank": index,
-#                 "id": row.get("id"),
-#                 "name": row.get("name"),
-#                 "image_url": row.get("image_url"),
-#                 "trend_status": status_pool[index % 2]  # 홀짝으로 번갈아가며 임시 매핑
-#             })
-
-#         # 4. 프론트엔드가 요구한 최종 JSON 구조로 리턴
-#         return {
-#             "today_recommended_ingredient": today_recommended,
-#             "recent_views": recent_views,
-#             "weekly_trending_ingredients": weekly_trending
-#         }
-
-#     except Exception as e:
-#         raise Exception(f"Failed to fetch home data: {str(e)}")
     
 def get_recent_views_for_user(user_id: str) -> Any:
     """Fetch recent ingredient views for a user."""
