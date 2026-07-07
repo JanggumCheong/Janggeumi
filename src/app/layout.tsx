@@ -31,15 +31,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" className="font-sans">
-      <body className="flex h-dvh flex-col items-center bg-white antialiased">
+      <body className="flex h-dvh flex-col items-center bg-muted antialiased">
         <Providers>
           {/* 모바일 앱 셸 — 뷰포트 높이 고정. 헤더/탭바 고정 + 본문(main)만 스크롤.
               body가 아니라 main이 스크롤 컨테이너라, sticky 헤더 이중 스크롤 흔들림이 없다. */}
-          <div className="flex h-full min-h-0 w-full flex-col bg-background sm:w-105">
+          <div className="flex h-full min-h-0 w-full flex-col bg-background sm:w-105 sm:shadow-[0_6px_20px_rgba(31,29,24,0.10)]">
             <Header />
-            <main className="min-h-0 flex-1 overflow-y-auto px-5 pb-10 pt-5">
-              {children}
-            </main>
+            <main className="min-h-0 flex-1 overflow-y-auto px-5 pb-10 pt-5">{children}</main>
             <TabBar />
             <InstallPrompt />
           </div>
