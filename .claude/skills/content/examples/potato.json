@@ -223,7 +223,13 @@
             "creator": "살림의여왕"
           }
         ],
-        "janggeumiComment": "사과 한 알이 비법이에요. 싹 트는 걸 늦춰줘서 훨씬 오래가요."
+        "comment": {
+          "author": {
+            "name": "장금이",
+            "type": "curator"
+          },
+          "text": "사과 한 알이 비법이에요. 싹 트는 걸 늦춰줘서 훨씬 오래가요."
+        }
       },
       {
         "id": "blanch-freeze",
@@ -273,7 +279,13 @@
           "lastReviewed": "2026-07-01"
         },
         "media": [],
-        "janggeumiComment": "많이 샀을 땐 데쳐서 얼려두면 조리할 때 바로 쓰기 좋아요."
+        "comment": {
+          "author": {
+            "name": "장금이",
+            "type": "curator"
+          },
+          "text": "많이 샀을 땐 데쳐서 얼려두면 조리할 때 바로 쓰기 좋아요."
+        }
       }
     ],
     "tip": "감자의 3대 적은 빛·습기·냉장이에요. 어둡고 서늘하게, 씻지 말고 두는 게 핵심입니다."
