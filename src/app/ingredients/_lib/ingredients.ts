@@ -10,7 +10,7 @@ import type { Ingredient, IngredientTab } from "./types";
 import { IngredientSchema, INGREDIENT_TABS } from "./types";
 import { getIngredientFromApi } from "./api-adapter";
 import { fetchIngredientMeta } from "./queries/ingredient-meta";
-import { emojiFor } from "./slug";
+import { emojiFor, nameFor } from "./slug";
 
 import watermelon from "./data/watermelon.json";
 import potato from "./data/potato.json";
@@ -67,9 +67,13 @@ export async function getIngredientDetail(slug: string): Promise<Ingredient | nu
   return getIngredientFromApi(slug, emptyBase(slug, meta.name));
 }
 
-/** slug → 재료 이름(헤더 제목 등 가벼운 조회용). 없으면 null. */
+/**
+ * slug → 재료 이름(헤더 제목 등 가벼운 동기 조회용). 없으면 null.
+ * 로컬 JSON에 없는 재료(peach 등)는 slug 매핑(nameFor)으로 fallback —
+ * 헤더가 클라 컴포넌트라 async API 조회를 못 하므로 이름은 정적 매핑으로 안다.
+ */
 export function getIngredientName(slug: string): string | null {
-  return INGREDIENTS[slug]?.name ?? null;
+  return INGREDIENTS[slug]?.name ?? nameFor(slug);
 }
 
 /** 유효한 탭인지 검사 (URL 세그먼트 검증용). */
