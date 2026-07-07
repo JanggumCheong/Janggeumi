@@ -4,7 +4,11 @@ import {
   RecipeDetail,
   StorageMethodDetail,
 } from "../../../../_components/detail/IngredientDetailViews";
-import { getIngredient, getIngredientSlugs } from "../../../../_lib/ingredients";
+import {
+  getIngredient,
+  getIngredientDetail,
+  getIngredientSlugs,
+} from "../../../../_lib/ingredients";
 
 export function generateStaticParams() {
   return getIngredientSlugs().flatMap((slug) => {
@@ -46,7 +50,7 @@ export default async function IngredientDetailPage({
   }>;
 }) {
   const { slug, tab, kind, itemId } = await params;
-  const ingredient = getIngredient(slug);
+  const ingredient = await getIngredientDetail(slug);
 
   if (!ingredient) notFound();
 

@@ -1,9 +1,5 @@
 import { notFound } from "next/navigation";
-import {
-  getIngredient,
-  getIngredientSlugs,
-  isValidTab,
-} from "../../_lib/ingredients";
+import { getIngredientDetail, getIngredientSlugs, isValidTab } from "../../_lib/ingredients";
 import { INGREDIENT_TABS } from "../../_lib/types";
 import { PurchaseSection } from "../../_components/sections/PurchaseSection";
 import { StorageSection } from "../../_components/sections/StorageSection";
@@ -11,9 +7,7 @@ import { HandlingSection } from "../../_components/sections/HandlingSection";
 
 /** slug × tab 조합을 정적 생성. */
 export function generateStaticParams() {
-  return getIngredientSlugs().flatMap((slug) =>
-    INGREDIENT_TABS.map((tab) => ({ slug, tab })),
-  );
+  return getIngredientSlugs().flatMap((slug) => INGREDIENT_TABS.map((tab) => ({ slug, tab })));
 }
 
 /**
@@ -27,7 +21,7 @@ export default async function IngredientTabPage({
   params: Promise<{ slug: string; tab: string }>;
 }) {
   const { slug, tab } = await params;
-  const ingredient = getIngredient(slug);
+  const ingredient = await getIngredientDetail(slug);
   if (!ingredient || !isValidTab(tab)) notFound();
 
   return (
@@ -40,18 +34,10 @@ export default async function IngredientTabPage({
         />
       )}
       {tab === "storage" && (
-        <StorageSection
-          slug={slug}
-          ingredientName={ingredient.name}
-          data={ingredient.storage}
-        />
+        <StorageSection slug={slug} ingredientName={ingredient.name} data={ingredient.storage} />
       )}
       {tab === "handling" && (
-        <HandlingSection
-          slug={slug}
-          ingredientName={ingredient.name}
-          data={ingredient.handling}
-        />
+        <HandlingSection slug={slug} ingredientName={ingredient.name} data={ingredient.handling} />
       )}
     </>
   );
