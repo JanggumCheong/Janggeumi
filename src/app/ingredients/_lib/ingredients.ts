@@ -8,7 +8,6 @@
  */
 import type { Ingredient, IngredientTab } from "./types";
 import { IngredientSchema, INGREDIENT_TABS } from "./types";
-import { getIngredientFromApi } from "./api-adapter";
 
 import watermelon from "./data/watermelon.json";
 import potato from "./data/potato.json";
@@ -29,17 +28,6 @@ export function getIngredientSlugs(): string[] {
 /** slug로 재료 상세 조회. 없으면 null. */
 export function getIngredient(slug: string): Ingredient | null {
   return INGREDIENTS[slug] ?? null;
-}
-
-/**
- * 상세 화면용 재료 조회.
- * API 응답을 현재 프론트 Ingredient 모델로 어댑팅하고, API가 없거나 흔들리면 로컬 JSON으로 폴백한다.
- */
-export async function getIngredientDetail(slug: string): Promise<Ingredient | null> {
-  const fallback = getIngredient(slug);
-  if (!fallback) return null;
-
-  return getIngredientFromApi(slug, fallback);
 }
 
 /** slug → 재료 이름(헤더 제목 등 가벼운 조회용). 없으면 null. */

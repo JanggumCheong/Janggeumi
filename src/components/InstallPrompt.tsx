@@ -40,7 +40,8 @@ function isIos(): boolean {
   const ua = window.navigator.userAgent;
   const iosDevice = /iphone|ipad|ipod/i.test(ua);
   // iPadOS는 데스크톱 UA로 위장 → 터치 가능한 Mac을 iPad로 취급
-  const iPadOsMasquerade = /macintosh/i.test(ua) && navigator.maxTouchPoints > 1;
+  const iPadOsMasquerade =
+    /macintosh/i.test(ua) && navigator.maxTouchPoints > 1;
   return iosDevice || iPadOsMasquerade;
 }
 
@@ -54,7 +55,8 @@ function recentlyDismissed(): boolean {
 }
 
 export function InstallPrompt() {
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [deferredPrompt, setDeferredPrompt] =
+    useState<BeforeInstallPromptEvent | null>(null);
   const [showIosGuide, setShowIosGuide] = useState(false);
   const [visible, setVisible] = useState(false);
 
@@ -64,11 +66,9 @@ export function InstallPrompt() {
 
     // iOS는 beforeinstallprompt가 없으므로 수동 안내로 분기.
     if (isIos()) {
-      const timer = window.setTimeout(() => {
-        setShowIosGuide(true);
-        setVisible(true);
-      }, 0);
-      return () => window.clearTimeout(timer);
+      setShowIosGuide(true);
+      setVisible(true);
+      return;
     }
 
     const onBeforeInstall = (e: Event) => {
