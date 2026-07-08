@@ -2,10 +2,13 @@
 
 import { useState } from "react";
 import {
+  HOTS,
+  SEASONAL,
   SearchBar,
+  SearchCarousel,
   SearchCategoryFilter,
+  SearchGuideBox,
   SearchIngredientGrid,
-  SearchSeasonalCarousel,
   SearchSortTabs,
   useIngredientFilter,
   type CategoryOption,
@@ -25,11 +28,13 @@ export default function SearchPage() {
     <div className="flex flex-col gap-4">
       <SearchBar value={query} onChange={setQuery} />
       <SearchCategoryFilter value={category} onChange={setCategory} />
-      <SearchSeasonalCarousel />
+      <SearchCarousel title="지금 많이 찾는 재료" list={HOTS} />
+      <SearchCarousel title="지금 제철 재료" list={SEASONAL} />
       <section>
         <SearchSortTabs value={sort} onChange={setSort} />
         <SearchIngredientGrid items={list} />
       </section>
+      <SearchGuideBox />
     </div>
   );
 }

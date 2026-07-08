@@ -50,7 +50,7 @@ export function Header() {
           <HeaderIconButton label="뒤로" onClick={() => router.back()}>
             <ChevronLeft className="size-5" />
           </HeaderIconButton>
-          {title && <h1 className="text-[17px] font-extrabold">{title}</h1>}
+          {title && <h1 className="text-lg font-bold">{title}</h1>}
         </div>
       )}
 

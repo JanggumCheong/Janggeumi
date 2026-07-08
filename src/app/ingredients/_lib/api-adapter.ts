@@ -8,6 +8,8 @@ const ApiIngredientSchema = z.object({
   catchphrase: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
   image_url: z.string().nullable().optional(),
+  good_case: z.string().nullable().optional(),
+  bad_case: z.string().nullable().optional(),
 });
 
 const ApiPurchaseTipSchema = z.object({
@@ -176,8 +178,22 @@ function adaptPurchase(api: ApiPurchaseResponse, base: Ingredient): Ingredient["
 
   return {
     headline: base.purchase.headline,
-    bestWorst: base.purchase.bestWorst,
+    bestWorst: adaptBestWorst(api.ingredient, base),
     criteria: criteria.length > 0 ? criteria : base.purchase.criteria,
+  };
+}
+
+/** 좋은/피할 예시 이미지 — API good_case/bad_case 로 대응(이미지만, 이모지 자리표시 없음). */
+function adaptBestWorst(
+  ingredient: ApiPurchaseResponse["ingredient"],
+  base: Ingredient,
+): Ingredient["purchase"]["bestWorst"] {
+  if (!ingredient?.good_case && !ingredient?.bad_case) {
+    return base.purchase.bestWorst;
+  }
+  return {
+    good: { image: ingredient.good_case ?? null },
+    bad: { image: ingredient.bad_case ?? null },
   };
 }
 
