@@ -1,0 +1,159 @@
+<!--
+  세그먼트 탭(구매/보관/처리) 활성 스타일 개선 — 검증 페이지
+  질문: "구매·보관·처리 탭 활성화 및 스타일 어떻게? 더 좋은 UI/UX?"
+  결정: 활성 탭 색을 영역별 액센트로 분기(구매 초록·보관 청록·처리 주황) / 라벨은 텍스트만.
+  이 페이지는 목업(ingredient-detail-mockup.html)과 별개로 Before/After·영역색·구현 매핑을 한눈에 검증한다.
+-->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>세그먼트 탭 개선 검증 — 장금이</title>
+<style>
+  :root {
+    --jg-primary:#5C6E3D; --jg-primary-soft:#EEF1E6;
+    --jg-bg:#FBFBFA; --jg-surface:#FFFFFF; --jg-sunken:#F4F4F2;
+    --jg-ink:#1F1D18; --jg-ink-sub:#6B675E; --jg-ink-mute:#9B978C;
+    --jg-line:#E7E4DC;
+    --jg-buy:#1F804D;  --jg-buy-bg:#E9F6EE;
+    --jg-keep:#2F6E86; --jg-keep-bg:#E8F2F6;
+    --jg-use:#C4712A;  --jg-use-bg:#FBF0E4;
+    --r-md:16px; --r-lg:20px; --r-pill:999px;
+    --shadow-card:0 2px 10px rgba(31,29,24,.05);
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--jg-bg); color:var(--jg-ink);
+    font-family:-apple-system,"Apple SD Gothic Neo","Pretendard","Malgun Gothic",sans-serif;
+    padding:32px 24px 64px; }
+  h1 { font-size:24px; font-weight:800; margin:0 0 4px; }
+  .lede { color:var(--jg-ink-sub); font-size:14px; margin:0 0 28px; line-height:1.5; }
+  h2 { font-size:17px; font-weight:800; margin:32px 0 12px; }
+  .grid { display:flex; flex-wrap:wrap; gap:20px; align-items:flex-start; }
+  .panel { background:var(--jg-surface); border:1px solid var(--jg-line); border-radius:var(--r-lg);
+    box-shadow:var(--shadow-card); overflow:hidden; width:340px; }
+  .panel-cap { font-size:12px; font-weight:800; letter-spacing:.3px; color:var(--jg-ink-mute);
+    padding:12px 16px 0; text-transform:uppercase; }
+  .panel-note { font-size:12px; color:var(--jg-ink-sub); padding:6px 16px 14px; line-height:1.5; }
+
+  /* ── 세그먼트 탭 컴포넌트 (실제 규칙과 동일) ── */
+  .segtabs { display:flex; background:var(--jg-surface); border-bottom:1px solid var(--jg-line); }
+  .segtab { flex:1; text-align:center; padding:12px 0 11px; font-size:15px; font-weight:700;
+    color:var(--jg-ink-mute); position:relative; cursor:pointer; transition:color .2s; }
+  /* Before: 세 탭 모두 브랜드 초록 언더라인(영역 무관) */
+  .segtab.before.on { color:var(--jg-ink); }
+  .segtab.before.on::after { content:""; position:absolute; left:20%; right:20%; bottom:-1px;
+    height:3px; border-radius:3px 3px 0 0; background:var(--jg-primary); }
+  /* After: 영역별 액센트 — 활성 글자·언더라인이 그 영역색 */
+  .segtab.buy  { --tab-accent:var(--jg-buy); }
+  .segtab.keep { --tab-accent:var(--jg-keep); }
+  .segtab.use  { --tab-accent:var(--jg-use); }
+  .segtab.after.on { color:var(--tab-accent); font-weight:800; }
+  .segtab.after.on::after { content:""; position:absolute; left:20%; right:20%; bottom:-1px;
+    height:3px; border-radius:3px 3px 0 0; background:var(--tab-accent); }
+
+  /* 하위 세그먼트(활용/폐기) — 처리 정체성이 상단 탭과 이어지는지 확인용 */
+  .subseg { display:flex; gap:8px; background:var(--jg-sunken); padding:4px; border-radius:var(--r-pill); margin:14px 16px; }
+  .subseg button { flex:1; border:0; background:transparent; border-radius:var(--r-pill); padding:8px 0;
+    font-size:13px; font-weight:700; color:var(--jg-ink-sub); cursor:pointer; }
+  .subseg button.on { background:var(--jg-surface); color:var(--jg-use);
+    box-shadow:0 2px 10px rgba(31,29,24,.06); }
+  .filler { padding:16px; color:var(--jg-ink-mute); font-size:13px; }
+
+  /* 영역색 스와치 */
+  .swatches { display:flex; gap:12px; flex-wrap:wrap; }
+  .sw { width:150px; border:1px solid var(--jg-line); border-radius:var(--r-md); overflow:hidden; background:var(--jg-surface); }
+  .sw-bar { height:44px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:14px; }
+  .sw-meta { padding:8px 12px; font-size:12px; color:var(--jg-ink-sub); }
+  .sw-meta code { background:var(--jg-sunken); border-radius:6px; padding:1px 6px; font-size:11px; }
+
+  /* 구현 매핑 표 */
+  table { border-collapse:collapse; width:100%; max-width:900px; font-size:13px; background:var(--jg-surface);
+    border:1px solid var(--jg-line); border-radius:var(--r-md); overflow:hidden; }
+  th,td { text-align:left; padding:9px 12px; border-bottom:1px solid var(--jg-line); vertical-align:top; }
+  th { color:var(--jg-ink-sub); font-weight:700; background:var(--jg-sunken); }
+  code { background:var(--jg-sunken); border-radius:6px; padding:1px 6px; font-size:11.5px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace; }
+  tr:last-child td { border-bottom:0; }
+</style>
+
+<h1>세그먼트 탭 개선 검증</h1>
+<p class="lede">
+  구매·보관·처리 상단 탭의 <b>활성 스타일</b>을 영역별 액센트로 분기한다.
+  현재(Before)는 어느 탭이든 브랜드 초록 언더라인이라, 처리 탭인데도 초록 → 하위 세그먼트(활용/폐기 주황)와 정체성이 어긋났다.
+  개선(After)은 활성 탭의 글자·언더라인이 그 영역색을 따른다. 비활성은 웜그레이로 절제. 라벨은 텍스트만(토스식 간결).
+</p>
+
+<h2>Before / After</h2>
+<div class="grid">
+  <div class="panel">
+    <div class="panel-cap">Before — 세 탭 모두 초록</div>
+    <div class="segtabs">
+      <div class="segtab before">구매</div>
+      <div class="segtab before on">보관</div>
+      <div class="segtab before">처리</div>
+    </div>
+    <div class="filler">활성이 "보관"인데 언더라인이 초록(구매색)과 같다 → 영역 구분 약함.</div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-cap" style="color:var(--jg-keep)">After — 영역별 액센트</div>
+    <div class="segtabs">
+      <div class="segtab after buy">구매</div>
+      <div class="segtab after keep on">보관</div>
+      <div class="segtab after use">처리</div>
+    </div>
+    <div class="filler">활성 "보관" = 청록. 지금 어느 영역인지 색으로 즉시 인지.</div>
+  </div>
+</div>
+
+<h2>After — 세 영역 활성 상태 (각 탭이 자기 색)</h2>
+<div class="grid">
+  <div class="panel">
+    <div class="panel-cap" style="color:var(--jg-buy)">구매 · 정답형</div>
+    <div class="segtabs">
+      <div class="segtab after buy on">구매</div>
+      <div class="segtab after keep">보관</div>
+      <div class="segtab after use">처리</div>
+    </div>
+    <div class="filler">초록 = 좋은 재료 고르기(확신).</div>
+  </div>
+  <div class="panel">
+    <div class="panel-cap" style="color:var(--jg-keep)">보관 · 합의형</div>
+    <div class="segtabs">
+      <div class="segtab after buy">구매</div>
+      <div class="segtab after keep on">보관</div>
+      <div class="segtab after use">처리</div>
+    </div>
+    <div class="filler">청록 = 차분한 비교·판단.</div>
+  </div>
+  <div class="panel">
+    <div class="panel-cap" style="color:var(--jg-use)">처리 · 확산형</div>
+    <div class="segtabs">
+      <div class="segtab after buy">구매</div>
+      <div class="segtab after keep">보관</div>
+      <div class="segtab after use on">처리</div>
+    </div>
+    <!-- 상단 탭 주황 ↔ 하위 세그먼트 주황: 정체성 이어짐 확인 -->
+    <div class="subseg">
+      <button class="on">🍽 활용 처리</button>
+      <button>🗑 폐기 처리</button>
+    </div>
+    <div class="filler">상단 탭 주황이 하위 세그먼트(활용/폐기) 주황과 이어진다.</div>
+  </div>
+</div>
+
+<h2>영역 액센트 토큰</h2>
+<div class="swatches">
+  <div class="sw"><div class="sw-bar" style="background:var(--jg-buy)">구매</div>
+    <div class="sw-meta"><code>--jg-buy</code> #1F804D<br>정답형 · 초록</div></div>
+  <div class="sw"><div class="sw-bar" style="background:var(--jg-keep)">보관</div>
+    <div class="sw-meta"><code>--jg-keep</code> #2F6E86<br>합의형 · 청록</div></div>
+  <div class="sw"><div class="sw-bar" style="background:var(--jg-use)">처리</div>
+    <div class="sw-meta"><code>--jg-use</code> #C4712A<br>확산형 · 주황</div></div>
+</div>
+
+<h2>구현 매핑 — <code>SegmentTabs.tsx</code></h2>
+<table>
+  <tr><th>영역</th><th>탭 값</th><th>활성 글자·언더라인 색(Tailwind)</th><th>비고</th></tr>
+  <tr><td>구매</td><td><code>purchase</code></td><td><code>text-jg-buy</code> / bar <code>bg-jg-buy</code></td><td rowspan="3">탭→영역 매핑 상수로. 활성 시 <code>font-extrabold</code>, 비활성은 <code>text-jg-ink-mute</code> 유지. 언더라인은 <code>inset-x-[20%] h-[3px]</code> 그대로.</td></tr>
+  <tr><td>보관</td><td><code>storage</code></td><td><code>text-jg-keep</code> / bar <code>bg-jg-keep</code></td></tr>
+  <tr><td>처리</td><td><code>handling</code></td><td><code>text-jg-use</code> / bar <code>bg-jg-use</code></td></tr>
+</table>

@@ -128,13 +128,19 @@
       .appbar .ic { font-size: 18px; color: var(--jg-ink-sub); width: 28px; text-align: center; }
       .appbar .side { display: flex; gap: 2px; }
 
-      /* 세그먼트 탭 (구매/보관/처리) */
+      /* 세그먼트 탭 (구매/보관/처리)
+         활성 탭 = 영역별 액센트(구매 초록 / 보관 청록 / 처리 주황) — 하위 세그먼트(활용/폐기 주황)와
+         정체성 일치. 현재 어느 영역인지 색으로 즉시 인지. 비활성은 웜그레이 유지(절제).
+         --tab-accent를 영역 클래스가 덮어써 글자·언더라인 색을 함께 바꾼다. */
       .segtabs { display: flex; background: var(--jg-surface); border-bottom: 1px solid var(--jg-line); }
       .segtab { flex: 1; text-align: center; padding: 12px 0 11px; font-size: 15px; font-weight: 700;
-        color: var(--jg-ink-mute); position: relative; cursor: pointer; }
-      .segtab.on { color: var(--jg-ink); }
+        color: var(--jg-ink-mute); position: relative; cursor: pointer; transition: color .2s; }
+      .segtab.buy  { --tab-accent: var(--jg-buy); }
+      .segtab.keep { --tab-accent: var(--jg-keep); }
+      .segtab.use  { --tab-accent: var(--jg-use); }
+      .segtab.on { color: var(--tab-accent); font-weight: 800; }
       .segtab.on::after { content: ""; position: absolute; left: 20%; right: 20%; bottom: -1px;
-        height: 3px; border-radius: 3px 3px 0 0; background: var(--jg-primary); }
+        height: 3px; border-radius: 3px 3px 0 0; background: var(--tab-accent); }
 
       .scroll { padding: 16px; display: flex; flex-direction: column; gap: 14px; flex: 1; }
 
@@ -344,9 +350,9 @@
               </div>
               <!-- component: SegTabs (variant: 구매 active) -->
               <div class="segtabs">
-                <div class="segtab on">구매</div>
-                <div class="segtab">보관</div>
-                <div class="segtab">처리</div>
+                <div class="segtab buy on">구매</div>
+                <div class="segtab keep">보관</div>
+                <div class="segtab use">처리</div>
               </div>
               <div class="scroll">
                 <!-- 히어로: 토스식 — 큰 카피가 주인공. 장금이는 카피 위 작은 화자 라벨. 삽화 경쟁 제거 -->
@@ -455,9 +461,9 @@
                 <span class="side"><span class="ic">♡</span><span class="ic">↑</span></span>
               </div>
               <div class="segtabs">
-                <div class="segtab">구매</div>
-                <div class="segtab on">보관</div>
-                <div class="segtab">처리</div>
+                <div class="segtab buy">구매</div>
+                <div class="segtab keep on">보관</div>
+                <div class="segtab use">처리</div>
               </div>
               <div class="scroll">
                 <!-- 히어로: 구매 탭처럼 장금이 화자 -->
@@ -557,9 +563,9 @@
                 <span class="side"><span class="ic">♡</span><span class="ic">↑</span></span>
               </div>
               <div class="segtabs">
-                <div class="segtab">구매</div>
-                <div class="segtab">보관</div>
-                <div class="segtab on">처리</div>
+                <div class="segtab buy">구매</div>
+                <div class="segtab keep">보관</div>
+                <div class="segtab use on">처리</div>
               </div>
               <div class="scroll">
                 <!-- 히어로: 구매·보관 탭처럼 장금이 화자 -->
@@ -729,6 +735,7 @@
             <tr><th>항목</th><th>결정</th></tr>
             <tr><td>브랜드 색</td><td>세이지 그린 <code>#5C6E3D</code> (후보 비교 후 확정)</td></tr>
             <tr><td>영역 액센트</td><td>구매 초록 / 보관 청록 / 처리 주황</td></tr>
+            <tr><td>상단 탭 활성색</td><td><b>영역별 액센트로 분기</b> — 활성 탭 글자·언더라인이 그 영역색(구매 초록·보관 청록·처리 주황). 하위 세그먼트(활용/폐기 주황)와 정체성 일치. 비활성은 웜그레이. 라벨은 텍스트만(아이콘 없음).</td></tr>
             <tr><td>기준 이미지</td><td>실제 사진 필요 (현재 이모지 자리표시)</td></tr>
           </table>
         </div>
