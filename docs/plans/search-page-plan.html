@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>장금이 검색(탐색 허브) 페이지 기획 명세</title>
+    <style>
+      :root {
+        --jg-bg: #fbfbfa;
+        --jg-surface: #ffffff;
+        --jg-surface-sunken: #f4f4f2;
+        --jg-primary: #5c6e3d;
+        --jg-primary-strong: #47562f;
+        --jg-primary-soft: #eef1e6;
+        --jg-ink: #1f1d18;
+        --jg-ink-sub: #6b675e;
+        --jg-ink-mute: #9b978c;
+        --jg-line: #e7e4dc;
+        --shadow-card: 0 4px 16px rgba(31, 29, 24, 0.05);
+        --shadow-float: 0 10px 28px rgba(31, 29, 24, 0.1);
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        background: #f3f2ee;
+        color: var(--jg-ink);
+        font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
+          "Pretendard", "Malgun Gothic", sans-serif;
+        line-height: 1.5;
+      }
+
+      a, button, input { font: inherit; }
+      a { color: inherit; text-decoration: none; }
+      button { cursor: pointer; }
+
+      /* ── 문서 히어로 ── */
+      .doc-hero { max-width: 1160px; margin: 0 auto; padding: 40px 24px 8px; }
+      .doc-hero .eyebrow {
+        display: inline-block;
+        margin-bottom: 12px;
+        border-radius: 999px;
+        background: var(--jg-primary-soft);
+        color: var(--jg-primary-strong);
+        padding: 5px 12px;
+        font-size: 12px;
+        font-weight: 900;
+      }
+      .doc-hero h1 { margin: 0; font-size: 30px; font-weight: 900; letter-spacing: -0.01em; }
+      .doc-hero p {
+        margin: 10px 0 0;
+        max-width: 760px;
+        color: var(--jg-ink-sub);
+        font-size: 15px;
+        font-weight: 600;
+      }
+      .doc-hero .route {
+        display: inline-block;
+        margin-top: 14px;
+        border: 1px solid var(--jg-line);
+        border-radius: 8px;
+        background: var(--jg-surface);
+        padding: 6px 12px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--jg-primary-strong);
+      }
+
+      /* ── 명세 레이아웃 ── */
+      .spec-layout {
+        display: flex;
+        justify-content: space-between;
+        gap: 32px;
+        max-width: 1160px;
+        margin: 0 auto;
+        padding: 24px 24px 64px;
+      }
+      .spec-stage {
+        flex: none;
+        width: 372px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .spec-stage .phone { margin-bottom: 20px; }
+
+      .phone {
+        display: flex;
+        width: 372px;
+        height: 792px;
+        overflow: hidden;
+        flex-direction: column;
+        border: 1px solid var(--jg-line);
+        border-radius: 28px;
+        background: var(--jg-bg);
+        box-shadow: var(--shadow-float);
+      }
+
+      .app-header {
+        display: flex;
+        height: 54px;
+        flex: none;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+      }
+      .brand-title { font-size: 17px; font-weight: 900; color: var(--jg-ink); }
+      .icon-button {
+        display: inline-flex;
+        width: 36px;
+        height: 36px;
+        align-items: center;
+        justify-content: center;
+        border: 0;
+        border-radius: 999px;
+        background: transparent;
+        color: var(--jg-ink-sub);
+      }
+      .icon {
+        width: 22px; height: 22px;
+        fill: none; stroke: currentColor;
+        stroke-linecap: round; stroke-linejoin: round; stroke-width: 2;
+      }
+
+      .app-main {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        padding: 6px 20px 28px;
+        scrollbar-width: none;
+      }
+      .app-main::-webkit-scrollbar { display: none; }
+
+      .page-title { margin: 6px 0 2px; }
+      .page-title h1 { margin: 0; font-size: 22px; font-weight: 900; letter-spacing: -0.01em; }
+      .page-title p { margin: 3px 0 0; color: var(--jg-ink-sub); font-size: 13px; font-weight: 700; }
+
+      /* 검색창 (sticky 아님) */
+      .search-box {
+        display: flex;
+        min-height: 46px;
+        align-items: center;
+        gap: 12px;
+        margin-top: 14px;
+        border: 2px solid var(--jg-primary);
+        border-radius: 17px;
+        background: var(--jg-surface);
+        padding: 0 16px;
+      }
+      .search-box .icon { width: 20px; height: 20px; color: var(--jg-ink); flex: none; }
+      .search-box input {
+        min-width: 0;
+        flex: 1;
+        border: 0;
+        outline: 0;
+        background: transparent;
+        color: var(--jg-ink);
+        font-size: 13px;
+        font-weight: 800;
+      }
+      .search-box input::placeholder { color: #8c8c8c; opacity: 1; }
+      .search-box .clear-btn {
+        display: inline-flex;
+        width: 20px; height: 20px;
+        flex: none;
+        align-items: center;
+        justify-content: center;
+        border: 0;
+        border-radius: 999px;
+        background: var(--jg-surface-sunken);
+        color: var(--jg-ink-sub);
+        padding: 0;
+      }
+      .search-box .clear-btn .icon { width: 12px; height: 12px; stroke-width: 2.6; }
+
+      /* 검색 모드 라벨 */
+      .mode-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        margin-top: 4px;
+        border-radius: 999px;
+        background: var(--jg-primary);
+        color: #fff;
+        padding: 3px 10px;
+        font-size: 10px;
+        font-weight: 900;
+      }
+
+      /* 검색 결과 행(리스트) 자동완성 */
+      .result-list { margin-top: 14px; display: grid; }
+      .result-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 11px 4px;
+        border-bottom: 1px solid var(--jg-line);
+      }
+      .result-row:last-child { border-bottom: 0; }
+      .result-thumb {
+        display: grid;
+        width: 42px; height: 42px;
+        flex: none;
+        place-items: center;
+        border-radius: 10px;
+        background: linear-gradient(145deg, #fbfbfa 0%, #edf1e5 100%);
+        font-size: 24px;
+      }
+      .result-main { flex: 1; min-width: 0; }
+      .result-name { font-size: 14px; font-weight: 900; color: var(--jg-ink); }
+      .result-name .alias { margin-left: 6px; font-size: 11px; font-weight: 700; color: var(--jg-ink-mute); }
+      .result-cat { font-size: 11px; font-weight: 800; color: var(--jg-ink-mute); }
+      .result-row .chev { width: 16px; height: 16px; flex: none; color: var(--jg-ink-mute); stroke-width: 2.4; }
+      .result-hint { margin: 6px 4px 0; font-size: 11px; font-weight: 800; color: var(--jg-ink-mute); }
+
+      .mode-caption {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin: 0 0 2px;
+        font-size: 13px;
+        font-weight: 900;
+        color: var(--jg-primary-strong);
+      }
+      .mode-caption::before {
+        content: "";
+        width: 6px; height: 18px;
+        border-radius: 3px;
+        background: var(--jg-primary);
+      }
+
+      /* 카테고리 칩 */
+      .chip-row {
+        display: flex;
+        gap: 8px;
+        margin: 16px -20px 0;
+        padding: 0 20px 2px;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+      .chip-row::-webkit-scrollbar { display: none; }
+      .chip {
+        flex: none;
+        border: 1px solid var(--jg-line);
+        border-radius: 999px;
+        background: var(--jg-surface);
+        padding: 7px 14px;
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--jg-ink-sub);
+      }
+      .chip.is-active { border-color: var(--jg-primary); background: var(--jg-primary); color: #fff; }
+
+      /* 섹션 공통 */
+      .section { margin-top: 26px; }
+      .section-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      .section-head h2 { margin: 0; font-size: 17px; font-weight: 900; }
+      .section-sub { color: var(--jg-ink-mute); font-size: 11px; font-weight: 800; }
+      .section-head.with-voice { margin-bottom: 4px; }
+
+      /* 장금이 화자 멘트 */
+      .jg-voice { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+      .jg-avatar {
+        display: grid;
+        width: 26px; height: 26px;
+        flex: none;
+        place-items: center;
+        border-radius: 999px;
+        background: var(--jg-primary-soft);
+        border: 1px solid #dfe4d2;
+        font-size: 15px;
+      }
+      .jg-voice-text { font-size: 12px; font-weight: 800; color: var(--jg-primary-strong); }
+
+      /* 가로 스크롤 강조 카드 */
+      .hscroll {
+        display: flex;
+        gap: 12px;
+        margin: 0 -20px;
+        padding: 2px 20px 6px;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+      .hscroll::-webkit-scrollbar { display: none; }
+      .feature-card {
+        position: relative;
+        flex: none;
+        width: 116px;
+        display: grid;
+        gap: 8px;
+        border: 1px solid var(--jg-line);
+        border-radius: 12px;
+        background: var(--jg-surface);
+        padding: 10px;
+        box-shadow: var(--shadow-card);
+      }
+      .feature-image {
+        display: grid;
+        aspect-ratio: 1 / 1;
+        place-items: center;
+        border-radius: 9px;
+        background: linear-gradient(145deg, #fbfbfa 0%, #edf1e5 100%);
+        font-size: 40px;
+      }
+      .rank-badge {
+        position: absolute;
+        top: 8px; left: 8px;
+        display: grid;
+        width: 22px; height: 22px;
+        place-items: center;
+        border-radius: 999px;
+        background: var(--jg-primary);
+        color: #fff;
+        font-size: 12px;
+        font-weight: 900;
+      }
+      .feature-name { font-size: 13px; font-weight: 900; color: var(--jg-ink); }
+      .season-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        border-radius: 6px;
+        background: var(--jg-primary-soft);
+        color: var(--jg-primary-strong);
+        padding: 2px 7px;
+        font-size: 10px;
+        font-weight: 900;
+      }
+
+      /* '전체' 칩일 때 카테고리 안내 (A-Z 나열 대체) */
+      .browse-hint {
+        display: grid;
+        justify-items: center;
+        gap: 8px;
+        margin-top: 4px;
+        border: 1px dashed #d9ded1;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.72);
+        padding: 22px 18px;
+        text-align: center;
+      }
+      .browse-hint .bh-icon {
+        display: grid;
+        width: 42px; height: 42px;
+        place-items: center;
+        border-radius: 999px;
+        background: var(--jg-primary-soft);
+        font-size: 22px;
+      }
+      .browse-hint .bh-title { font-size: 13px; font-weight: 900; color: var(--jg-ink); }
+      .browse-hint .bh-sub { font-size: 11.5px; font-weight: 700; color: var(--jg-ink-sub); line-height: 1.5; }
+
+      /* 카테고리 그리드 */
+      .ingredient-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px;
+      }
+      .ingredient-card {
+        position: relative;
+        display: grid;
+        gap: 6px;
+        border: 1px solid var(--jg-line);
+        border-radius: 10px;
+        background: var(--jg-surface);
+        padding: 7px;
+        box-shadow: var(--shadow-card);
+      }
+      .ingredient-image {
+        display: grid;
+        aspect-ratio: 1 / 1;
+        place-items: center;
+        border-radius: 8px;
+        background: linear-gradient(145deg, #fbfbfa 0%, #edf1e5 100%);
+        font-size: 30px;
+      }
+      .ingredient-card strong {
+        overflow: hidden;
+        color: var(--jg-ink);
+        font-size: 11.5px;
+        font-weight: 900;
+        line-height: 1.2;
+        text-align: center;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .cat-label { text-align: center; color: var(--jg-ink-mute); font-size: 9.5px; font-weight: 800; min-height: 12px; }
+      .ingredient-card .season-badge { justify-self: center; }
+      .ingredient-card.is-planned { opacity: 0.62; }
+      .planned-badge {
+        position: absolute;
+        top: 6px; right: 6px;
+        border-radius: 5px;
+        background: #efece5;
+        color: var(--jg-ink-mute);
+        padding: 1px 5px;
+        font-size: 8.5px;
+        font-weight: 900;
+      }
+
+      /* 하단 탭바 */
+      .bottom-tabbar {
+        display: flex;
+        flex: none;
+        border-top: 1px solid var(--jg-line);
+        background: var(--jg-surface);
+      }
+      .tab-item {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        padding: 8px 4px;
+        color: var(--jg-ink-mute);
+        font-size: 11px;
+        font-weight: 800;
+      }
+      .tab-item.is-active { color: var(--jg-primary); }
+      .tab-item .icon { width: 23px; height: 23px; }
+
+      /* ── 명세 패널 ── */
+      .spec-panel {
+        position: sticky;
+        top: 24px;
+        align-self: flex-start;
+        flex: 1;
+        min-width: 340px;
+        max-height: calc(100vh - 48px);
+        overflow-y: auto;
+        padding-right: 4px;
+      }
+      .spec-head { margin: 0 0 14px; font-size: 18px; font-weight: 900; }
+      .spec-card {
+        margin-bottom: 16px;
+        border: 1px solid var(--jg-line);
+        border-radius: 14px;
+        background: var(--jg-surface);
+        padding: 16px 18px;
+        box-shadow: var(--shadow-card);
+      }
+      .spec-card h3 { margin: 0 0 12px; font-size: 14px; font-weight: 900; color: var(--jg-primary-strong); }
+      .spec-card h3 .tag {
+        margin-left: 8px;
+        border-radius: 6px;
+        background: var(--jg-primary-soft);
+        padding: 2px 7px;
+        font-size: 10px;
+        font-weight: 900;
+        color: var(--jg-primary-strong);
+        vertical-align: middle;
+      }
+      table.spec-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+      .spec-table th, .spec-table td {
+        border-bottom: 1px solid var(--jg-line);
+        padding: 7px 6px;
+        text-align: left;
+        vertical-align: top;
+      }
+      .spec-table th { color: var(--jg-ink-mute); font-weight: 800; font-size: 11px; white-space: nowrap; }
+      .spec-table td { color: var(--jg-ink); font-weight: 600; }
+      .spec-table tr:last-child th, .spec-table tr:last-child td { border-bottom: 0; }
+      code.f {
+        border-radius: 4px;
+        background: var(--jg-surface-sunken);
+        padding: 1px 5px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 11px;
+        color: var(--jg-primary-strong);
+      }
+      .req-list { margin: 0; padding-left: 18px; }
+      .req-list li { margin-bottom: 8px; font-size: 12px; font-weight: 600; line-height: 1.5; }
+      .req-list li b { color: var(--jg-primary-strong); }
+      .decided li::marker { content: "✅ "; }
+      .decided li { list-style: none; margin-left: -18px; padding-left: 4px; }
+      .later li::marker { content: "🕒 "; }
+      .later li { list-style: none; margin-left: -18px; padding-left: 4px; }
+      .value-badges { display: flex; flex-wrap: wrap; gap: 6px; }
+      .vb {
+        border-radius: 999px;
+        border: 1px solid var(--jg-line);
+        padding: 5px 11px;
+        font-size: 11px;
+        font-weight: 900;
+        color: var(--jg-primary-strong);
+        background: var(--jg-primary-soft);
+      }
+      .callout {
+        border-radius: 10px;
+        background: #fff8ec;
+        border: 1px solid #f0e2c4;
+        padding: 10px 12px;
+        font-size: 11.5px;
+        font-weight: 700;
+        color: #7a5a1e;
+        line-height: 1.5;
+      }
+      .strike { color: var(--jg-ink-mute); text-decoration: line-through; }
+
+      @media (max-width: 1080px) {
+        .spec-layout { flex-direction: column; align-items: center; }
+        .spec-panel { position: static; max-height: none; width: 100%; max-width: 372px; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="doc-hero">
+      <span class="eyebrow">기능 기획 · 검색</span>
+      <h1>검색 — 재료 탐색 허브</h1>
+      <p>
+        재료명을 아는 사람은 <b>검색</b>으로, 모르는 사람은 <b>🔥 많이 찾는 · 🌱 제철로 발견</b>하고
+        <b>카테고리 칩으로 브라우징</b>해 재료 상세로 최단 진입하는 모바일 허브. 정렬 탭·전체 나열 없이
+        발견=🔥🌱 / 브라우징=칩 / 특정=검색 세 갈래로 인지 부담을 없앤다.
+      </p>
+      <br />
+      <span class="route">/search → /ingredients/[slug]</span>
+    </header>
+
+    <div class="spec-layout">
+      <!-- ───────── 좌: 폰 목업 ───────── -->
+      <div class="spec-stage">
+        <p class="mode-caption">① 탐색 모드 — '전체' 칩 (발견: 🔥·🌱 + 카테고리 유도)</p>
+        <div class="phone">
+          <header class="app-header">
+            <span class="brand-title">장금이</span>
+            <button class="icon-button" type="button" aria-label="마이페이지">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" />
+              </svg>
+            </button>
+          </header>
+
+          <main class="app-main">
+            <div class="page-title">
+              <h1>식재료 검색</h1>
+              <p>모든 식재료를 한눈에</p>
+            </div>
+
+            <label class="search-box">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+              </svg>
+              <input type="search" aria-label="재료 검색"
+                placeholder="재료를 검색해보세요 (예: 수박, 양파)" />
+            </label>
+
+            <div class="chip-row" aria-label="카테고리">
+              <button class="chip is-active" type="button">전체</button>
+              <button class="chip" type="button">채소</button>
+              <button class="chip" type="button">과일</button>
+              <button class="chip" type="button">육류</button>
+              <button class="chip" type="button">수산</button>
+              <button class="chip" type="button">곡물·견과</button>
+            </div>
+
+            <!-- 🔥 지금 많이 찾는 재료 -->
+            <section class="section" aria-label="지금 많이 찾는 재료">
+              <div class="jg-voice">
+                <span class="jg-avatar" aria-hidden="true">👩‍🍳</span>
+                <span class="jg-voice-text">요즘 다들 이것들을 찾사옵니다</span>
+              </div>
+              <div class="section-head with-voice">
+                <h2>🔥 지금 많이 찾는 재료</h2>
+                <span class="section-sub">조회수순</span>
+              </div>
+              <div class="hscroll">
+                <a class="feature-card" href="#">
+                  <span class="rank-badge">1</span>
+                  <div class="feature-image" aria-hidden="true">🧅</div>
+                  <span class="feature-name">양파</span>
+                </a>
+                <a class="feature-card" href="#">
+                  <span class="rank-badge">2</span>
+                  <div class="feature-image" aria-hidden="true">🥔</div>
+                  <span class="feature-name">감자</span>
+                  <span class="season-badge">제철 6~10월</span>
+                </a>
+                <a class="feature-card" href="#">
+                  <span class="rank-badge">3</span>
+                  <div class="feature-image" aria-hidden="true">🍉</div>
+                  <span class="feature-name">수박</span>
+                  <span class="season-badge">제철 6~8월</span>
+                </a>
+                <a class="feature-card" href="#">
+                  <span class="rank-badge">4</span>
+                  <div class="feature-image" aria-hidden="true">🌿</div>
+                  <span class="feature-name">대파</span>
+                </a>
+              </div>
+            </section>
+
+            <!-- 🌱 지금 제철이에요 -->
+            <section class="section" aria-label="지금 제철이에요">
+              <div class="jg-voice">
+                <span class="jg-avatar" aria-hidden="true">👩‍🍳</span>
+                <span class="jg-voice-text">지금이 딱 제철이옵니다</span>
+              </div>
+              <div class="section-head with-voice">
+                <h2>🌱 지금 제철이에요</h2>
+                <span class="section-sub">7월 기준</span>
+              </div>
+              <div class="hscroll">
+                <a class="feature-card" href="#">
+                  <div class="feature-image" aria-hidden="true">🍉</div>
+                  <span class="feature-name">수박</span>
+                  <span class="season-badge">제철 6~8월</span>
+                </a>
+                <a class="feature-card" href="#">
+                  <div class="feature-image" aria-hidden="true">🥔</div>
+                  <span class="feature-name">감자</span>
+                  <span class="season-badge">제철 6~10월</span>
+                </a>
+                <a class="feature-card" href="#">
+                  <div class="feature-image" aria-hidden="true">🍅</div>
+                  <span class="feature-name">토마토</span>
+                  <span class="season-badge">제철 6~9월</span>
+                </a>
+              </div>
+            </section>
+
+            <!-- '전체' 칩: A-Z 나열 대신 카테고리 브라우징 유도 -->
+            <section class="section" aria-label="카테고리 둘러보기">
+              <div class="browse-hint">
+                <span class="bh-icon" aria-hidden="true">🥕</span>
+                <span class="bh-title">👩‍🍳 무얼 찾으시옵니까?</span>
+                <span class="bh-sub">위 카테고리를 골라 둘러보시옵소서.<br />재료명을 아신다면 검색이 가장 빠르옵니다.</span>
+              </div>
+            </section>
+          </main>
+
+          <nav class="bottom-tabbar" aria-label="하단 탭">
+            <a class="tab-item" href="#">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m3 10.5 9-7 9 7" />
+                <path d="M5 10v10h14V10" />
+                <path d="M9 20v-6h6v6" />
+              </svg>
+              홈
+            </a>
+            <a class="tab-item is-active" href="#" aria-current="page">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+              </svg>
+              검색
+            </a>
+            <a class="tab-item" href="#">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" />
+              </svg>
+              마이페이지
+            </a>
+          </nav>
+        </div>
+
+        <p class="mode-caption">② 검색 모드 — 입력 시 (맥락 섹션 숨김, 행 자동완성)</p>
+        <div class="phone">
+          <header class="app-header">
+            <span class="brand-title">장금이</span>
+            <button class="icon-button" type="button" aria-label="마이페이지">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" />
+              </svg>
+            </button>
+          </header>
+
+          <main class="app-main">
+            <div class="page-title">
+              <h1>식재료 검색</h1>
+              <p>모든 식재료를 한눈에</p>
+            </div>
+
+            <label class="search-box">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+              </svg>
+              <input type="search" aria-label="재료 검색" value="파" />
+              <button class="clear-btn" type="button" aria-label="검색어 지우기">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M6 6l12 12M18 6 6 18" />
+                </svg>
+              </button>
+            </label>
+
+            <span class="mode-label">🔍 "파" 검색 결과</span>
+
+            <div class="chip-row" aria-label="카테고리">
+              <button class="chip is-active" type="button">전체</button>
+              <button class="chip" type="button">채소</button>
+              <button class="chip" type="button">과일</button>
+              <button class="chip" type="button">육류</button>
+              <button class="chip" type="button">수산</button>
+              <button class="chip" type="button">곡물·견과</button>
+            </div>
+
+            <!-- 검색 모드: 맥락 섹션 전부 숨김 → 행 자동완성 -->
+            <div class="result-list" aria-label="검색 결과">
+              <a class="result-row" href="#">
+                <div class="result-thumb" aria-hidden="true">🌿</div>
+                <div class="result-main">
+                  <div class="result-name">대파 <span class="alias">· 파</span></div>
+                  <div class="result-cat">채소</div>
+                </div>
+                <svg class="icon chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+              </a>
+              <a class="result-row" href="#">
+                <div class="result-thumb" aria-hidden="true">🧅</div>
+                <div class="result-main">
+                  <div class="result-name">양파 <span class="alias">· onion</span></div>
+                  <div class="result-cat">채소</div>
+                </div>
+                <svg class="icon chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+              </a>
+            </div>
+            <p class="result-hint">이름·별칭으로 2건을 찾았어요. 접두 일치가 위로 올라와요.</p>
+          </main>
+
+          <nav class="bottom-tabbar" aria-label="하단 탭">
+            <a class="tab-item" href="#">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m3 10.5 9-7 9 7" />
+                <path d="M5 10v10h14V10" />
+                <path d="M9 20v-6h6v6" />
+              </svg>
+              홈
+            </a>
+            <a class="tab-item is-active" href="#" aria-current="page">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+              </svg>
+              검색
+            </a>
+            <a class="tab-item" href="#">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" />
+              </svg>
+              마이페이지
+            </a>
+          </nav>
+        </div>
+
+        <p class="mode-caption">③ 카테고리 브라우징 — '채소' 칩 선택 시 (그 카테고리 완결 목록)</p>
+        <div class="phone">
+          <header class="app-header">
+            <span class="brand-title">장금이</span>
+            <button class="icon-button" type="button" aria-label="마이페이지">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" />
+              </svg>
+            </button>
+          </header>
+
+          <main class="app-main">
+            <div class="page-title">
+              <h1>식재료 검색</h1>
+              <p>모든 식재료를 한눈에</p>
+            </div>
+
+            <label class="search-box">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+              </svg>
+              <input type="search" aria-label="재료 검색"
+                placeholder="재료를 검색해보세요 (예: 수박, 양파)" />
+            </label>
+
+            <div class="chip-row" aria-label="카테고리">
+              <button class="chip" type="button">전체</button>
+              <button class="chip is-active" type="button">채소</button>
+              <button class="chip" type="button">과일</button>
+              <button class="chip" type="button">육류</button>
+              <button class="chip" type="button">수산</button>
+              <button class="chip" type="button">곡물·견과</button>
+            </div>
+
+            <!-- 칩 선택: 그 카테고리 전체 그리드(가나다, 완결 목록) -->
+            <section class="section" aria-label="채소 전체">
+              <div class="section-head with-voice">
+                <h2>채소 <span class="section-sub" style="font-weight:800;">6</span></h2>
+                <span class="section-sub">가나다순</span>
+              </div>
+              <div class="ingredient-grid">
+                <a class="ingredient-card" href="#">
+                  <div class="ingredient-image" aria-hidden="true">🥔</div>
+                  <strong>감자</strong>
+                  <span class="season-badge">제철</span>
+                </a>
+                <a class="ingredient-card is-planned" href="#">
+                  <span class="planned-badge">준비 중</span>
+                  <div class="ingredient-image" aria-hidden="true">🥕</div>
+                  <strong>당근</strong>
+                  <span class="cat-label">&nbsp;</span>
+                </a>
+                <a class="ingredient-card" href="#">
+                  <div class="ingredient-image" aria-hidden="true">🌿</div>
+                  <strong>대파</strong>
+                  <span class="cat-label">&nbsp;</span>
+                </a>
+                <a class="ingredient-card is-planned" href="#">
+                  <span class="planned-badge">준비 중</span>
+                  <div class="ingredient-image" aria-hidden="true">🧄</div>
+                  <strong>마늘</strong>
+                  <span class="cat-label">&nbsp;</span>
+                </a>
+                <a class="ingredient-card is-planned" href="#">
+                  <span class="planned-badge">준비 중</span>
+                  <div class="ingredient-image" aria-hidden="true">🥬</div>
+                  <strong>양배추</strong>
+                  <span class="cat-label">&nbsp;</span>
+                </a>
+                <a class="ingredient-card is-planned" href="#">
+                  <span class="planned-badge">준비 중</span>
+                  <div class="ingredient-image" aria-hidden="true">🧅</div>
+                  <strong>양파</strong>
+                  <span class="cat-label">&nbsp;</span>
+                </a>
+              </div>
+            </section>
+
+            <p class="result-hint">채소 6가지를 가나다순으로 모두 보여드려요.</p>
+          </main>
+
+          <nav class="bottom-tabbar" aria-label="하단 탭">
+            <a class="tab-item" href="#">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m3 10.5 9-7 9 7" />
+                <path d="M5 10v10h14V10" />
+                <path d="M9 20v-6h6v6" />
+              </svg>
+              홈
+            </a>
+            <a class="tab-item is-active" href="#" aria-current="page">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+              </svg>
+              검색
+            </a>
+            <a class="tab-item" href="#">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" />
+              </svg>
+              마이페이지
+            </a>
+          </nav>
+        </div>
+      </div>
+
+      <!-- ───────── 우: 기획 명세 패널 ───────── -->
+      <aside class="spec-panel">
+        <h2 class="spec-head">📋 기획 명세</h2>
+
+        <div class="spec-card">
+          <h3>핵심 가치 매핑 <span class="tag">탐색 계층</span></h3>
+          <div class="value-badges">
+            <span class="vb">빠른 확신 · 최소 동선</span>
+            <span class="vb">믿음 · 조회수 큐레이션</span>
+            <span class="vb">끝까지 · 제철 강조</span>
+          </div>
+          <p style="margin:12px 0 0;font-size:11.5px;font-weight:600;color:var(--jg-ink-sub);line-height:1.55;">
+            구매·보관·처리 어디에도 속하지 않는 <b>탐색(navigation) 계층</b>. 세 영역의 정보를 담지 않고 <b>입구만 연다.</b>
+          </p>
+        </div>
+
+        <div class="spec-card">
+          <h3>데이터 매핑 <span class="tag">content/list.json</span></h3>
+          <table class="spec-table">
+            <tr><th>UI 요소</th><th>schema 필드</th></tr>
+            <tr><td>카드 이름 / 검색</td><td><code class="f">name</code> + <code class="f">aliases[]</code></td></tr>
+            <tr><td>카테고리 칩·필터</td><td><code class="f">categories[]</code> / item <code class="f">category</code></td></tr>
+            <tr><td>이미지 / 폴백</td><td>스프라이트 / <code class="f">emoji</code></td></tr>
+            <tr><td>🔥 많이 찾는</td><td><code class="f">viewCount</code> <b>(신설)</b></td></tr>
+            <tr><td>🌱 제철·제철 배지</td><td><code class="f">seasonMonths[]</code></td></tr>
+            <tr><td>카테고리 그리드 정렬</td><td><code class="f">name</code> (ko locale) · 칩 선택 시</td></tr>
+            <tr><td>준비 중 배지</td><td><code class="f">status</code> / <code class="f">hasContent</code></td></tr>
+            <tr><td>상세 링크</td><td><code class="f">id</code> → <code class="f">/ingredients/{id}</code></td></tr>
+          </table>
+        </div>
+
+        <div class="spec-card">
+          <h3>섹션별 기능 요구사항</h3>
+          <ul class="req-list">
+            <li><b>검색 = 모드 전환</b> — 빈 검색창은 <b>탐색 모드</b>(🔥·🌱+칩). 1글자+ 입력 시 <b>검색 모드</b>로 전환: 맥락 섹션 전부 숨기고 검색창 바로 아래 <b>행(리스트) 자동완성</b>. 입력과 결과가 멀어지지 않게 코앞에 붙임.</li>
+            <li><b>검색 매칭</b> — <code class="f">name+aliases</code> 부분일치, 접두 일치 우선. 별칭 매칭이면 이름 뒤 흐린 별칭(<code class="f">대파 · 파</code>). 0건 → 빈 상태 + 칩 유도. 1건이면 Enter로 바로 상세. X로 탐색 모드 복귀.</li>
+            <li><b>카테고리 칩 = 브라우징 축</b> — <code class="f">categories</code>와 1:1(하드코딩 금지). <b>전체</b>: A-Z 나열 없이 "🥕 카테고리를 골라 둘러보세요" 안내. <b>채소·과일 등</b>: 그 자리에 <b>그 카테고리 전체 그리드</b>(가나다) 펼침. 검색어와 AND.</li>
+            <li><b>🔥 많이 찾는</b> — <code class="f">viewCount</code> 내림차순 상위 6. 순위 오버레이. <b>별점 없음.</b> 위에 장금이 화자 한 줄.</li>
+            <li><b>🌱 제철</b> — 오늘 월 ∈ <code class="f">seasonMonths</code>. 0건이면 섹션 숨김. 위에 장금이 화자 한 줄.</li>
+            <li><b>카테고리 그리드</b> — 칩 선택 시만 등장. 가나다순(완결 목록). <code class="f">planned</code>는 "준비 중" 배지 + 진입 차단.</li>
+            <li><b>장금이 화자</b> — 캐릭터 일러스트 대신 <b>말투로 스밈</b>. 작은 아바타 1개 + 🔥/🌱 큐레이션 멘트 + 안내·0건 카피를 사극 톤으로. 🔥·🌱가 "데이터"가 아니라 "장금이의 추천"으로 읽혀 신뢰(믿음) 톤 강화.</li>
+          </ul>
+        </div>
+
+        <div class="spec-card">
+          <h3>확정 사항</h3>
+          <ul class="req-list decided">
+            <li><b>정렬 탭 폐기</b> → 발견=🔥🌱 / 브라우징=칩 / 특정=검색 세 갈래. 정렬 축 고르는 인지 부담 제거.</li>
+            <li><b>A-Z 전체 나열 폐기</b> — 가나다 미리보기는 "앞 글자(ㄱ~ㄷ)만 항상 보임" + 카탈로그 커지면 무한 스크롤. 전체 나열 자체를 없애 12개든 200개든 ① 길이 불변.</li>
+            <li><b>가나다순은 "카테고리 완결 목록"에서만</b> — 발견용 미리보기엔 안 씀(색인 순서라 발견에 부적합).</li>
+            <li><b>검색은 모드 전환</b> — 입력 시 맥락 섹션 숨기고 행 자동완성. 검색과 결과가 멀어지는 문제 해소(탐색↔검색 두 화면이 공존하지 않음).</li>
+            <li><b>장금이는 화자로 스밈</b> — 기능성 화면이라 캐릭터 크게 X. 문구 + 작은 아바타 1개로.</li>
+            <li><b>재료별 별점 미채택</b> — 평점은 <code class="f">storage.methods[].rating</code>이 원천, 재료 단위 근거 없음.</li>
+            <li><b>viewCount 필드 신설</b> — 조회수는 탐색 허브에서 생기는 실제 집단 신호. 초기 큐레이션 시드 → 후속 실집계.</li>
+          </ul>
+          <div class="callout" style="margin-top:10px;">
+            <b>미채택:</b> <span class="strike">인기순 탭(산정X)</span> · <span class="strike">최신순(죽은 축)</span> · <span class="strike">재료별 별점</span> · <span class="strike">선호도 필터</span>
+          </div>
+        </div>
+
+        <div class="spec-card">
+          <h3>SEO / GEO</h3>
+          <ul class="req-list">
+            <li><b>h1</b> = <code class="f">식재료 검색</code> (visible), 서브 "모든 식재료를 한눈에".</li>
+            <li>모든 재료명 <b>실제 텍스트 SSR</b>. 🔥·🌱·카테고리 그리드 전부 서버 렌더 DOM에 존재, 검색·필터는 클라이언트 토글(표시만).</li>
+            <li><b>JSON-LD</b> <code class="f">ItemList</code> — 각 <code class="f">ListItem</code> = name + <code class="f">/ingredients/{id}</code>.</li>
+          </ul>
+        </div>
+
+        <div class="spec-card">
+          <h3>범위 밖 / 후속</h3>
+          <ul class="req-list later">
+            <li><code class="f">viewCount</code> 실집계 파이프라인(GA/서버 로그) — 지금은 시드값.</li>
+            <li>초성 검색·오타 보정 — 1차는 부분일치.</li>
+            <li>최근 본 재료(홈과 저장소 공유) 포함 여부 — 팀 확인.</li>
+            <li>재료별 별점·리뷰(UGC) / 로그인·마이페이지 플로우.</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </body>
+</html>

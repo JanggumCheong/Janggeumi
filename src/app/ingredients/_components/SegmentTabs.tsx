@@ -20,6 +20,7 @@ export function SegmentTabs({ slug }: { slug: string }) {
           <Link
             key={tab}
             href={href}
+            replace
             aria-current={active ? "page" : undefined}
             className={[
               "relative flex-1 py-3 text-center text-[15px] font-bold transition-colors",

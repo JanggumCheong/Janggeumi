@@ -76,13 +76,13 @@ export function MethodCard({
         </div>
       </div>
 
-      {/* 장금이 코멘트 (있을 때만, 하단 전체 폭 한 줄) */}
-      {method.janggeumiComment && (
+      {/* 코멘트 (있을 때만, 하단 전체 폭 한 줄). 화자명은 데이터(comment.author) — 장금이/유저/전문가 확장 대응. */}
+      {method.comment && (
         <div className="mt-2.5 flex items-baseline gap-1.5 border-t border-dashed border-border pt-2.5">
           <span className="flex-none text-xs">👩‍🍳</span>
           <p className="line-clamp-1 min-w-0 flex-1 text-[11.5px] leading-[1.4] text-jg-ink-sub">
-            <b className="font-extrabold text-primary">장금이</b>{" "}
-            {method.janggeumiComment}
+            <b className="font-extrabold text-primary">{method.comment.author.name}</b>{" "}
+            {method.comment.text}
           </p>
         </div>
       )}
