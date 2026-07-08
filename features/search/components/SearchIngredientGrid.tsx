@@ -18,9 +18,6 @@ export function SearchIngredientGrid({ items }: SearchIngredientGridProps) {
           <div className="grid aspect-square w-full place-items-center text-3xl">{item.emoji}</div>
           <div className="flex flex-col items-center bg-background w-full p-2">
             <span className="text-sm font-semibold">{item.name}</span>
-            <span>
-              <SearchRating value={item.rating} />
-            </span>
           </div>
         </Link>
       ))}

@@ -52,6 +52,45 @@ export const SEASONAL: SeasonalIngredient[] = [
   },
 ];
 
+export const HOTS: SeasonalIngredient[] = [
+  {
+    slug: "corn",
+    name: "옥수수",
+    emoji: "🌽",
+    rating: 4.6,
+    category: "곡류",
+    inSeason: true,
+    season: "6·9월",
+  },
+  {
+    slug: "watermelon",
+    name: "수박",
+    emoji: "🍉",
+    rating: 4.7,
+    category: "과일",
+    inSeason: true,
+    season: "6·8월",
+  },
+  {
+    slug: "peach",
+    name: "복숭아",
+    emoji: "🍑",
+    rating: 4.5,
+    category: "과일",
+    inSeason: true,
+    season: "6·8월",
+  },
+  {
+    slug: "cucumber",
+    name: "오이",
+    emoji: "🥒",
+    rating: 4.4,
+    category: "채소",
+    inSeason: true,
+    season: "4·9월",
+  },
+];
+
 export const INGREDIENTS: Ingredient[] = [
   { slug: "watermelon", name: "수박", emoji: "🍉", rating: 4.7, category: "과일", inSeason: true },
   { slug: "onion", name: "양파", emoji: "🧅", rating: 4.6, category: "채소", inSeason: false },
