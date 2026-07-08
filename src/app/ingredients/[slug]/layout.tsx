@@ -12,6 +12,15 @@ export function generateStaticParams() {
 export const dynamicParams = true;
 
 /**
+ * 로컬 목록에 없는 재료(apple 등)는 요청 시 렌더된다. 이때 존재 확인용
+ * fetchIngredientMeta가 no-store(revalidate: 0) fetch를 호출하는데, 라우트가
+ * 정적으로 시작하면 Next가 "static→dynamic at runtime" 에러를 던져 layout이
+ * 500으로 죽는다(page의 notFound()에 도달 못 함). 이 라우트는 매 요청 API에
+ * 의존하므로 처음부터 동적 렌더로 선언해 충돌을 없앤다.
+ */
+export const dynamic = "force-dynamic";
+
+/**
  * 재료 상세 공통 셸.
  * 앱 공통 Header/TabBar는 루트 layout(src/app/layout.tsx)이 제공한다 —
  * 여기선 상세 전용 SegmentTabs(구매/보관/처리)만 얹는다(이중 헤더/탭바 방지).
