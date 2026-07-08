@@ -6,7 +6,7 @@ import { useHorizontalWheel } from "../hooks";
 
 type SearchCarouselProps = {
   title: string;
-  sortBy: string;
+  sortBy?: string;
   list: SeasonalIngredient[];
 };
 
@@ -17,7 +17,7 @@ export function SearchCarousel({ title, sortBy, list }: SearchCarouselProps) {
     <section>
       <div className="flex items-center justify-between mb-3">
         <h2 className="font-bold">{title}</h2>
-        <span className="text-sm text-muted-foreground font-semibold">{sortBy}</span>
+        {sortBy && <span className="text-sm text-muted-foreground font-semibold">{sortBy}</span>}
       </div>
       <div
         ref={scrollRef}
