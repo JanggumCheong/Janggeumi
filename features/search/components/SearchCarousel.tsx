@@ -6,16 +6,18 @@ import { useHorizontalWheel } from "../hooks";
 
 type SearchCarouselProps = {
   title: string;
+  sortBy: string;
   list: SeasonalIngredient[];
 };
 
-export function SearchCarousel({ title, list }: SearchCarouselProps) {
+export function SearchCarousel({ title, sortBy, list }: SearchCarouselProps) {
   const scrollRef = useHorizontalWheel<HTMLDivElement>();
 
   return (
     <section>
       <div className="flex items-center justify-between mb-3">
         <h2 className="font-bold">{title}</h2>
+        <span className="text-sm text-muted-foreground font-semibold">{sortBy}</span>
       </div>
       <div
         ref={scrollRef}
@@ -30,8 +32,7 @@ export function SearchCarousel({ title, list }: SearchCarouselProps) {
             <div className="grid h-23 place-items-center rounded-sm text-4xl">{item.emoji}</div>
             <span className="text-sm font-semibold">{item.name}</span>
             <span className="w-fit items-center py-0.5 text-xs font-semibold text-jg-buy flex gap-1">
-              <span className="bg-jg-buy-bg rounded-full px-2 py-0.5">제철</span>
-              <span>{item.season}</span>
+              <span className="bg-jg-buy-bg rounded-full px-2 py-0.5">제철 {item.season}</span>
             </span>
           </Link>
         ))}
