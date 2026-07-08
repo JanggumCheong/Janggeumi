@@ -63,7 +63,7 @@ export default function SearchPage() {
       ) : (
         <>
           <SearchCarousel title="🔥 지금 많이 찾는 재료" sortBy="조회순" list={HOTS} />
-          <SearchCarousel title="🌱 지금 제철 재료" sortBy="제철순" list={SEASONAL} />
+          <SearchCarousel title="🌱 지금 제철 재료" list={SEASONAL} />
           <SearchGuideBox />
         </>
       )}
