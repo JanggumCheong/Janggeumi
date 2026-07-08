@@ -1,14 +1,23 @@
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import {
   DisposeDetail,
   RecipeDetail,
   StorageMethodDetail,
 } from "../../../../_components/detail/IngredientDetailViews";
+import { DetailSkeleton } from "../../../../_components/detail/DetailSkeleton";
 import {
   getIngredient,
   getIngredientDetail,
   getIngredientSlugs,
 } from "../../../../_lib/ingredients";
+
+type DetailPageParams = Promise<{
+  slug: string;
+  tab: string;
+  kind: string;
+  itemId: string;
+}>;
 
 export function generateStaticParams() {
   return getIngredientSlugs().flatMap((slug) => {
@@ -39,16 +48,15 @@ export function generateStaticParams() {
   });
 }
 
-export default async function IngredientDetailPage({
-  params,
-}: {
-  params: Promise<{
-    slug: string;
-    tab: string;
-    kind: string;
-    itemId: string;
-  }>;
-}) {
+export default async function IngredientDetailPage({ params }: { params: DetailPageParams }) {
+  return (
+    <Suspense fallback={<DetailSkeleton />}>
+      <IngredientDetailContent params={params} />
+    </Suspense>
+  );
+}
+
+async function IngredientDetailContent({ params }: { params: DetailPageParams }) {
   const { slug, tab, kind, itemId } = await params;
   const ingredient = await getIngredientDetail(slug);
 
