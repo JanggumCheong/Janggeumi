@@ -52,58 +52,58 @@
     "criteria": [
       {
         "key": "firmness",
-        "title": "단단함",
-        "desc": "눌렀을 때 단단하고 무르지 않은 것이 신선해요.",
+        "title": "단단하고 묵직한 것",
+        "desc": "손으로 들었을 때 묵직하고, 눌렀을 때 무르지 않고 단단한 것이 싱싱해요.",
         "image": null,
         "source": {
-          "org": "농촌진흥청 농사로",
+          "org": "대한민국 정책브리핑(농림축산식품부)",
           "type": "official",
           "mediaType": "article",
-          "url": "https://www.nongsaro.go.kr",
+          "url": "https://www.korea.kr/news/healthView.do?newsId=148818501",
           "verified": true,
-          "lastReviewed": "2026-07-01"
+          "lastReviewed": "2026-07-09"
         }
       },
       {
         "key": "no-sprout",
         "title": "싹이 없는 것",
-        "desc": "싹이 튼 감자는 솔라닌이 생겨 좋지 않아요. 눈이 튀어나오지 않은 걸 고르세요.",
+        "desc": "싹이 튼 감자는 솔라닌이 생겨 좋지 않아요. 싹눈이 튀어나오지 않은 걸 고르세요.",
         "image": null,
         "source": {
-          "org": "식품의약품안전처",
+          "org": "식품안전나라(식품의약품안전처)",
           "type": "official",
           "mediaType": "article",
-          "url": "https://www.mfds.go.kr",
+          "url": "https://foodsafetykorea.go.kr/portal/board/boardDetail.do?menu_no=2864&ntctxt_no=7890&bbs_no=bbs074",
           "verified": true,
-          "lastReviewed": "2026-07-01"
+          "lastReviewed": "2026-07-09"
         }
       },
       {
         "key": "no-green",
         "title": "초록빛이 없는 것",
-        "desc": "껍질이 초록으로 변한 부분은 독성이 있어요. 고르게 갈색인 것을 고르세요.",
+        "desc": "껍질이 녹색으로 변한 부분은 솔라닌이 늘어나 좋지 않아요. 고르게 갈색인 것을 고르세요.",
         "image": null,
         "source": {
-          "org": "식품의약품안전처",
+          "org": "식품안전나라(식품의약품안전처)",
           "type": "official",
           "mediaType": "article",
-          "url": "https://www.mfds.go.kr",
+          "url": "https://foodsafetykorea.go.kr/portal/board/boardDetail.do?menu_no=2864&ntctxt_no=7890&bbs_no=bbs074",
           "verified": true,
-          "lastReviewed": "2026-07-01"
+          "lastReviewed": "2026-07-09"
         }
       },
       {
         "key": "smooth-skin",
         "title": "껍질이 매끈한 것",
-        "desc": "주름지거나 쭈글쭈글하면 수분이 빠진 오래된 감자예요.",
+        "desc": "표면에 흠집이 적고 매끄러운 것이 좋아요. 주름이 생긴 감자는 수분이 빠져 맛이 덜해요.",
         "image": null,
         "source": {
-          "org": "농촌진흥청 농사로",
+          "org": "대한민국 정책브리핑(농림축산식품부)",
           "type": "official",
           "mediaType": "article",
-          "url": "https://www.nongsaro.go.kr",
+          "url": "https://www.korea.kr/news/healthView.do?newsId=148818501",
           "verified": true,
-          "lastReviewed": "2026-07-01"
+          "lastReviewed": "2026-07-09"
         }
       }
     ]
@@ -154,7 +154,7 @@
           30
         ],
         "conditions": {
-          "temp": "7~10℃"
+          "temp": "8℃ 이상 서늘한 곳"
         },
         "steps": [
           {
@@ -187,11 +187,11 @@
           "실온 보관 공간이 있을 때"
         ],
         "notFor": [
-          "여름철 더운 실내(냉장 필요)"
+          "여름철 더운 실내(서늘한 곳이 없을 때)"
         ],
         "cautions": [
           "냉장고에 넣으면 전분이 당으로 변해 맛이 나빠져요",
-          "빛을 받으면 초록으로 변하니 반드시 차광",
+          "빛을 받으면 녹색으로 변하고 솔라닌이 늘어나니 반드시 차광",
           "양파와 같이 두면 서로 빨리 상해요"
         ],
         "rating": {
@@ -206,12 +206,12 @@
           }
         },
         "source": {
-          "org": "농촌진흥청",
+          "org": "대한민국 정책브리핑(농림축산식품부)",
           "type": "official",
           "mediaType": "article",
-          "url": "https://www.nongsaro.go.kr",
+          "url": "https://www.korea.kr/news/healthView.do?newsId=148818501",
           "verified": true,
-          "lastReviewed": "2026-07-01"
+          "lastReviewed": "2026-07-09"
         },
         "media": [
           {
@@ -229,6 +229,53 @@
             "type": "curator"
           },
           "text": "사과 한 알이 비법이에요. 싹 트는 걸 늦춰줘서 훨씬 오래가요."
+        }
+      },
+      {
+        "id": "fridge-avoid",
+        "title": "냉장 보관 (권장하지 않아요)",
+        "recommended": false,
+        "tags": {
+          "place": "냉장",
+          "light": "일반",
+          "companion": "단독"
+        },
+        "summary": "냉장은 오히려 감자에 해로워요. 어쩔 수 없이 넣더라도 고온 조리는 피하세요.",
+        "durationDays": [
+          7,
+          14
+        ],
+        "conditions": {
+          "temp": "0~4℃"
+        },
+        "steps": [],
+        "goodFor": [
+          "한여름 실내가 너무 더워 냉암소가 없을 때(임시)"
+        ],
+        "notFor": [
+          "튀김·구이·감자전 등 고온 조리용",
+          "장기 보관"
+        ],
+        "cautions": [
+          "감자는 저온에 약해 냉장고에 두면 오히려 상하기 쉬워요. 장기간 냉장은 피하고 8℃ 이상 서늘한 곳에 두세요.",
+          "냉장에 뒀던 감자를 160℃ 이상 고온에서 튀기거나 구우면 발암가능물질 아크릴아마이드가 더 많이 생길 수 있어요.",
+          "냉장에 뒀던 감자는 조림·찜처럼 물에 익히는 조리로 쓰는 게 좋아요."
+        ],
+        "source": {
+          "org": "식품안전나라(식품의약품안전처)",
+          "type": "official",
+          "mediaType": "article",
+          "url": "https://www.foodsafetykorea.go.kr/portal/board/boardDetail.do?menu_no=3120&bbs_no=bbs001&ntctxt_no=22266&menu_grp=MENU_NEW01",
+          "verified": true,
+          "lastReviewed": "2026-07-09"
+        },
+        "media": [],
+        "comment": {
+          "author": {
+            "name": "장금이",
+            "type": "curator"
+          },
+          "text": "감자는 냉장고에 넣지 마시옵소서 — 전분이 당으로 변해 오히려 해로운 것이옵니다. 8℃ 이상 서늘한 냉암소가 정답이에요."
         }
       },
       {
@@ -271,12 +318,12 @@
           }
         },
         "source": {
-          "org": "식품의약품안전처",
-          "type": "official",
+          "org": "조리 일반 상식(공식 출처 딥링크 확보 전)",
+          "type": "expert",
           "mediaType": "article",
-          "url": "https://www.mfds.go.kr",
-          "verified": true,
-          "lastReviewed": "2026-07-01"
+          "url": null,
+          "verified": false,
+          "lastReviewed": "2026-07-09"
         },
         "media": [],
         "comment": {
@@ -352,14 +399,44 @@
         "title": "감자 껍질",
         "way": "물기를 빼고 음식물로 배출해요. 소량은 말려 튀겨 먹어도 좋아요.",
         "wasteType": "food",
-        "image": null
+        "image": null,
+        "reason": "감자·고구마 껍질은 부드러워 퇴비·사료로 재활용할 수 있어 음식물로 분류돼요. (반대로 양파·마늘·생강의 마른 껍질은 재활용제품 품질을 떨어뜨려 일반 쓰레기예요.)",
+        "cautions": [
+          "물기를 최대한 빼고 배출해야 처리 부담이 적어요",
+          "감자에 붙은 스티커·흙은 털어내고 배출"
+        ],
+        "regionNote": "음식물쓰레기 기준은 지자체 조례라 자치구마다 다를 수 있어요. 애매하면 관할 규정을 확인하세요.",
+        "source": {
+          "org": "서울특별시 생활환경과",
+          "type": "official",
+          "mediaType": "article",
+          "url": "https://mediahub.seoul.go.kr/archives/2004122",
+          "verified": true,
+          "lastReviewed": "2026-07-09"
+        },
+        "detailHref": null
       },
       {
         "key": "sprout",
         "title": "싹·녹색 부분",
-        "way": "솔라닌 독성이 있어 도려낸 부분은 음식물로 배출해요.",
+        "way": "싹과 싹눈을 도려낸 부분은 음식물로 배출해요. 녹색이 심하게 퍼졌으면 통째로 버리세요.",
         "wasteType": "food",
-        "image": null
+        "image": null,
+        "reason": "감자의 싹·싹눈·녹색 부분에는 천연 독소 솔라닌이 몰려 있어요. 싹과 싹눈을 말끔히 도려낸 뒤 익혀 먹으면 중독 위험을 줄일 수 있지만, 녹색이 심하게 퍼졌으면 전체를 버리는 게 안전해요.",
+        "cautions": [
+          "싹눈이 남지 않게 말끔히 도려내야 해요",
+          "도려낸 뒤에도 아린맛이 강하면 먹지 말고 버리세요"
+        ],
+        "regionNote": "도려낸 싹·껍질은 음식물이지만, 지자체 기준이 다를 수 있으니 관할 규정을 확인하세요.",
+        "source": {
+          "org": "식품안전나라(식품의약품안전처)",
+          "type": "official",
+          "mediaType": "article",
+          "url": "https://foodsafetykorea.go.kr/portal/board/boardDetail.do?menu_no=2864&ntctxt_no=7890&bbs_no=bbs074",
+          "verified": true,
+          "lastReviewed": "2026-07-09"
+        },
+        "detailHref": null
       },
       {
         "key": "net",
@@ -381,6 +458,6 @@
   "meta": {
     "schemaVersion": "1.0.0",
     "generatedAt": null,
-    "reviewStatus": "draft"
+    "reviewStatus": "reviewed"
   }
 }

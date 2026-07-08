@@ -1,0 +1,379 @@
+<meta charset="utf-8" />
+<title>감자 콘텐츠 강화 기획</title>
+<style>
+  :root {
+    --jg-primary: #5c6e3d;
+    --jg-primary-strong: #47562f;
+    --jg-primary-soft: #eef1e6;
+    --jg-bg: #fbfbfa;
+    --jg-surface: #ffffff;
+    --jg-sunken: #f4f4f2;
+    --jg-ink: #1f1d18;
+    --jg-ink-sub: #6b675e;
+    --jg-ink-mute: #9b978c;
+    --jg-line: #e7e4dc;
+    --jg-buy: #1f804d;
+    --jg-buy-bg: #e9f6ee;
+    --jg-keep: #2f6e86;
+    --jg-keep-bg: #e8f2f6;
+    --jg-use: #c4712a;
+    --jg-use-bg: #fbf0e4;
+    --jg-star: #f0a93b;
+    --jg-danger: #c1453b;
+    --jg-danger-bg: #fbeceb;
+    --r-sm: 10px;
+    --r-md: 16px;
+    --r-lg: 20px;
+    --r-pill: 999px;
+    --shadow-card: 0 2px 10px rgba(31, 29, 24, 0.05);
+    --shadow-float: 0 6px 20px rgba(31, 29, 24, 0.1);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--jg-bg);
+    color: var(--jg-ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
+      "Malgun Gothic", sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  /* hero */
+  .hero {
+    background: linear-gradient(135deg, var(--jg-primary) 0%, var(--jg-primary-strong) 100%);
+    color: #fff; border-radius: var(--r-lg); padding: 34px 32px;
+    box-shadow: var(--shadow-float);
+  }
+  .hero .kicker { font-size: 13px; font-weight: 700; opacity: 0.85; letter-spacing: 0.02em; }
+  .hero h1 { margin: 10px 0 12px; font-size: 27px; line-height: 1.35; }
+  .hero p { margin: 0; font-size: 15px; opacity: 0.94; max-width: 720px; }
+  .hero .emoji { font-size: 30px; }
+  .hero .status-pill {
+    display: inline-block; margin-top: 16px; background: rgba(255,255,255,0.16);
+    border: 1px solid rgba(255,255,255,0.28); border-radius: var(--r-pill);
+    padding: 5px 13px; font-size: 12.5px; font-weight: 600;
+  }
+
+  section { margin-top: 36px; }
+  h2.sec {
+    font-size: 18px; margin: 0 0 16px; display: flex; align-items: center; gap: 9px;
+    padding-bottom: 8px; border-bottom: 2px solid var(--jg-primary-soft);
+  }
+  h2.sec .n {
+    background: var(--jg-primary); color: #fff; width: 24px; height: 24px;
+    border-radius: 7px; display: inline-flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 800;
+  }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 720px) { .grid2 { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--jg-surface); border: 1px solid var(--jg-line);
+    border-radius: var(--r-md); box-shadow: var(--shadow-card); padding: 18px 20px;
+  }
+  .card h3 { margin: 0 0 8px; font-size: 15px; }
+  .card p { margin: 0; font-size: 13.5px; color: var(--jg-ink-sub); }
+
+  /* problem table */
+  table.tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .tbl-wrap { overflow-x: auto; border: 1px solid var(--jg-line); border-radius: var(--r-md); background: var(--jg-surface); box-shadow: var(--shadow-card); }
+  table.tbl th, table.tbl td { text-align: left; padding: 11px 13px; border-bottom: 1px solid var(--jg-line); vertical-align: top; }
+  table.tbl th { background: var(--jg-sunken); color: var(--jg-ink-sub); font-weight: 700; white-space: nowrap; }
+  table.tbl tr:last-child td { border-bottom: none; }
+  .gap { color: var(--jg-danger); font-weight: 700; }
+
+  /* value badges */
+  .badges { display: flex; flex-wrap: wrap; gap: 12px; }
+  .badge {
+    flex: 1 1 240px; background: var(--jg-surface); border: 1px solid var(--jg-line);
+    border-left: 4px solid var(--jg-primary); border-radius: var(--r-md);
+    padding: 14px 16px; box-shadow: var(--shadow-card);
+  }
+  .badge .t { font-weight: 800; font-size: 14px; margin-bottom: 5px; }
+  .badge .d { font-size: 12.5px; color: var(--jg-ink-sub); }
+
+  /* area tag */
+  .tag { display: inline-block; border-radius: var(--r-pill); padding: 2px 10px; font-size: 11.5px; font-weight: 800; }
+  .tag-buy { color: var(--jg-buy); background: var(--jg-buy-bg); }
+  .tag-keep { color: var(--jg-keep); background: var(--jg-keep-bg); }
+  .tag-use { color: var(--jg-use); background: var(--jg-use-bg); }
+
+  /* spec list */
+  .spec { display: flex; flex-direction: column; gap: 14px; }
+  .spec-item {
+    background: var(--jg-surface); border: 1px solid var(--jg-line);
+    border-radius: var(--r-md); box-shadow: var(--shadow-card); overflow: hidden;
+  }
+  .spec-item .head {
+    display: flex; align-items: center; gap: 10px; padding: 13px 18px;
+    background: var(--jg-sunken); border-bottom: 1px solid var(--jg-line);
+  }
+  .spec-item .head .title { font-weight: 800; font-size: 14.5px; }
+  .spec-item .body { padding: 14px 18px; }
+  .flow { font-size: 13px; color: var(--jg-ink-sub); margin: 0 0 10px; }
+  .flow b { color: var(--jg-ink); }
+  .arrow { color: var(--jg-primary); font-weight: 800; margin: 0 5px; }
+  code {
+    background: var(--jg-sunken); border-radius: 6px; padding: 1px 6px;
+    font-size: 12px; font-family: "SF Mono", Menlo, monospace; color: var(--jg-primary-strong);
+  }
+  .waste { display: inline-block; border-radius: var(--r-pill); padding: 2px 9px; font-size: 11px; font-weight: 800; }
+  .waste-food { color: var(--jg-use); background: var(--jg-use-bg); }
+  .waste-general { color: var(--jg-ink-sub); background: var(--jg-sunken); }
+  .no { color: var(--jg-danger); font-weight: 800; }
+
+  ul.clean { margin: 8px 0 0; padding-left: 18px; font-size: 13px; color: var(--jg-ink-sub); }
+  ul.clean li { margin-bottom: 5px; }
+
+  /* source chips */
+  .src { display: inline-flex; align-items: center; gap: 5px; background: var(--jg-buy-bg); color: var(--jg-buy);
+    border-radius: var(--r-pill); padding: 2px 10px; font-size: 11px; font-weight: 700; }
+
+  .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 720px) { .metrics { grid-template-columns: 1fr; } }
+  .metric { background: var(--jg-surface); border: 1px solid var(--jg-line); border-radius: var(--r-md);
+    padding: 14px 16px; box-shadow: var(--shadow-card); font-size: 13px; }
+  .metric b { display: block; color: var(--jg-primary-strong); font-size: 13.5px; margin-bottom: 3px; }
+
+  .open { border-left: 4px solid var(--jg-star); }
+  .open .card { border: none; box-shadow: none; padding: 0; }
+
+  .comment {
+    margin-top: 12px; background: var(--jg-primary-soft); border-radius: var(--r-sm);
+    padding: 11px 14px; font-size: 13px; color: var(--jg-primary-strong);
+  }
+  .footnote { margin-top: 40px; font-size: 12px; color: var(--jg-ink-mute); border-top: 1px solid var(--jg-line); padding-top: 16px; }
+</style>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="kicker">장금이 · 기능 기획</div>
+    <h1><span class="emoji">🥔</span> 감자 콘텐츠 강화 — "결론"에 <u>"왜"</u>를 채운다</h1>
+    <p>감자 상세의 <b>껍질 처리 · 싹 · 냉장/상온</b> 세 질문에 결론뿐 아니라 <b>검증된 근거</b>를 붙여, 검색·AI가 인용할 수 있는 콘텐츠로 만든다. 새 화면이 아니라 <b>기존 3탭이 렌더하는 데이터를 채우는</b> 작업.</p>
+    <span class="status-pill">대상: potato.json · 이미 published · 3탭 전체 관여</span>
+  </div>
+
+  <!-- 문제 -->
+  <section>
+    <h2 class="sec"><span class="n">1</span> 문제 — 답은 있는데 "왜"가 없다</h2>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead>
+          <tr><th>사용자가 검색하는 질문</th><th>현재 potato.json</th><th>빈 곳</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>감자 껍질 일반? 음식물?</td>
+            <td><code>dispose.peel.way</code> 한 줄 = 음식물</td>
+            <td class="gap">왜 음식물인지 · 지역차 · 출처 없음</td>
+          </tr>
+          <tr>
+            <td>감자 싹 나면 어떻게 / 왜 나나</td>
+            <td><code>dispose.sprout</code> 한 줄 + 빈 <code>related</code> 링크</td>
+            <td class="gap">"왜 싹이 나나" 콘텐츠 자체가 없음</td>
+          </tr>
+          <tr>
+            <td>냉장? 상온?</td>
+            <td><code>tip</code>·<code>cautions</code>에 "냉장 해로움"</td>
+            <td class="gap">"왜 나쁜가" 정면 설명 부재 · 냉장 필터에 카드 없음</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="comment" style="margin-top:16px;">
+      결론만 있고 근거가 없으면 → 사용자는 <b>확신 못 함</b>(빠른 확신 실패) · AI는 <b>인용 못 함</b>(GEO 실패). 이 서비스의 무기인 "검증된 근거"가 정작 비어 있다.
+    </div>
+  </section>
+
+  <!-- 대상 & 시나리오 -->
+  <section>
+    <h2 class="sec"><span class="n">2</span> 대상 & 시나리오</h2>
+    <div class="grid2">
+      <div class="card">
+        <h3>👤 누가</h3>
+        <p>감자 한 봉지 사서 며칠 지나 마주치는 자취·1인 가구. "이거 버려야 하나?", "싹 났는데 먹어도 되나?", "냉장고 넣을까?"의 순간.</p>
+      </div>
+      <div class="card">
+        <h3>🍳 시나리오 A — 껍질</h3>
+        <p>감자전 해먹고 껍질 한 움큼. "음식물? 일반?" → 폐기 세그먼트에서 <b>음식물 + 왜(사료화 가능)</b> 확인 → 확신하고 버림.</p>
+      </div>
+      <div class="card">
+        <h3>🌱 시나리오 B — 싹</h3>
+        <p>사둔 감자에 싹. "왜 났지, 먹어도 되나?" → related <b>"감자 싹, 왜 나고 먹어도 될까?"</b>로 이동 → 도려낼지/버릴지 판단.</p>
+      </div>
+      <div class="card">
+        <h3>🧊 시나리오 C — 냉장</h3>
+        <p>여름이라 냉장 고민 → 보관탭 <b>"냉장은 오히려 해로워요"</b> + 저온당화·아크릴아마이드 근거 → 냉암소로.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 핵심 가치 -->
+  <section>
+    <h2 class="sec"><span class="n">3</span> 핵심 가치 매핑</h2>
+    <div class="badges">
+      <div class="badge">
+        <div class="t">⚡ 빠른 확신</div>
+        <div class="d">세 질문 모두 "결론 + 왜"를 한 화면에. 껍질=음식물 배지, 냉장=❌ 명시. 망설임 제거.</div>
+      </div>
+      <div class="badge">
+        <div class="t">🤝 믿음 (권위)</div>
+        <div class="d">결론마다 <b>출처</b>(식약처·환경부·농진청). 분리배출·독성은 지어내지 않고 공식 기준만. 구매·보관=정답형이라 권위가 무기.</div>
+      </div>
+      <div class="badge">
+        <div class="t">♻️ 끝까지 (안 버리기)</div>
+        <div class="d">싹·초록·껍질을 "무조건 버려"가 아니라 <b>도려내면 먹을 수 있다 / 껍질 활용</b>부터 제시.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 영역 -->
+  <section>
+    <h2 class="sec"><span class="n">4</span> 영역 & 정보 성격 — 3탭 전체를 건드린다</h2>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>질문</th><th>영역</th><th>정보 성격</th><th>반영 위치</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>냉장/상온</td>
+            <td><span class="tag tag-keep">🧊 보관</span></td>
+            <td>합의형(필터+비교). 단 "냉장 나쁨"은 정답에 가까움</td>
+            <td><code>storage.methods</code>에 <b>냉장 카드 추가</b>(비추천)</td>
+          </tr>
+          <tr>
+            <td>싹 (왜/처리)</td>
+            <td><span class="tag tag-use">🍳 처리</span> <span class="tag tag-buy">🛒 구매</span></td>
+            <td>싹 원인=정답형 지식, 처리=폐기 안내</td>
+            <td><code>dispose.sprout</code> 상세화 + <code>related</code> 실콘텐츠</td>
+          </tr>
+          <tr>
+            <td>껍질</td>
+            <td><span class="tag tag-use">🍳 처리</span></td>
+            <td>지자체 기준 = 정답형</td>
+            <td><code>dispose.peel</code> reason·regionNote·source</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 기능 명세 -->
+  <section>
+    <h2 class="sec"><span class="n">5</span> 기능 명세 — 채우는 건 데이터, 화면은 기존</h2>
+    <div class="spec">
+
+      <div class="spec-item">
+        <div class="head"><span class="tag tag-keep">🧊 보관</span><span class="title">"냉장? 상온?" 정면 답</span></div>
+        <div class="body">
+          <p class="flow"><b>냉암소 실온 카드</b>(추천 1위, 기존 유지)가 상단 <span class="arrow">→</span> 그 아래 <b>냉장 카드 신규</b>(<code>recommended:false</code>).</p>
+          <ul class="clean">
+            <li>냉장 카드 요약 = <b>"냉장은 오히려 해로워요"</b>. <code>cautions</code>에 저온당화 → 아크릴아마이드 근거.</li>
+            <li>필터 <code>place=냉장</code> 눌러도 빈 결과가 아니라 "왜 안 되는지" 카드가 뜬다 — <b>필터가 곧 설명</b>이 된다.</li>
+            <li>필터 정합성 복구: <code>place</code> 옵션 3개(냉암소·냉장·냉동) : 카드 3개.</li>
+          </ul>
+          <div class="comment">👩‍🍳 장금이 왈, 감자는 냉장고에 넣지 마시옵소서 — 전분이 당으로 변해 오히려 해로운 것이옵니다.</div>
+        </div>
+      </div>
+
+      <div class="spec-item">
+        <div class="head"><span class="tag tag-use">🍳 처리</span><span class="title">"껍질 어디에 버려요?"</span></div>
+        <div class="body">
+          <p class="flow"><code>peel</code> 카드 <span class="waste waste-food">음식물</span> <span class="arrow">→</span> 탭하면 상세.</p>
+          <ul class="clean">
+            <li><b>reason</b> — 수분 많아 사료·퇴비화 가능 → 음식물. (대비: 양파·마늘 <b>마른 껍질은 일반쓰레기</b> — 사료 부적합)</li>
+            <li><b>regionNote</b> — 지자체 처리시설 따라 기준 상이. 애매하면 관할 확인.</li>
+            <li><span class="src">🏛 식약처 · 분리배출 안내</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="spec-item">
+        <div class="head"><span class="tag tag-use">🍳 처리</span><span class="title">"싹 난 감자"</span></div>
+        <div class="body">
+          <p class="flow"><code>sprout</code> 카드 <span class="waste waste-food">음식물</span> <span class="arrow">→</span> "싹·초록 도려내고, 많으면 배출".</p>
+          <ul class="clean">
+            <li><b>reason</b> — 싹·초록에 <b>솔라닌·차코닌</b> 독소 집중. 조금이면 도려내고, 많으면 폐기.</li>
+            <li><b>cautions</b> — 도려낸 뒤에도 쓴맛 나면 먹지 말 것. <span class="src">🏛 식약처</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="spec-item">
+        <div class="head"><span class="tag tag-buy">🔎 SEO/GEO</span><span class="title">related → "감자 싹, 왜 날까?" 실콘텐츠</span></div>
+        <div class="body">
+          <p class="flow">빈 링크(<code>/재료/potato/싹</code>)를 <b>지식 콘텐츠</b>로 승격. h1 = 검색어형.</p>
+          <ul class="clean">
+            <li><b>싹 나는 이유</b> — 감자는 살아있는 덩이줄기 → <b>빛·온도·습도</b>가 발아 촉진.</li>
+            <li>솔라닌 + 안전 손질. 검색·AI 진입 콘텐츠. <code>HowTo</code>/<code>FAQPage</code> JSON-LD, 출처 SSR 색인.</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 데이터 & 필터 -->
+  <section>
+    <h2 class="sec"><span class="n">6</span> 데이터 & 필터 정합성</h2>
+    <div class="grid2">
+      <div class="card">
+        <h3>➕ 채울 필드</h3>
+        <ul class="clean">
+          <li><code>storage.methods[]</code> += <b>fridge-avoid 카드</b> (tags.place=냉장 → 정합 복구)</li>
+          <li><code>dispose.peel</code> += reason · regionNote · source</li>
+          <li><code>dispose.sprout</code> += reason · cautions · source</li>
+          <li><code>related[0]</code> → 실제 싹 콘텐츠 (h1 검색어형)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>🔧 필터 축은 그대로 (3축 유지)</h3>
+        <p>현재 <code>place</code> 옵션 3개인데 방법은 2개 → <b>냉장이 빈 필터</b>. 냉장 카드 추가로 <b>3옵션 : 3카드</b> 복구. 새 축 추가 안 함(schema "최대 3축" 준수: place·light·companion).</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 성공 지표 -->
+  <section>
+    <h2 class="sec"><span class="n">7</span> 성공 지표</h2>
+    <div class="metrics">
+      <div class="metric"><b>검색 유입</b>"감자 껍질 음식물", "감자 싹 왜", "감자 냉장 보관" → 감자 상세/싹 콘텐츠 랜딩 수.</div>
+      <div class="metric"><b>근거 소비</b>폐기 카드 → 상세 전개(탭) 비율 = 근거를 실제로 읽는가.</div>
+      <div class="metric"><b>AI 인용 (GEO)</b>Perplexity·AI Overviews가 감자 분리배출·싹 답변에 <b>출처로 인용</b>하는지.</div>
+      <div class="metric"><b>필터 이탈 하락</b><code>place=냉장</code> 클릭 후 이탈률 ↓ (빈 결과 → "왜 안 되는지" 카드).</div>
+    </div>
+  </section>
+
+  <!-- 미정 -->
+  <section>
+    <h2 class="sec"><span class="n">8</span> 범위 밖 / 미정 — 팀 확인</h2>
+    <div class="spec">
+      <div class="spec-item open">
+        <div class="head" style="background:#fdf7ea;"><span class="title">🟡 팀과 정할 것</span></div>
+        <div class="body">
+          <ul class="clean">
+            <li><b>싹 콘텐츠 형태</b> — 별도 라우트(<code>/ingredients/potato/sprout</code>) vs 처리탭 내 확장 블록. <b>기획은 별도 라우트 가정</b>(SEO 독립 URL 유리).</li>
+            <li><b>분리배출 출처 URL</b> — 식약처 정책브리핑(korea.kr, 2021) vs 환경부 "내 손안의 분리배출" 중 정식 출처 고정. 지금은 기관·type만 확정.</li>
+            <li><b>냉장 카드 rating</b> — 비추천 카드에 별점을 붙일지. 지금은 <b>장금이 코멘트로 대체</b>, rating 생략 가능.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="spec-item">
+        <div class="head"><span class="title">⛔ 범위 밖</span></div>
+        <div class="body">
+          <ul class="clean">
+            <li>새 화면·컴포넌트 개발 (기존 3탭 목업 재사용).</li>
+            <li>이미지 에셋 (<code>image:null</code> 유지) · 레시피 UGC 추가.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="footnote">
+    근거: 식품의약품안전처(분리배출·솔라닌), 환경부·서울시(음식물 분류), 농촌진흥청(보관·저온당화). 분리배출은 지자체 기준이라 <code>regionNote</code>로 지역차 명시 — 추측 없이 공식 기준만.<br>
+    연결 목업: <code>docs/mockups/ingredient-detail-mockup.html</code> (재료 상세 3탭 + 우측 명세 패널) · 데이터 스키마: <code>.claude/skills/content/schema.md</code>
+  </div>
+</div>
