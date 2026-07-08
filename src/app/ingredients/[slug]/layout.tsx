@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getIngredient, getIngredientSlugs } from "../_lib/ingredients";
 import { SegmentTabs } from "../_components/SegmentTabs";
+import { RecentViewTracker } from "../_components/RecentViewTracker";
 
 /** 존재하는 재료만 정적 생성. */
 export function generateStaticParams() {
@@ -30,6 +31,8 @@ export default async function IngredientLayout({
 
   return (
     <div className="flex flex-1 flex-col">
+      <RecentViewTracker slug={slug} name={ingredient.name} emoji={ingredient.emoji} />
+
       {/* 세그먼트 탭 — Header 아래 밀착, 좌우 엣지까지. (sticky 아님 — 스크롤과 함께 올라감) */}
       <div className="-mx-5 -mt-5">
         <SegmentTabs slug={slug} />

@@ -37,7 +37,7 @@ export default function RootLayout({
               body가 아니라 main이 스크롤 컨테이너라, sticky 헤더 이중 스크롤 흔들림이 없다. */}
           <div className="flex h-full min-h-0 w-full flex-col bg-background sm:w-105">
             <Header />
-            <main className="min-h-0 flex-1 overflow-y-auto px-5 pb-10 pt-5">
+            <main className="min-h-0 flex-1 overflow-y-auto px-5 pb-10 pt-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {children}
             </main>
             <TabBar />
