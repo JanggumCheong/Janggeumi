@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
-import { getIngredientSlugs } from "../_lib/ingredients";
+import { getIngredient, getIngredientSlugs } from "../_lib/ingredients";
 import { fetchIngredientMeta } from "../_lib/queries/ingredient-meta";
+import { emojiFor } from "../_lib/slug";
 import { SegmentTabs } from "../_components/SegmentTabs";
 import { RecentViewTracker } from "../_components/RecentViewTracker";
 
@@ -28,13 +29,18 @@ export default async function IngredientLayout({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  // 존재 확인은 API로 (하드코딩 목록 아님) — API에만 있는 재료도 통과(peach 등).
-  const meta = await fetchIngredientMeta(slug);
-  if (!meta) notFound();
+  const localIngredient = getIngredient(slug);
+  // 로컬 상세 데이터가 있으면 API 없이도 통과, 로컬에 없으면 API 메타로 존재 확인.
+  const meta = localIngredient ? null : await fetchIngredientMeta(slug);
+  if (!localIngredient && !meta) notFound();
 
   return (
     <div className="flex flex-1 flex-col">
-      <RecentViewTracker slug={slug} name={ingredient.name} emoji={ingredient.emoji} />
+      <RecentViewTracker
+        slug={slug}
+        name={localIngredient?.name ?? meta!.name}
+        emoji={localIngredient?.emoji ?? emojiFor(slug)}
+      />
 
       {/* 세그먼트 탭 — Header 아래 밀착, 좌우 엣지까지. (sticky 아님 — 스크롤과 함께 올라감) */}
       <div className="-mx-5 -mt-5">

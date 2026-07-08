@@ -23,8 +23,12 @@ type RecommendedBanner = {
   id: string;
   slug: string;
   name: string;
-  catchphrase: string;
-  accentColor: string;
+  catchphrase: {
+    highlight: string;
+    title: string;
+  };
+  highlightColor: string;
+  titleColor: string;
   imageSrc: string;
   isSeason: boolean;
   detailHref: string;
@@ -47,21 +51,29 @@ const RECOMMENDED_BANNERS: RecommendedBanner[] = [
     id: "ing_watermelon",
     slug: "watermelon",
     name: "수박",
-    catchphrase: "시원하게 즐기는 여름 수박",
-    accentColor: "#E94F64",
+    catchphrase: {
+      highlight: "시원하게 즐기는 여름",
+      title: "수박",
+    },
+    highlightColor: "#2F7D4F",
+    titleColor: "#E94F64",
     imageSrc: "/images/banners/watermelon-recommend-banner.webp",
     isSeason: true,
     detailHref: "/ingredients/watermelon",
   },
   {
     id: "ing_peach",
-    slug: "nectarine",
+    slug: "peach",
     name: "천도복숭아",
-    catchphrase: "제철 맞은 달콤한 천도복숭아!",
-    accentColor: "#C86445",
-    imageSrc: "/images/banners/nectarine-recommend-banner.webp",
+    catchphrase: {
+      highlight: "제철 맞은 달콤한",
+      title: "천도복숭아",
+    },
+    highlightColor: "#C86445",
+    titleColor: "#F28C6B",
+    imageSrc: "/images/banners/peach-recommend-banner.webp",
     isSeason: true,
-    detailHref: "/ingredients/nectarine",
+    detailHref: "/ingredients/peach",
   },
 ];
 
@@ -79,10 +91,10 @@ const TRENDING_INGREDIENTS: TrendingIngredient[] = [
     imageSrc: "/images/ingredients/avocado.webp",
   },
   {
-    slug: "nectarine",
+    slug: "peach",
     name: "천도복숭아",
     emoji: "🍑",
-    imageSrc: "/images/ingredients/nectarine.webp",
+    imageSrc: "/images/ingredients/peach.webp",
   },
   {
     slug: "shine-muscat",
@@ -111,9 +123,9 @@ const INGREDIENT_SEARCH_INDEX: Record<string, string> = {
   애플: "apple",
   아보카도: "avocado",
   avocado: "avocado",
-  천도복숭아: "nectarine",
-  복숭아: "nectarine",
-  nectarine: "nectarine",
+  천도복숭아: "peach",
+  복숭아: "peach",
+  peach: "peach",
   샤인머스켓: "shine-muscat",
   "shine-muscat": "shine-muscat",
   딸기: "strawberry",
@@ -402,11 +414,16 @@ export default function Home() {
                 제철
               </span>
             )}
-            <p
-              className={`${roundedMisoBold.className} text-2xl leading-tight`}
-              style={{ color: activeRecommendedBanner.accentColor }}
-            >
-              {activeRecommendedBanner.catchphrase}
+            <p className={`${roundedMisoBold.className} flex flex-col text-2xl leading-tight`}>
+              <span
+                className="whitespace-nowrap"
+                style={{ color: activeRecommendedBanner.highlightColor }}
+              >
+                {activeRecommendedBanner.catchphrase.highlight}
+              </span>
+              <span className="text-4xl" style={{ color: activeRecommendedBanner.titleColor }}>
+                {activeRecommendedBanner.catchphrase.title}
+              </span>
             </p>
           </div>
 

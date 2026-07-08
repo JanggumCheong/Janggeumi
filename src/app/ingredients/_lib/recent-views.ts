@@ -13,7 +13,7 @@ export const RECENT_VIEWS_LIMIT = 5;
 const INGREDIENT_IMAGE_SRC: Record<string, string> = {
   apple: "/images/ingredients/apple.webp",
   avocado: "/images/ingredients/avocado.webp",
-  nectarine: "/images/ingredients/nectarine.webp",
+  peach: "/images/ingredients/peach.webp",
   "shine-muscat": "/images/ingredients/shine-muscat.webp",
   strawberry: "/images/ingredients/strawberry.webp",
   watermelon: "/images/ingredients/watermelon.webp",
