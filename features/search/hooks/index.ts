@@ -1,2 +1,2 @@
 export { useHorizontalWheel } from "./useHorizontalWheel";
-export { useIngredientFilter } from "./useIngredientFilter";
+export { useSearchIngredients } from "./useSearchIngredients";

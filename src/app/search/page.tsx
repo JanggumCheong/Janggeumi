@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   HOTS,
   SEASONAL,
@@ -9,32 +10,63 @@ import {
   SearchCategoryFilter,
   SearchGuideBox,
   SearchIngredientGrid,
-  SearchSortTabs,
-  useIngredientFilter,
+  useSearchIngredients,
   type CategoryOption,
-  type SortKey,
 } from "../../../features/search";
 
+/**
+ * 검색 페이지. 재료를 찾는 단일 화면.
+ * - 미검색(기본) · 타이핑 중: 🔥·🌱 캐러셀 + 카테고리 칩 + 안내(발견·제안 상태).
+ * - 검색 실행(Enter/돋보기) 후: 로딩 → 정렬 탭 + 결과 그리드.
+ * 검색어 입력만으로는 화면이 바뀌지 않고, "실행"해야 결과 모드로 전환된다.
+ */
 export default function SearchPage() {
   const [category, setCategory] = useState<CategoryOption>("전체");
-  const [sort, setSort] = useState<SortKey>("인기순");
   const [query, setQuery] = useState("");
+  const [submittedQuery, setSubmittedQuery] = useState("");
 
-  const list = useIngredientFilter(category, sort, query);
+  const hasSearched = submittedQuery.trim().length > 0;
+  const { data: results, isFetching } = useSearchIngredients(
+    { query: submittedQuery, category },
+    hasSearched,
+  );
 
-  // 공통 layout(src/app/layout.tsx)이 Header·TabBar·main 셸을 제공한다.
-  // 여기선 셸 안 콘텐츠만 렌더한다(자체 min-h-screen·main 중복 금지).
+  // 입력을 비우면(검색창 X/전체 삭제) 발견 모드로 되돌린다.
+  const handleChange = (value: string) => {
+    setQuery(value);
+    if (value.trim() === "") setSubmittedQuery("");
+  };
+
   return (
-    <div className="flex flex-col gap-4">
-      <SearchBar value={query} onChange={setQuery} />
-      <SearchCategoryFilter value={category} onChange={setCategory} />
-      <SearchCarousel title="지금 많이 찾는 재료" list={HOTS} />
-      <SearchCarousel title="지금 제철 재료" list={SEASONAL} />
-      <section>
-        <SearchSortTabs value={sort} onChange={setSort} />
-        <SearchIngredientGrid items={list} />
-      </section>
-      <SearchGuideBox />
+    <div className="flex flex-col gap-6">
+      <SearchBar
+        value={query}
+        onChange={handleChange}
+        onSubmit={() => setSubmittedQuery(query)}
+        autoFocus
+      />
+      {hasSearched ? (
+        <section>
+          {isFetching && !results ? (
+            <div className="grid grid-cols-4 gap-x-2 gap-y-5 pt-5">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <Skeleton key={i} className="aspect-square w-full rounded-sm" />
+              ))}
+            </div>
+          ) : (
+            <>
+              <SearchCategoryFilter value={category} onChange={setCategory} />
+              <SearchIngredientGrid category={category} items={results ?? []} />
+            </>
+          )}
+        </section>
+      ) : (
+        <>
+          <SearchCarousel title="🔥 지금 많이 찾는 재료" sortBy="조회순" list={HOTS} />
+          <SearchCarousel title="🌱 지금 제철 재료" sortBy="제철순" list={SEASONAL} />
+          <SearchGuideBox />
+        </>
+      )}
     </div>
   );
 }
