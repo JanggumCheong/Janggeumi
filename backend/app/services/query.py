@@ -7,6 +7,54 @@ from ..database import get_db
 supabase = get_db()
 
 
+STORAGE_OPTION_LABEL_OVERRIDES = {
+    "fo_whole": "통째로",
+    "fo_trimmed": "자른 뒤",
+}
+
+HANDLING_OPTION_PRIORITY = {
+    "fo_waste_recipe": 0,
+    "fo_waste_yes": 1,
+}
+
+HANDLING_WASTE_TYPE_BY_OPTION_ID = {
+    "fo_waste_recipe": "food",
+    "fo_waste_yes": "general",
+}
+
+
+def _storage_option_label(option_id: Optional[str], option_name: Optional[str]) -> Optional[str]:
+    return STORAGE_OPTION_LABEL_OVERRIDES.get(option_id) or option_name
+
+
+def _handling_option_sort_key(option_id: Optional[str]) -> int:
+    return HANDLING_OPTION_PRIORITY.get(option_id or "", 99)
+
+
+def _with_ro_particle(text: str) -> str:
+    if not text:
+        return text
+
+    last_char = text.strip()[-1]
+    code = ord(last_char)
+    if not 0xAC00 <= code <= 0xD7A3:
+        return f"{text}로"
+
+    has_final_consonant = (code - 0xAC00) % 28 != 0
+    return f"{text}{'으로' if has_final_consonant else '로'}"
+
+
+def _summary_from_text(text: Optional[str], limit: int = 80) -> str:
+    if not text:
+        return ""
+
+    normalized = " ".join(str(text).split())
+    if len(normalized) <= limit:
+        return normalized
+
+    return f"{normalized[:limit].rstrip()}..."
+
+
 def _execute_query(query):
     response = query.execute()
     if getattr(response, "error", None):
@@ -127,7 +175,6 @@ def _get_category_filter_option_ids(category_id: Optional[str], tab_type: str) -
 def get_ingredient_detail(ingredient_id: str, fallback_name: Optional[str] = None) -> Any:
     """
     [구매 탭] 상세 정보 조회
-    - sources 필드를 { "source": "...", "updated_at": "..." } 객체 배열로 반환합니다.
     """
     row = _get_ingredient_row(ingredient_id, fallback_name)
     if not row:
@@ -159,7 +206,6 @@ def get_ingredient_detail(ingredient_id: str, fallback_name: Optional[str] = Non
                 "title": post.get("title") or "꿀팁",
                 "content": post.get("description"),
                 "sort_order": post.get("rating_value") or index,
-                # 💡 콤마로 분리된 출처별로 각각 updated_at을 매핑한 JSON 객체 리스트 생성
                 "sources": [
                     {
                         "source": s.strip(),
@@ -261,10 +307,146 @@ def get_home_data(ingredient_id: str = "ing_watermelon") -> Dict[str, Any]:
         raise Exception(f"Failed to fetch home data: {str(e)}")
 
 
+# def get_ingredient_storage_data(ingredient_id: str, fallback_name: str = None) -> Dict[str, Any]:
+#     """
+#     [보관 탭] 가이드 조회
+#     - user_posts 테이블에서 실제 보관 팁 데이터를 연동하여 필터 정합성을 완성합니다.
+#     """
+#     try:
+#         ing_query = supabase.table("ingredients") \
+#             .select("name") \
+#             .eq("id", ingredient_id) \
+#             .single() \
+#             .execute()
+        
+#         ing_name = ing_query.data.get("name") if ing_query.data else (fallback_name or "식재료")
+
+#         storage_headline = {
+#             "title": f"{ing_name} 보관 방법 비교",
+#             "intro": "내 상황에 맞는 방법을 찾아보세요.",
+#             "janggeumi_tip": f"{ing_name}은 자른 후 시간이 지날수록 단맛이 떨어질 수 있어요. 최대한 빠르게 드시는 것이 가장 맛있습니다! 💡"
+#         }
+
+#         # 1. 필터 레이아웃용 기본 세션 조회
+#         sections_query = supabase.table("filter_sections") \
+#             .select("id, section_name, filter_options(id, option_name)") \
+#             .in_("id", ["fs_cut_status", "fs_storage_location"]) \
+#             .execute()
+
+#         storage_filters = []
+#         period_options = []
+
+#         for section in sections_query.data:
+#             section_id = section.get("id")
+#             options_data = section.get("filter_options", [])
+            
+#             formatted_options = [
+#                 {
+#                     "option_id": opt.get("id"),
+#                     "option_name": opt.get("option_name")
+#                 } for opt in options_data
+#             ]
+            
+#             if section_id == "fs_storage_location":
+#                 for opt in formatted_options:
+#                     opt_id = opt["option_id"]
+#                     if opt_id == "fo_room" and {"option_id": "fo_mid_term", "option_name": "중기"} not in period_options:
+#                         period_options.append({"option_id": "fo_mid_term", "option_name": "중기"})
+#                     elif opt_id == "fo_fridge" and {"option_id": "fo_short_term", "option_name": "단기"} not in period_options:
+#                         period_options.append({"option_id": "fo_short_term", "option_name": "단기"})
+#                     elif opt_id == "fo_freezer" and {"option_id": "fo_long_term", "option_name": "장기"} not in period_options:
+#                         period_options.append({"option_id": "fo_long_term", "option_name": "장기"})
+
+#             storage_filters.append({
+#                 "section_id": section_id,
+#                 "label": "자름 유무" if section_id == "fs_cut_status" else "보관 장소",
+#                 "options": formatted_options
+#             })
+
+#         if period_options:
+#             order_map = {"fo_short_term": 0, "fo_mid_term": 1, "fo_long_term": 2}
+#             period_options.sort(key=lambda x: order_map.get(x["option_id"], 99))
+#             storage_filters.insert(1, {
+#                 "section_id": "fs_storage_period",
+#                 "label": "보관 기간",
+#                 "options": period_options
+#             })
+
+#         # 🔥 2. 하드코딩 탈피: 유저 포스트 테이블(user_posts)에서 해당 재료의 보관(storage) 데이터 직접 조회
+#         posts_query = supabase.table("user_posts") \
+#             .select("id, option_id, title, content, rating_value, filter_options(section_id, option_name)") \
+#             .eq("ingredient_id", ingredient_id) \
+#             .eq("tab_type", "storage") \
+#             .execute()
+
+#         methods_map = {}
+#         for row in posts_query.data:
+#             post_id = row.get("id")
+#             title = row.get("title")
+#             content = row.get("content")
+#             rating_val = row.get("rating_value") or 5
+#             opt_data = row.get("filter_options") or {}
+            
+#             section_id = opt_data.get("section_id")
+#             option_id = row.get("option_id")
+#             option_name = opt_data.get("option_name")
+
+#             # 보관 위치나 데이터 성격에 매핑되는 보관 기간 라벨 식별
+#             if option_id == "fo_room":
+#                 period_id, duration_text,option_tezt = "fo_mid_term", "단기","실온"
+#             elif option_id == "fo_fridge":
+#                 period_id, duration_text,option_tezt = "fo_short_term", "중기","냉장"
+#             else:
+#                 period_id, duration_text,option_tezt = "fo_long_term", "장기","냉동"
+
+#             if post_id not in methods_map:
+#                 methods_map[post_id] = {
+#                     "id": post_id,
+#                     "title": option_name or title, 
+#                     "is_recommended": True if option_id == "fo_room" else False,
+                    
+#                     # 🔥 user_posts의 option_id에 연동된 태그들을 완벽하게 동적 인젝션
+#                     "tags": {
+#                         "storage_location_option_id": option_tezt,
+#                         "storage_cut_option_id": "fo_whole" if option_id == "fo_room" else "fo_trimmed",
+#                         "storage_period_option_id": duration_text
+#                     },
+#                     "summary": content, # user_posts의 실제 노하우 본문 바인딩
+#                     "duration": duration_text, # 동적으로 걸러진 기간 문자열 바인딩
+#                     "rating": {
+#                         "avg": float(rating_val),
+#                         "count": 1248 if option_id == "fo_room" else 982 if option_id == "fo_fridge" else 454
+#                     },
+#                     "comment": {
+#                         "author": { "name": "장금이", "type": "curator" },
+#                         "text": content
+#                     },
+#                     "sources": [
+#                         {
+#                             "source": "장금이 유저 집단지성 가이드",
+#                             "updated_at": datetime.now().isoformat()
+#                         }
+#                     ]
+#                 }
+#             else:
+#                 if section_id == "fs_cut_status":
+#                     methods_map[post_id]["tags"]["storage_cut_option_id"] = option_id
+#                 elif section_id == "fs_storage_location":
+#                     methods_map[post_id]["tags"]["storage_location_option_id"] = option_id
+
+#         return {
+#             "storage_headline": storage_headline,
+#             "storage_filters": storage_filters,
+#             "storage_methods": list(methods_map.values())
+#         }
+
+#     except Exception as e:
+#         raise Exception(f"Failed to aggregate database storage data: {str(e)}")
+
 def get_ingredient_storage_data(ingredient_id: str, fallback_name: str = None) -> Dict[str, Any]:
     """
     [보관 탭] 가이드 조회
-    - sources 필드를 { "source": "...", "updated_at": "..." } 객체 배열로 반환합니다.
+    - user_posts + filter_options 기반 동적 보관 데이터 생성
     """
     try:
         ing_query = supabase.table("ingredients") \
@@ -272,92 +454,302 @@ def get_ingredient_storage_data(ingredient_id: str, fallback_name: str = None) -
             .eq("id", ingredient_id) \
             .single() \
             .execute()
-        
-        ing_name = ing_query.data.get("name") if ing_query.data else (fallback_name or "식재료")
+
+        ing_name = (
+            ing_query.data.get("name")
+            if ing_query.data
+            else (fallback_name or "식재료")
+        )
 
         storage_headline = {
             "title": f"{ing_name} 보관 방법 비교",
             "intro": "내 상황에 맞는 방법을 찾아보세요.",
-            "janggeumi_tip": f"{ing_name}은 자른 후 시간이 지날수록 단맛이 떨어질 수 있어요. 최대한 빠르게 드시는 것이 가장 맛있습니다! 💡"
+            "janggeumi_tip": (
+                f"{ing_name}은 자른 후 시간이 지날수록 "
+                "단맛이 떨어질 수 있어요. 최대한 빠르게 드시는 것이 가장 맛있습니다! 💡"
+            )
         }
+
+
+        # =========================
+        # 필터 목록
+        # =========================
 
         sections_query = supabase.table("filter_sections") \
             .select("id, section_name, filter_options(id, option_name)") \
             .in_("id", ["fs_cut_status", "fs_storage_location"]) \
             .execute()
 
+
         storage_filters = []
+        period_options = []
+        option_label_by_id = {}
+
+
         for section in sections_query.data:
+
+            section_id = section.get("id")
+            options = section.get("filter_options", [])
+
+
+            formatted_options = [
+                {
+                    "option_id": opt.get("id"),
+                    "option_name": _storage_option_label(
+                        opt.get("id"),
+                        opt.get("option_name")
+                    )
+                }
+                for opt in options
+            ]
+            option_label_by_id.update(
+                {
+                    opt["option_id"]: opt["option_name"]
+                    for opt in formatted_options
+                    if opt.get("option_id") and opt.get("option_name")
+                }
+            )
+
+
+            if section_id == "fs_storage_location":
+
+                for opt in formatted_options:
+
+                    if opt["option_id"] == "fo_room":
+                        period_options.append({
+                            "option_id": "fo_mid_term",
+                            "option_name": "중기"
+                        })
+
+                    elif opt["option_id"] == "fo_fridge":
+                        period_options.append({
+                            "option_id": "fo_short_term",
+                            "option_name": "단기"
+                        })
+
+                    elif opt["option_id"] == "fo_freezer":
+                        period_options.append({
+                            "option_id": "fo_long_term",
+                            "option_name": "장기"
+                        })
+
+
             storage_filters.append({
-                "section_id": section.get("id"),
-                "label": "자름 유무" if section.get("id") == "fs_cut_status" else "보관 장소",
-                "options": [
-                    {
-                        "option_id": opt.get("id"),
-                        "option_name": opt.get("option_name")
-                    } for opt in section.get("filter_options", [])
-                ]
+                "section_id": section_id,
+                "label": (
+                    "자름 유무"
+                    if section_id == "fs_cut_status"
+                    else "보관 장소"
+                ),
+                "options": formatted_options
             })
 
+
+        if period_options:
+
+            order_map = {
+                "fo_short_term": 0,
+                "fo_mid_term": 1,
+                "fo_long_term": 2
+            }
+
+            period_options.sort(
+                key=lambda x: order_map.get(x["option_id"], 99)
+            )
+
+
+            storage_filters.insert(
+                1,
+                {
+                    "section_id": "fs_storage_period",
+                    "label": "보관 기간",
+                    "options": period_options
+                }
+            )
+
+
+        # =========================
+        # 실제 보관 데이터
+        # =========================
+
+        # 1. 시스템 기본 필터 상세 정보 가져오기 (화면에 켜두신 테이블)
         details_query = supabase.table("ingredient_filter_details") \
-            .select("id, option_id, description, rating_value, source, updated_at, filter_options(section_id, option_name)") \
+            .select(
+                """
+                id,
+                option_id,
+                title,
+                description,
+                rating_value,
+                tab_type,
+                filter_options(
+                    section_id,
+                    option_name
+                )
+                """
+            ) \
             .eq("ingredient_id", ingredient_id) \
             .eq("tab_type", "storage") \
             .execute()
 
-        methods_map = {}
-        
-        for row in details_query.data:
-            detail_id = row.get("id")
-            desc = row.get("description", "")
-            rating_val = row.get("rating_value") or 5
-            opt_data = row.get("filter_options") or {}
-            
-            section_id = opt_data.get("section_id")
-            option_id = row.get("option_id")
-            option_name = opt_data.get("option_name")
 
-            if detail_id not in methods_map:
-                methods_map[detail_id] = {
-                    "id": detail_id,
-                    "title": option_name, 
-                    "is_recommended": True if option_id == "fo_room" else False,
-                    "tags": {},
-                    "summary": desc,
-                    "duration": "7~10일 보관 가능" if option_id == "fo_room" else "2~3일 보관 가능",
+        # 2. 유저들이 작성한 포스트 데이터 가져오기
+        posts_query = supabase.table("user_posts") \
+        .select(
+            """
+            id,
+            option_id,
+            title,
+            content,
+            rating_value,
+            filter_options(
+                section_id,
+                option_name
+            )
+            """
+        ) \
+        .eq("ingredient_id", ingredient_id) \
+        .eq("tab_type", "storage") \
+        .execute()
+
+        # 최종 결과 데이터 활용
+        system_details = details_query.data  # 관리자 가이드 데이터
+        user_posts = posts_query.data        # 유저들이 쓴 글 목록
+
+        methods_map = {}
+
+        for row in system_details+user_posts:
+            post_id = row.get("id")
+            option_id = row.get("option_id")
+            title = row.get("title")
+            content = row.get("content")
+            rating_val = row.get("rating_value") or 5
+            filter_data = row.get("filter_options") or {}
+            section_id = filter_data.get("section_id")
+            option_name = filter_data.get("option_name")
+            description =  row.get("description")
+            title_text = title or option_name or "보관 방법"
+            summary_text = description or title or _summary_from_text(content)
+            content_text = content or ""
+
+            if post_id not in methods_map:
+
+                methods_map[post_id] = {
+                    "id": post_id,
+                    "title": title_text,
+                    "is_recommended": False,
+                    "tags": {
+                        "storage_location_option_id": None,
+                        "storage_cut_option_id": None,
+                        "storage_period_option_id": None
+                    },
+                    "summary": summary_text,
+                    "content": content_text,
+                    "duration": None,
                     "rating": {
                         "avg": float(rating_val),
-                        "count": 1248 if option_id == "fo_room" else 982
+                        "count": 1248
                     },
-                    # 💡 보관 데이터 가이드도 동일한 객체 포맷으로 매핑
+                    "comment": {
+                        "author": {
+                            "name": "장금이",
+                            "type": "curator"
+                        },
+                        "text": content_text or summary_text
+                    },
                     "sources": [
                         {
-                            "source": s.strip(),
-                            "updated_at": row.get("updated_at")
+                            "source": "장금이 유저 집단지성 가이드",
+                            "updated_at": datetime.now().isoformat()
                         }
-                        for s in (row.get("source").split(",") if row.get("source") else [])
                     ]
                 }
-            
-            if section_id == "fs_cut_status":
-                methods_map[detail_id]["tags"]["cut_status_option_id"] = option_id
-            elif section_id == "fs_storage_location":
-                methods_map[detail_id]["tags"]["storage_location_option_id"] = option_id
+            if section_id == "fs_storage_location":
+                cut_option_id = None
+                methods_map[post_id]["tags"][
+                    "storage_location_option_id"
+                ] = _storage_option_label(
+                    option_id,
+                    option_name
+                ) or option_label_by_id.get(option_id)
+                if option_id == "fo_room":
+                    methods_map[post_id]["duration"] = "중기"
+                    methods_map[post_id]["tags"][
+                        "storage_period_option_id"
+                    ] = "중기"
+                    cut_option_id = "fo_whole"
+                    methods_map[post_id]["is_recommended"] = True
+
+                elif option_id == "fo_fridge":
+
+                    methods_map[post_id]["duration"] = "단기"
+
+                    methods_map[post_id]["tags"][
+                        "storage_period_option_id"
+                    ] = "단기"
+                    cut_option_id = "fo_trimmed"
+
+
+
+                elif option_id == "fo_freezer":
+
+                    methods_map[post_id]["duration"] = "장기"
+
+                    methods_map[post_id]["tags"][
+                        "storage_period_option_id"
+                    ] = "장기"
+                    cut_option_id = "fo_trimmed"
+
+                if cut_option_id:
+                    methods_map[post_id]["tags"][
+                        "storage_cut_option_id"
+                    ] = option_label_by_id.get(cut_option_id) or {
+                        "fo_whole": "통째로",
+                        "fo_trimmed": "자른 뒤"
+                    }.get(cut_option_id)
+
+
+
+            elif section_id == "fs_cut_status":
+
+                methods_map[post_id]["tags"][
+                    "storage_cut_option_id"
+                ] = _storage_option_label(
+                    option_id,
+                    option_name
+                ) or option_label_by_id.get(option_id)
+
+            elif section_id == "fs_storage_period":
+
+                methods_map[post_id]["tags"][
+                    "storage_period_option_id"
+                ] = _storage_option_label(
+                    option_id,
+                    option_name
+                ) or option_label_by_id.get(option_id)
+
+
 
         return {
+
             "storage_headline": storage_headline,
+
             "storage_filters": storage_filters,
+
             "storage_methods": list(methods_map.values())
+
         }
 
+
     except Exception as e:
-        raise Exception(f"Failed to aggregate database storage data: {str(e)}")
 
-
+        raise Exception(
+            f"Failed to aggregate database storage data: {str(e)}"
+        )
+    
 def get_ingredient_handling_data(supabase_client, ingredient_id: str, fallback_name: str = None) -> Dict[str, Any]:
     """
     [처리(레시피/배출) 탭] 가이드 조회
-    - sources 필드를 { "source": "...", "updated_at": "..." } 객체 배열로 반환합니다.
     """
     try:
         ing_query = supabase_client.table("ingredients") \
@@ -369,7 +761,7 @@ def get_ingredient_handling_data(supabase_client, ingredient_id: str, fallback_n
         ing_name = ing_query.data.get("name") if ing_query.data else (fallback_name or "식재료")
 
         handling_headline = {
-            "headline": f"남은 {ing_name}으로 무엇이든 지어보세요!",
+            "headline": f"남은 {_with_ro_particle(ing_name)} 무엇이든 지어보세요!",
             "intro": "다양한 레시피와 아이디어 모음"
         }
         
@@ -378,8 +770,21 @@ def get_ingredient_handling_data(supabase_client, ingredient_id: str, fallback_n
             .eq("ingredient_id", ingredient_id) \
             .eq("tab_type", "processing") \
             .execute()
-            
-        active_option_ids = [row.get("option_id") for row in active_details.data if row.get("option_id")]
+
+        posts_query = supabase_client.table("user_posts") \
+            .select("id, title, content, rating_value, option_id, filter_options(option_name)") \
+            .eq("ingredient_id", ingredient_id) \
+            .eq("tab_type", "processing") \
+            .execute()
+
+        active_option_ids = sorted(
+            {
+                row.get("option_id")
+                for row in (active_details.data or []) + (posts_query.data or [])
+                if row.get("option_id")
+            },
+            key=_handling_option_sort_key
+        )
 
         sections_query = supabase_client.table("filter_sections") \
             .select("id, section_name, filter_options(id, option_name)") \
@@ -388,6 +793,7 @@ def get_ingredient_handling_data(supabase_client, ingredient_id: str, fallback_n
             
         categories = ["전체"]
         handling_main_sections = []
+        handling_option_name_by_id = {}
 
         for section in sections_query.data:
             section_id = section.get("id")
@@ -400,6 +806,13 @@ def get_ingredient_handling_data(supabase_client, ingredient_id: str, fallback_n
                 for opt in section.get("filter_options", [])
                 if opt.get("id") in active_option_ids
             ]
+            handling_option_name_by_id.update(
+                {
+                    opt["option_id"]: opt["option_name"]
+                    for opt in filtered_options
+                    if opt.get("option_id") and opt.get("option_name")
+                }
+            )
             
             if filtered_options:
                 handling_main_sections.append({
@@ -412,20 +825,23 @@ def get_ingredient_handling_data(supabase_client, ingredient_id: str, fallback_n
                     if opt.get("option_name") not in categories:
                         categories.append(opt.get("option_name"))
 
-        posts_query = supabase_client.table("user_posts") \
-            .select("id, title, content, rating_value, option_id, filter_options(option_name)") \
-            .eq("ingredient_id", ingredient_id) \
-            .eq("tab_type", "processing") \
-            .execute()
-
         recipes = []
         if posts_query.data:
             profiles_query = supabase_client.table("profiles").select("nickname, avatar_url").execute()
             profile_map = {p.get("nickname"): p for p in profiles_query.data} if profiles_query.data else {}
 
-            for post in posts_query.data:
+            for post in sorted(
+                posts_query.data,
+                key=lambda item: _handling_option_sort_key(item.get("option_id"))
+            ):
                 opt_data = post.get("filter_options") or {}
                 title = post.get("title", "")
+                option_id = post.get("option_id")
+                category = (
+                    opt_data.get("option_name")
+                    or handling_option_name_by_id.get(option_id)
+                    or "레시피"
+                )
                 
                 author_name = "요리하는_지니" if "화채" in title else "자취요리왕"
                 matched_profile = profile_map.get(author_name, {})
@@ -433,7 +849,7 @@ def get_ingredient_handling_data(supabase_client, ingredient_id: str, fallback_n
                 recipes.append({
                     "id": post.get("id"),
                     "title": title,
-                    "category": opt_data.get("option_name", "레시피"),
+                    "category": category,
                     "desc": post.get("content"),
                     "image": None,
                     "author": {
@@ -454,18 +870,24 @@ def get_ingredient_handling_data(supabase_client, ingredient_id: str, fallback_n
             .execute()
 
         dispose_list = []
-        for row in dispose_query.data:
+        for row in sorted(
+            dispose_query.data or [],
+            key=lambda item: _handling_option_sort_key(item.get("option_id"))
+        ):
             opt_id = row.get("option_id")
             opt_data = row.get("filter_options") or {}
-            waste_type = "general" if opt_id == "fo_waste_yes" else "food"
+            waste_type = HANDLING_WASTE_TYPE_BY_OPTION_ID.get(opt_id, "food")
                 
             dispose_list.append({
                 "option_id": opt_id,
-                "title": opt_data.get("option_name", "배출 안내"),
+                "title": (
+                    opt_data.get("option_name")
+                    or handling_option_name_by_id.get(opt_id)
+                    or "배출 안내"
+                ),
                 "way": row.get("description", ""),
                 "wasteType": waste_type,
                 "image": None,
-                # 💡 배출 안내 데이터의 sources도 객체 배열 형태로 포맷 매핑
                 "sources": [
                     {
                         "source": s.strip(),
