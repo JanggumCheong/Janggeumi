@@ -19,6 +19,9 @@ export function TabBar() {
   const pathname = usePathname();
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
 
+  // 로그인(온보딩)은 전체 화면 스플래시 — 하단 탭바를 숨긴다.
+  if (pathname === "/login") return null;
+
   const authTab: Tab = isLoggedIn
     ? { href: "/mypage", label: "마이페이지", icon: User }
     : { href: "/login", label: "로그인", icon: LogIn };

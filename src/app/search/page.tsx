@@ -12,7 +12,7 @@ import {
   SearchIngredientGrid,
   useSearchIngredients,
   type CategoryOption,
-} from "../../../features/search";
+} from "@/features/search";
 
 /**
  * 검색 페이지. 재료를 찾는 단일 화면.
