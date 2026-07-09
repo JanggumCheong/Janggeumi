@@ -233,7 +233,7 @@ def get_recent_views_for_user(user_id: str) -> Any:
     )
 
 
-def get_home_data(ingredient_id: str = "ing_watermelon") -> Dict[str, Any]:
+def _get_home_data_from_database(ingredient_id: str = "ing_watermelon") -> Dict[str, Any]:
     """메인 홈 화면에 필요한 컴포넌트 데이터를 가져옵니다."""
     try:
         current_month = datetime.now().month
@@ -442,6 +442,115 @@ def get_home_data(ingredient_id: str = "ing_watermelon") -> Dict[str, Any]:
 
 #     except Exception as e:
 #         raise Exception(f"Failed to aggregate database storage data: {str(e)}")
+
+def get_home_data(ingredient_id: str = "ing_watermelon") -> Dict[str, Any]:
+    """Return the home screen data."""
+    try:
+        today_recommended_ingredients = [
+            {
+                "id": "ing_watermelon",
+                "name": "수박",
+                "emoji": "🍉",
+                "catchphrase": {
+                    "highlight": "시원하게 즐기는 여름",
+                    "title": "수박"
+                },
+                "image_url": "public/images/banners/watermelon-recommend-banner.webp",
+                "is_season": True,
+                "rating": {
+                    "avg": 4.7,
+                    "count": 1248
+                }
+            },
+            {
+                "id": "ing_peach",
+                "name": "천도복숭아",
+                "emoji": "🍑",
+                "catchphrase": {
+                    "highlight": "제철 맞은 달콤한",
+                    "title": "천도복숭아"
+                },
+                "image_url": "public/images/banners/peach-recommend-banner.webp",
+                "is_season": True,
+                "rating": {
+                    "avg": 4.5,
+                    "count": 986
+                }
+            }
+        ]
+
+        recent_rows = supabase.table("recent_views") \
+            .select("viewed_at, ingredients(id, name, image_url)") \
+            .order("viewed_at", desc=True) \
+            .limit(5) \
+            .execute()
+
+        recent_views = []
+        for row in recent_rows.data or []:
+            ing = row.get("ingredients")
+            if ing:
+                recent_views.append({
+                    "id": ing.get("id"),
+                    "name": ing.get("name"),
+                    "image_url": ing.get("image_url"),
+                    "viewed_at": row.get("viewed_at")
+                })
+
+        weekly_trending = [
+            {
+                "rank": 1,
+                "id": "ing_avocado",
+                "name": "아보카도",
+                "image_url": "https://example.com/images/avocado.png",
+                "trend_status": "지금 제철!"
+            },
+            {
+                "rank": 2,
+                "id": "ing_peach",
+                "name": "천도복숭아",
+                "image_url": "public/images/banners/peach-recommend-banner.webp",
+                "trend_status": "지금 제철!"
+            },
+            {
+                "rank": 3,
+                "id": "ing_watermelon",
+                "name": "수박",
+                "image_url": "public/images/banners/watermelon-recommend-banner.webp",
+                "trend_status": "지금 제철!"
+            },
+            {
+                "rank": 4,
+                "id": "ing_korean_melon",
+                "name": "참외",
+                "image_url": "https://example.com/images/korean-melon.png",
+                "trend_status": "지금 제철!"
+            },
+            {
+                "rank": 5,
+                "id": "ing_plum",
+                "name": "자두",
+                "image_url": "https://example.com/images/plum.png",
+                "trend_status": "지금 제철!"
+            },
+            {
+                "rank": 6,
+                "id": "ing_grape",
+                "name": "포도",
+                "image_url": "https://example.com/images/grape.png",
+                "trend_status": "지금 제철!"
+            }
+        ]
+
+        return {
+            "today_recommended_ingredient": today_recommended_ingredients,
+            "today_recommended_ingredients": today_recommended_ingredients,
+            "recent_views": recent_views,
+            "weekly_trending_ingredients": weekly_trending
+        }
+
+    except Exception as e:
+        raise Exception(f"Failed to fetch home data: {str(e)}")
+
 
 def get_ingredient_storage_data(ingredient_id: str, fallback_name: str = None) -> Dict[str, Any]:
     """
