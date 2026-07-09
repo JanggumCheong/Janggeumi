@@ -5,8 +5,8 @@ import { Bell, ChevronLeft, LogIn, User } from "lucide-react";
 import { useAuthStore } from "../../stores";
 import { HeaderIconButton } from "./HeaderIconButton";
 import Image from "next/image";
-import logo from "../../../assets/images/logo.webp";
-import { getIngredientName } from "../../../src/app/ingredients/_lib/ingredients";
+import logo from "../../../../assets/images/logo.webp";
+import { getIngredientName } from "@/app/ingredients/_lib/ingredients";
 import { useEffect } from "react";
 
 /** 경로 → 헤더 제목. 정확 일치 우선, 없으면 가장 긴 접두사로 매칭. */

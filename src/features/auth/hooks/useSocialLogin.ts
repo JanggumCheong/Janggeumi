@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuthStore } from "../../../../shared/stores";
+import { useAuthStore } from "@/shared/stores";
 import type { ProviderId, SocialProvider } from "../providers";
 
 type UseSocialLoginResult = {
