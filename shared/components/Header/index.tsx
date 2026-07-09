@@ -7,12 +7,15 @@ import { HeaderIconButton } from "./HeaderIconButton";
 import Image from "next/image";
 import logo from "../../../assets/images/logo.webp";
 import { getIngredientName } from "../../../src/app/ingredients/_lib/ingredients";
+import { useEffect } from "react";
 
 /** 경로 → 헤더 제목. 정확 일치 우선, 없으면 가장 긴 접두사로 매칭. */
 const PAGE_TITLES: Record<string, string> = {
   "/search": "검색",
   "/ingredients": "재료",
 };
+
+const KEY = "app:navDepth";
 
 function resolveTitle(pathname: string): string {
   if (PAGE_TITLES[pathname]) return PAGE_TITLES[pathname];
@@ -39,6 +42,19 @@ export function Header() {
   const isHome = pathname === "/";
   const title = resolveTitle(pathname);
 
+  // 루트 레이아웃에 마운트
+  useEffect(() => {
+    const current = Number(sessionStorage.getItem(KEY) ?? "0");
+    if (isHome) {
+      sessionStorage.setItem(KEY, String(0));
+    } else {
+      sessionStorage.setItem(KEY, String(current + 1));
+    }
+  }, [pathname, isHome]);
+
+  const canGoBack = () => Number(sessionStorage.getItem(KEY) ?? "0") > 1;
+  const handleBack = () => (canGoBack() ? router.back() : router.push("/"));
+
   return (
     <header className="sticky top-0 z-20 flex h-14 w-full items-center justify-between px-2 bg-card">
       {isHome ? (
@@ -47,7 +63,7 @@ export function Header() {
         </span>
       ) : (
         <div className="flex items-center gap-1">
-          <HeaderIconButton label="뒤로" onClick={() => router.back()}>
+          <HeaderIconButton label="뒤로" onClick={() => handleBack()}>
             <ChevronLeft className="size-5" />
           </HeaderIconButton>
           {title && <h1 className="text-lg font-bold">{title}</h1>}
