@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <!--
+  장금이 — 마이페이지 목업 (모바일 우선)
+  스펙 출처: 사용자가 제시한 참조 이미지(폰 목업)를 그대로 스펙으로 삼음.
+    · 로그인 후 진입: 장금이 정보(레벨·티어·XP) + 계정(개인정보관리) + 알람 토글.
+    · 사용자 지시 1: 이미지의 '나의 장바구니 기록' 카드는 제외한다.
+    · 사용자 지시 2: 하단 탭바는 이미지 그대로 유지(홈·검색·장바구니·MY 4탭). DS 표준 탭바로 바꾸지 않음.
+  구현 예정: 라우트 src/app/mypage, 재사용 요소는 src/features/user(또는 mypage).
+  DS 대비 신규 패턴(우측 명세 패널 '확정/미정' 참조):
+    - 게이미피케이션(LevelBadge·XpProgress) — DS에 없던 신규. 임시값, 데이터 모델 확정 필요.
+    - SettingsRow / ToggleSwitch / ThemeToggle / section-label — 신규 컴포넌트.
+    - 배경: 로그인 목업 선례대로 near-white(--jg-bg). 따뜻함은 캐릭터+그린 포인트로만(이미지의 아이보리 배경 미채택).
+  Figma 오토레이아웃 이관 대비: flex column = 세로 오토레이아웃, gap = itemSpacing, padding = 오토레이아웃 패딩.
+  -->
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>장금이 — 마이페이지 목업</title>
+    <style>
+      :root {
+        --jg-primary: #5c6e3d;
+        --jg-primary-strong: #47562f;
+        --jg-primary-soft: #eef1e6;
+        --jg-bg: #fbfbfa;
+        --jg-surface: #ffffff;
+        --jg-sunken: #f4f4f2;
+        --jg-ink: #1f1d18;
+        --jg-ink-sub: #6b675e;
+        --jg-ink-mute: #9b978c;
+        --jg-line: #e7e4dc;
+        --jg-buy: #1f804d;
+        --jg-buy-bg: #e9f6ee;
+        --jg-keep: #2f6e86;
+        --jg-keep-bg: #e8f2f6;
+        --jg-use: #c4712a;
+        --jg-use-bg: #fbf0e4;
+        --jg-star: #f0a93b;
+        --jg-danger: #c1453b;
+        --r-sm: 10px;
+        --r-md: 16px;
+        --r-lg: 20px;
+        --r-pill: 999px;
+        --shadow-card: 0 2px 10px rgba(31, 29, 24, 0.05);
+        --shadow-float: 0 6px 20px rgba(31, 29, 24, 0.1);
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--jg-bg);
+        color: var(--jg-ink);
+        font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
+          "Pretendard", "Malgun Gothic", sans-serif;
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+      }
+      .page { max-width: 1240px; margin: 0 auto; padding: 32px 24px 64px; overflow-x: hidden; }
+      .page-title { font-size: 30px; font-weight: 800; margin: 0 0 6px; }
+      .page-sub { color: var(--jg-ink-sub); font-size: 15px; margin: 0 0 24px; max-width: 720px; }
+
+      /* ── 기획 2단 레이아웃 (재사용 표준, login/ingredient-detail-mockup 동일) ── */
+      .spec-layout { display: flex; gap: 28px; align-items: flex-start; justify-content: space-between; }
+      .spec-stage { flex: 0 1 auto; min-width: 0; max-width: 704px;
+        display: flex; flex-wrap: wrap; gap: 24px 24px; justify-content: center; align-items: flex-start; }
+      .spec-panel { width: 380px; flex: none; position: sticky; top: 24px;
+        max-height: calc(100vh - 48px); overflow-y: auto; display: flex; flex-direction: column; gap: 16px;
+        padding-right: 4px; }
+      .spec-head { padding: 2px 4px 4px; }
+      .spec-head-title { font-size: 18px; font-weight: 800; color: var(--jg-ink); }
+      .spec-head-sub { font-size: 12px; color: var(--jg-ink-sub); margin-top: 4px; line-height: 1.4; }
+      .spec-card { background: var(--jg-surface); border: 1px solid var(--jg-line); border-radius: var(--r-lg);
+        box-shadow: var(--shadow-card); padding: 18px 20px; }
+      .spec-card h2 { font-size: 15px; font-weight: 800; margin: 0 0 12px; letter-spacing: .2px; }
+      .spec-card table { border-collapse: collapse; width: 100%; font-size: 13px; }
+      .spec-card th, .spec-card td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--jg-line); vertical-align: top; }
+      .spec-card th { color: var(--jg-ink-sub); font-weight: 700; white-space: nowrap; }
+      .spec-card td:last-child { white-space: normal; }
+      .spec-card tr:last-child th, .spec-card tr:last-child td { border-bottom: none; }
+      .spec-card code { background: var(--jg-sunken); border-radius: 6px; padding: 1px 6px; font-size: 11px;
+        word-break: break-all; overflow-wrap: anywhere; }
+      .spec-card ul { margin: 0; padding-left: 18px; font-size: 13px; color: var(--jg-ink-sub); }
+      .spec-card li { margin: 5px 0; }
+      .spec-card li b { color: var(--jg-ink); }
+      .pill { display: inline-block; font-size: 11px; font-weight: 800; border-radius: var(--r-pill);
+        padding: 2px 9px; }
+      .pill-fix { background: var(--jg-buy-bg); color: var(--jg-buy); }
+      .pill-open { background: var(--jg-use-bg); color: var(--jg-use); }
+      .pill-new { background: var(--jg-keep-bg); color: var(--jg-keep); }
+
+      .screen-wrap { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+      .screen-label { font-size: 13px; font-weight: 700; color: var(--jg-ink-sub); }
+
+      /* 폰 프레임 (login/ingredient-detail-mockup 동일 규격) */
+      .phone {
+        width: 340px;
+        background: var(--jg-surface);
+        border: 10px solid #1f1d18;
+        border-radius: 42px;
+        overflow: hidden;
+        box-shadow: var(--shadow-float);
+      }
+      .status { height: 42px; display: flex; align-items: center;
+        justify-content: space-between; padding: 0 22px; font-size: 12px; font-weight: 700;
+        background: transparent; position: relative; z-index: 2; }
+      .status .dots { display: inline-flex; gap: 5px; align-items: center; }
+      .status .sig { width: 16px; height: 10px; border-radius: 2px; background: var(--jg-ink); opacity: .85; }
+      .status .batt { width: 22px; height: 11px; border: 1.5px solid var(--jg-ink); border-radius: 3px;
+        position: relative; opacity: .85; }
+      .status .batt::after { content: ""; position: absolute; left: 1.5px; top: 1.5px; bottom: 1.5px; width: 13px;
+        background: var(--jg-ink); border-radius: 1px; }
+
+      /* 마이페이지 앱 컨테이너 — near-white 배경 + 하단 탭바 고정 */
+      .app {
+        position: relative;
+        min-height: 720px;
+        display: flex;
+        flex-direction: column;
+        padding: 4px 20px 0;
+        background: var(--jg-bg);
+        overflow: hidden;
+      }
+
+      /* ── 상단 헤더 (제목 + 테마 토글) ── */
+      .mp-header { display: flex; align-items: center; justify-content: space-between;
+        padding: 6px 2px 18px; }
+      .mp-header .title { font-size: 26px; font-weight: 800; color: var(--jg-primary); margin: 0; }
+      /* component: ThemeToggle (라이트/다크 — 신규) */
+      .theme-btn { width: 40px; height: 40px; border: none; background: transparent; cursor: pointer;
+        display: flex; align-items: center; justify-content: center; color: var(--jg-ink-sub); border-radius: var(--r-pill); }
+
+      /* ── 프로필(장금이 정보) 카드 ── */
+      /* component: ProfileCard */
+      .profile-card { background: var(--jg-surface); border: 1px solid var(--jg-line);
+        border-radius: var(--r-lg); box-shadow: var(--shadow-card); padding: 20px; }
+      .profile-top { display: flex; gap: 16px; align-items: center; }
+      /* component: ProfileAvatar (임시 캐릭터 — 정식 아트 확정 시 교체) */
+      .avatar { width: 78px; height: 78px; flex: none; border-radius: 50%;
+        background: var(--jg-primary-soft); border: 2px dashed var(--jg-primary);
+        display: flex; align-items: center; justify-content: center; }
+      .avatar svg { width: 52px; height: 52px; }
+      .profile-main { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+      /* component: LevelBadge (신규 — 레벨 + 티어명) */
+      .level-badge { align-self: flex-start; display: inline-flex; align-items: center;
+        background: var(--jg-primary); color: #fff; font-size: 12px; font-weight: 800;
+        border-radius: var(--r-pill); padding: 4px 11px; letter-spacing: .2px; }
+      .profile-name { font-size: 21px; font-weight: 800; color: var(--jg-ink); line-height: 1.2; }
+      .profile-caption { font-size: 13px; font-weight: 500; color: var(--jg-ink-sub); }
+
+      /* component: XpProgress (신규 — 다음 레벨까지 진행률) */
+      .xp-wrap { margin-top: 18px; }
+      .xp-row { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 8px; }
+      .xp-label { font-size: 12px; font-weight: 600; color: var(--jg-ink-sub); }
+      .xp-value { font-size: 12px; font-weight: 800; color: var(--jg-primary); }
+      .xp-value .max { color: var(--jg-ink-mute); font-weight: 700; }
+      .xp-track { height: 9px; border-radius: var(--r-pill); background: var(--jg-sunken); overflow: hidden; }
+      .xp-fill { height: 100%; width: 72%; border-radius: var(--r-pill);
+        background: linear-gradient(90deg, var(--jg-primary-strong), var(--jg-primary)); }
+
+      /* ── 섹션 라벨 ── */
+      /* component: SectionLabel (신규) */
+      .section-label { font-size: 13px; font-weight: 700; color: var(--jg-ink-sub);
+        padding: 26px 4px 12px; }
+
+      /* ── 계정 설정 리스트 ── */
+      .settings-list { display: flex; flex-direction: column; gap: 12px; }
+      /* component: SettingsRow (변형: link | toggle) */
+      .settings-row { display: flex; align-items: center; gap: 14px;
+        background: var(--jg-surface); border: 1px solid var(--jg-line); border-radius: var(--r-lg);
+        box-shadow: var(--shadow-card); padding: 16px; width: 100%; text-align: left;
+        font-family: inherit; cursor: pointer; }
+      .row-icon { width: 40px; height: 40px; flex: none; border-radius: var(--r-pill);
+        display: flex; align-items: center; justify-content: center; }
+      .row-icon svg { width: 21px; height: 21px; }
+      .row-icon.acct { background: var(--jg-primary-soft); color: var(--jg-primary); }
+      .row-icon.alarm { background: var(--jg-use-bg); color: var(--jg-use); }
+      .row-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+      .row-title { font-size: 15.5px; font-weight: 700; color: var(--jg-ink); }
+      .row-desc { font-size: 12.5px; font-weight: 500; color: var(--jg-ink-mute); }
+      .row-chevron { color: var(--jg-ink-mute); display: flex; }
+      .row-chevron svg { width: 20px; height: 20px; }
+
+      /* component: ToggleSwitch (신규 — 켜짐 = 그린) */
+      .switch { position: relative; width: 46px; height: 28px; flex: none; border-radius: var(--r-pill);
+        background: var(--jg-primary); transition: background .15s; }
+      .switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px;
+        border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(31,29,24,.28);
+        transition: transform .15s; }
+      .switch.on::after { transform: translateX(18px); }
+      .switch.off { background: var(--jg-line); }
+      .switch.off::after { transform: translateX(0); }
+
+      /* ── 로그아웃 ── */
+      .logout-wrap { display: flex; justify-content: center; padding: 30px 0 22px; }
+      .logout { background: none; border: none; cursor: pointer; font-family: inherit;
+        font-size: 13.5px; font-weight: 600; color: var(--jg-ink-mute); text-decoration: underline;
+        text-underline-offset: 3px; }
+
+      /* ── 하단 탭바 (이미지 그대로 유지 — 홈·검색·장바구니·MY) ── */
+      /* component: BottomTabBar (스펙: 참조 이미지 유지, 사용자 지시) */
+      .tabbar { margin-top: auto; display: flex; align-items: stretch;
+        background: var(--jg-surface); border-top: 1px solid var(--jg-line);
+        padding: 8px 6px 14px; }
+      .tab { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;
+        background: none; border: none; cursor: pointer; font-family: inherit;
+        font-size: 11px; font-weight: 600; color: var(--jg-ink-mute); }
+      .tab svg { width: 24px; height: 24px; }
+      .tab.on { color: var(--jg-primary); font-weight: 800; }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <h1 class="page-title">마이페이지</h1>
+      <p class="page-sub">
+        로그인 후 진입 — 장금이 정보(레벨·XP) · 계정(개인정보관리) · 알람 토글.
+        참조 이미지를 스펙으로 재현. 라우트 <code>/mypage</code>, 재사용 요소 <code>features/user</code>.
+        (사용자 지시: '나의 장바구니 기록' 카드 제외, 하단 탭바는 이미지 유지)
+      </p>
+
+      <div class="spec-layout">
+        <div class="spec-stage">
+          <div class="screen-wrap">
+            <div class="phone">
+              <div class="app">
+                <!-- 상태바 -->
+                <div class="status">
+                  <span>9:41</span>
+                  <span class="dots">
+                    <span class="sig"></span>
+                    <span class="batt"></span>
+                  </span>
+                </div>
+
+                <!-- 헤더: 제목 + 테마 토글 -->
+                <div class="mp-header">
+                  <h2 class="title">마이페이지</h2>
+                  <!-- component: ThemeToggle -->
+                  <button class="theme-btn" aria-label="테마 전환">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="4.2"/>
+                      <path d="M12 2.5v2.2M12 19.3v2.2M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.2 19.8l1.6-1.6M18.2 5.8l1.6-1.6"/>
+                    </svg>
+                  </button>
+                </div>
+
+                <!-- 프로필(장금이 정보) 카드 -->
+                <!-- component: ProfileCard -->
+                <section class="profile-card">
+                  <div class="profile-top">
+                    <!-- component: ProfileAvatar (임시 캐릭터 — 교체 예정) -->
+                    <div class="avatar" aria-label="장금이 프로필">
+                      <svg viewBox="0 0 64 64" fill="none">
+                        <!-- 토크(요리 모자) -->
+                        <path d="M18 26c-4 0-7-3-7-6.5S14 13 18 13c.5-4 4-7 8-7s7.5 3 8 7c4 0 7 3 7 6.5S38 26 34 26z" fill="#fff" stroke="#5c6e3d" stroke-width="2.2"/>
+                        <rect x="17" y="25" width="18" height="6" rx="2" fill="#fff" stroke="#5c6e3d" stroke-width="2.2"/>
+                        <!-- 얼굴 -->
+                        <circle cx="26" cy="42" r="13" fill="#fff" stroke="#5c6e3d" stroke-width="2.2"/>
+                        <circle cx="21.5" cy="41" r="1.7" fill="#5c6e3d"/>
+                        <circle cx="30.5" cy="41" r="1.7" fill="#5c6e3d"/>
+                        <path d="M21.5 46.5c1.7 2 7.3 2 9 0" stroke="#5c6e3d" stroke-width="2" stroke-linecap="round"/>
+                      </svg>
+                    </div>
+                    <div class="profile-main">
+                      <!-- component: LevelBadge (레벨 + 티어명) -->
+                      <span class="level-badge">Lv.5 수라간</span>
+                      <span class="profile-name">장금이님</span>
+                      <span class="profile-caption">오늘도 알뜰 장보기 완료!</span>
+                    </div>
+                  </div>
+
+                  <!-- component: XpProgress -->
+                  <div class="xp-wrap">
+                    <div class="xp-row">
+                      <span class="xp-label">다음 레벨까지</span>
+                      <span class="xp-value">720 <span class="max">/ 1000 XP</span></span>
+                    </div>
+                    <div class="xp-track"><div class="xp-fill"></div></div>
+                  </div>
+                </section>
+
+                <!-- 계정 섹션 -->
+                <!-- component: SectionLabel -->
+                <div class="section-label">계정</div>
+
+                <div class="settings-list">
+                  <!-- component: SettingsRow / link -->
+                  <button class="settings-row">
+                    <span class="row-icon acct">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="8" r="3.6"/>
+                        <path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/>
+                      </svg>
+                    </span>
+                    <span class="row-body">
+                      <span class="row-title">개인정보관리</span>
+                    </span>
+                    <span class="row-chevron">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+                    </span>
+                  </button>
+
+                  <!-- component: SettingsRow / toggle -->
+                  <div class="settings-row">
+                    <span class="row-icon alarm">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6z"/>
+                        <path d="M10 20a2 2 0 0 0 4 0"/>
+                      </svg>
+                    </span>
+                    <span class="row-body">
+                      <span class="row-title">알람</span>
+                      <span class="row-desc">특가·장보기 리마인드 알림</span>
+                    </span>
+                    <!-- component: ToggleSwitch (on) -->
+                    <span class="switch on" role="switch" aria-checked="true"></span>
+                  </div>
+                </div>
+
+                <!-- 로그아웃 -->
+                <div class="logout-wrap">
+                  <button class="logout">로그아웃</button>
+                </div>
+
+                <!-- 하단 탭바 (이미지 유지 — 사용자 지시로 미변경) -->
+                <!-- component: BottomTabBar -->
+                <nav class="tabbar">
+                  <button class="tab">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-6.5 8 6.5"/><path d="M6 10v9h12v-9"/></svg>
+                    홈
+                  </button>
+                  <button class="tab">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>
+                    검색
+                  </button>
+                  <button class="tab">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l-1 12H7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
+                    장바구니
+                  </button>
+                  <button class="tab on">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/></svg>
+                    MY
+                  </button>
+                </nav>
+              </div>
+            </div>
+            <div class="screen-label">/mypage — 로그인 후 마이페이지</div>
+          </div>
+        </div>
+        <!-- /spec-stage -->
+
+        <!-- 기획 명세 패널 -->
+        <aside class="spec-panel">
+          <div class="spec-head">
+            <div class="spec-head-title">📋 기획 명세</div>
+            <div class="spec-head-sub">이 화면의 라우팅·구현 구조·데이터 매핑·기능 요구사항. 참조 이미지를 스펙으로 확정.</div>
+          </div>
+
+          <div class="spec-card">
+            <h2>라우팅 · 구현 구조</h2>
+            <table>
+              <tr><th>라우트</th><td><code>src/app/mypage/page.tsx</code> → <code>/mypage</code></td></tr>
+              <tr><th>보호</th><td>비로그인 접근 시 <code>/login?next=/mypage</code> 리다이렉트</td></tr>
+              <tr><th>재사용</th><td><code>src/features/user/</code> 에 컴포넌트·훅·서버액션 배치</td></tr>
+              <tr><th>진입</th><td>하단 탭바 <b>MY</b> 탭에서 진입</td></tr>
+            </table>
+          </div>
+
+          <div class="spec-card">
+            <h2>데이터 매핑 (user)</h2>
+            <table>
+              <tr><th>닉네임</th><td><code>user.nickname</code> → "장금이님"</td></tr>
+              <tr><th>레벨·티어</th><td><code>user.level</code> / <code>user.tier</code> → "Lv.5 수라간"</td></tr>
+              <tr><th>XP</th><td><code>user.xp</code> / <code>user.xpToNext</code> → 720 / 1000 (진행률 = xp/xpToNext)</td></tr>
+              <tr><th>한줄 상태</th><td><code>user.statusLine</code> → "오늘도 알뜰 장보기 완료!"</td></tr>
+              <tr><th>알람</th><td><code>user.settings.alarm</code> (boolean) ↔ 토글</td></tr>
+              <tr><th>테마</th><td><code>settings.theme</code> (light/dark) ↔ 헤더 토글</td></tr>
+            </table>
+          </div>
+
+          <div class="spec-card">
+            <h2>features/user 구성(제안)</h2>
+            <ul>
+              <li><b>components/ProfileCard</b> — 아바타·LevelBadge·XpProgress 조합</li>
+              <li><b>components/SettingsRow</b> — 변형 <code>link | toggle</code></li>
+              <li><b>components/ToggleSwitch</b> — 켜짐=그린</li>
+              <li><b>components/ThemeToggle</b> — 라이트/다크</li>
+              <li><b>actions/updateAlarm.ts</b> — 알람 on/off 저장(낙관적 업데이트)</li>
+              <li><b>actions/signOut.ts</b> — 로그아웃 → <code>/login</code></li>
+            </ul>
+          </div>
+
+          <div class="spec-card">
+            <h2>기능 요구사항</h2>
+            <ul>
+              <li><b>개인정보관리</b> 행 탭 → 상세 화면 이동(후속 별도 화면)</li>
+              <li><b>알람 토글</b> — 즉시 반영(낙관적) + 서버 저장, 실패 시 롤백·토스트</li>
+              <li><b>테마 토글</b> — 라이트/다크 전환(설정 영속)</li>
+              <li><b>로그아웃</b> — 세션 종료 후 <code>/login</code> 복귀</li>
+              <li>XP 진행률은 <code>xp/xpToNext</code>로 계산해 바 폭 반영</li>
+            </ul>
+          </div>
+
+          <div class="spec-card">
+            <h2>확정 / 미정</h2>
+            <table>
+              <tr>
+                <th><span class="pill pill-fix">확정</span></th>
+                <td>이미지 스펙 재현: 프로필(레벨·XP) + 개인정보관리 + 알람 토글 + 로그아웃</td>
+              </tr>
+              <tr>
+                <th><span class="pill pill-fix">확정</span></th>
+                <td><b>'나의 장바구니 기록' 카드 제외</b>(사용자 지시). 단, <b>하단 탭바는 이미지 그대로 유지</b>(홈·검색·장바구니·MY, 사용자 지시)</td>
+              </tr>
+              <tr>
+                <th><span class="pill pill-fix">확정</span></th>
+                <td><b>배경</b>: 로그인 목업 선례대로 near-white(<code>--jg-bg</code>). 따뜻함은 캐릭터·그린 포인트로만(이미지의 아이보리 배경 미채택)</td>
+              </tr>
+              <tr>
+                <th><span class="pill pill-new">신규</span></th>
+                <td>DS에 없던 패턴: <b>LevelBadge·XpProgress·SettingsRow·ToggleSwitch·ThemeToggle·SectionLabel</b> → design-system.md 추가 검토</td>
+              </tr>
+              <tr>
+                <th><span class="pill pill-open">미정</span></th>
+                <td>게이미피케이션 데이터 모델·XP 산정 규칙·티어명("수라간") 체계</td>
+              </tr>
+              <tr>
+                <th><span class="pill pill-open">미정</span></th>
+                <td>정식 캐릭터 아트(<code>ProfileAvatar</code>), 개인정보관리 상세 화면(후속)</td>
+              </tr>
+            </table>
+          </div>
+        </aside>
+      </div>
+      <!-- /spec-layout -->
+    </div>
+  </body>
+</html>
