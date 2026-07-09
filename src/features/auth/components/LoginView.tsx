@@ -25,7 +25,7 @@ export function LoginView({ nextPath = "/" }: LoginViewProps) {
         <h1 className="m-0">
           <AuthLogo />
         </h1>
-        <p className="mt-4 text-[15px] font-bold text-muted-foreground">
+        <p className="-mt-2 text-base font-semibold text-muted-foreground">
           마트에서 살 식재료, 똑똑하게
         </p>
       </div>
