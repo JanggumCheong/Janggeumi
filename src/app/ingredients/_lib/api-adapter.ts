@@ -1,6 +1,11 @@
 import { z } from "zod";
 import { apiUrl } from "@/lib/api";
-import { IngredientSchema, type Ingredient, type StorageFilter } from "./types";
+import {
+  IngredientSchema,
+  type Ingredient,
+  type StorageFilter,
+  type Source,
+} from "./types";
 
 const ApiIngredientSchema = z.object({
   id: z.string().optional(),
@@ -82,7 +87,7 @@ const ApiStorageResponseSchema = z.object({
 const ApiAuthorSchema = z.object({
   name: z.string().optional(),
   type: z.enum(["ugc", "official", "curator"]).optional(),
-  avatar_url: z.string().optional(),
+  avatar_url: z.string().nullable().optional(),
 });
 
 const ApiRecipeSchema = z.object({
@@ -103,6 +108,11 @@ const ApiRecipeSchema = z.object({
   source: z.unknown().nullable().optional(),
 });
 
+const ApiSourceSchema = z.object({
+  source: z.string(),
+  updated_at: z.string().optional(),
+});
+
 const ApiDisposeSchema = z.object({
   key: z.string().optional(),
   option_id: z.string().optional(),
@@ -112,6 +122,16 @@ const ApiDisposeSchema = z.object({
   waste_type: z.enum(["food", "general", "recycle"]).optional(),
   image: z.string().nullable().optional(),
   image_url: z.string().nullable().optional(),
+  sources: z.array(ApiSourceSchema).optional(),
+});
+
+/** 처리 분류 축(쓰레기 여부) — option_id로 활용/폐기를 가른다. */
+const ApiHandlingSectionSchema = z.object({
+  section_id: z.string().optional(),
+  section_name: z.string().optional(),
+  options: z
+    .array(z.object({ option_id: z.string(), option_name: z.string() }))
+    .optional(),
 });
 
 const ApiProcessingResponseSchema = z.object({
@@ -121,6 +141,7 @@ const ApiProcessingResponseSchema = z.object({
       intro: z.string().optional(),
     })
     .optional(),
+  handling_main_sections: z.array(ApiHandlingSectionSchema).optional(),
   recipes: z.array(ApiRecipeSchema).optional(),
   dispose: z.array(ApiDisposeSchema).optional(),
 });
@@ -228,10 +249,23 @@ function adaptStorage(api: ApiStorageResponse, base: Ingredient): Ingredient["st
 }
 
 function adaptHandling(api: ApiProcessingResponse, base: Ingredient): Ingredient["handling"] {
+  // 처리 분류는 텍스트 추측이 아니라 option_id 로 명확히 가른다.
+  // main_sections 에서 '폐기(쓰레기)' 옵션의 id·이름을 찾는다(fo_waste_yes 계열).
+  const wasteOption = (api.handling_main_sections ?? [])
+    .flatMap((s) => s.options ?? [])
+    .find(
+      (o) => /폐기|쓰레기/.test(o.option_name) || /waste_yes/.test(o.option_id),
+    );
+  const wasteId = wasteOption?.option_id;
+  const wasteName = wasteOption?.option_name;
+  const isWaste = (opt?: string | null, name?: string | null) =>
+    (wasteId != null && opt === wasteId) ||
+    (wasteName != null && name === wasteName) ||
+    /폐기|쓰레기/.test(name ?? "");
+
+  // 활용(recipes) = 폐기 category 가 아닌 것. category(이름)로 판별(recipes엔 option_id 없음).
   const recipes = (api.recipes ?? [])
-    .filter(
-      (recipe) => !isDisposeLike(`${recipe.category ?? ""} ${recipe.title} ${recipe.desc ?? ""}`),
-    )
+    .filter((recipe) => !isWaste(null, recipe.category))
     .map((recipe) => ({
       id: recipe.id,
       title: recipe.title,
@@ -249,15 +283,17 @@ function adaptHandling(api: ApiProcessingResponse, base: Ingredient): Ingredient
       source: null,
     }));
 
+  // 폐기(dispose) = 폐기 option_id 인 것만(fo_waste_recipe=레시피 처리는 제외).
   const dispose = (api.dispose ?? [])
-    .filter((item) => !isRecipeLike(`${item.title} ${item.way}`))
+    .filter((item) => isWaste(item.option_id, item.title))
     .map((item, index) => ({
       key: item.key ?? item.option_id ?? `dispose-${index + 1}`,
       title: item.title,
       way: item.way,
       wasteType: normalizeWasteType(item.wasteType ?? item.waste_type, item.way),
       image: item.image ?? item.image_url ?? null,
-      source: base.handling.dispose?.[index]?.source,
+      source:
+        adaptApiSource(item.sources) ?? base.handling.dispose?.[index]?.source,
     }));
 
   return {
@@ -351,12 +387,16 @@ function adaptStorageComment(
   return undefined;
 }
 
-function isDisposeLike(value: string): boolean {
-  return /폐기|쓰레기|분리배출|배출/.test(value);
-}
-
-function isRecipeLike(value: string): boolean {
-  return /레시피|요리|무침|통조림|병조림|재탄생/.test(value);
+/**
+ * API sources[]({source,updated_at}) → 프론트 Source(단수). 첫 출처를 대표로.
+ * type은 API가 안 줘서 official 기본(현재 출처는 기관·장금이 가이드 계열). 없으면 undefined.
+ */
+function adaptApiSource(
+  sources: { source: string; updated_at?: string }[] | undefined,
+): Source | undefined {
+  const first = sources?.[0];
+  if (!first) return undefined;
+  return { org: first.source, type: "official", lastReviewed: first.updated_at };
 }
 
 function normalizeWasteType(
