@@ -45,7 +45,7 @@ export function TabBar() {
               active ? "text-primary" : "text-jg-ink-mute"
             }`}
           >
-            <Icon className="size-6" />
+            <Icon className="size-5" />
             {label}
           </Link>
         );

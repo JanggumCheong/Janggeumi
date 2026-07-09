@@ -8,11 +8,13 @@ import Image from "next/image";
 import logo from "../../../../assets/images/logo.webp";
 import { getIngredientName } from "@/app/ingredients/_lib/ingredients";
 import { useEffect } from "react";
+import Link from "next/link";
 
 /** 경로 → 헤더 제목. 정확 일치 우선, 없으면 가장 긴 접두사로 매칭. */
 const PAGE_TITLES: Record<string, string> = {
   "/search": "검색",
   "/ingredients": "재료",
+  "/mypage": "마이페이지",
 };
 
 const KEY = "app:navDepth";
@@ -80,7 +82,9 @@ export function Header() {
               <Bell className="size-5" />
             </HeaderIconButton>
             <HeaderIconButton label="마이페이지">
-              <User className="size-5" />
+              <Link href="/mypage">
+                <User className="size-5" />
+              </Link>
             </HeaderIconButton>
           </>
         ) : (
