@@ -96,8 +96,8 @@
       "emoji": "🥬",
       "summary": "한 통 사면 다 못 쓰기 쉬운 채소. 자른 뒤 보관·활용이 핵심이에요.",
       "seasonMonths": [4, 5, 11, 12],
-      "status": "planned",
-      "hasContent": false,
+      "status": "published",
+      "hasContent": true,
       "order": 7
     },
     {
@@ -159,6 +159,18 @@
       "status": "planned",
       "hasContent": false,
       "order": 12
+    },
+    {
+      "id": "kiwi",
+      "name": "키위",
+      "aliases": ["kiwi", "참다래", "kiwifruit"],
+      "category": "fruit",
+      "emoji": "🥝",
+      "summary": "딱딱하게 사서 후숙해 먹는 과일. 언제 먹기 좋은지 무르기를 보는 게 핵심이에요.",
+      "seasonMonths": [11, 12, 1],
+      "status": "published",
+      "hasContent": true,
+      "order": 13
     }
   ]
 }
