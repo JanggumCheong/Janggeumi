@@ -17,12 +17,14 @@ from .services.query import (
     get_ingredient_handling_data,  # query.py에서 정의한 함수 바인딩
 )
 from .services.recent_view import add_recent_view as add_recent_view_record
+from .api.ai import router as ai_router
 
 app = FastAPI(
     title="Janggeumi API",
     version="0.1.0",
     description="Backend API for the Janggeumi project.",
 )
+app.include_router(ai_router, prefix="/api/ai", tags=["AI Chat"])
 
 app.add_middleware(
     CORSMiddleware,
