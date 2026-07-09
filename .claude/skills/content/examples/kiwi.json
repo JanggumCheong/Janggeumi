@@ -1,0 +1,426 @@
+{
+  "id": "kiwi",
+  "name": "키위",
+  "aliases": [
+    "kiwi",
+    "참다래",
+    "kiwifruit"
+  ],
+  "category": "fruit",
+  "emoji": "🥝",
+  "summary": "딱딱하게 사서 후숙해 먹는 과일. 언제 먹기 좋은지 무르기를 보는 게 핵심이에요.",
+  "seasonMonths": [
+    11,
+    12,
+    1
+  ],
+  "facts": [
+    {
+      "key": "category",
+      "label": "분류",
+      "value": "과일(참다래)"
+    },
+    {
+      "key": "calorie",
+      "label": "칼로리",
+      "value": "54kcal (100g)"
+    },
+    {
+      "key": "nutrients",
+      "label": "주요 영양 성분",
+      "value": "비타민C, 식이섬유, 칼륨, 액티니딘"
+    }
+  ],
+  "purchase": {
+    "headline": "좋은 키위 고르는 법",
+    "intro": "무르기와 겉면만 보면 실패하지 않아요. 언제 먹을지에 따라 골라요.",
+    "bestWorst": {
+      "good": {
+        "image": null,
+        "hint": "고르게 살짝 말랑, 겉면 매끈, 은은한 향"
+      },
+      "bad": {
+        "image": null,
+        "hint": "한쪽만 푹 물렁, 진물·찢김, 심한 주름"
+      }
+    },
+    "criteria": [
+      {
+        "key": "firmness",
+        "title": "눌렀을 때 탄력 확인",
+        "desc": "손으로 살짝 눌렀을 때 탄력이 있고 살짝 들어가면 먹기 좋게 익은 상태예요. 단단하면 며칠 두고 후숙해 먹기 좋아요.",
+        "image": null,
+        "source": {
+          "org": "Zespri(제스프리)",
+          "type": "expert",
+          "mediaType": "article",
+          "url": "https://www.zespri.com/ko-KR/blogdetail/how-do-i-ripen-kiwifruit",
+          "verified": true,
+          "lastReviewed": "2026-07-09"
+        }
+      },
+      {
+        "key": "even-soft",
+        "title": "한쪽만 물렁하지 않은 것",
+        "desc": "전체가 고르게 탄력 있는 것을 고르세요. 특정 부분만 푹 꺼지듯 물렁하면 그 부위가 상했을 수 있어요.",
+        "image": null,
+        "source": {
+          "org": "일반 상식(공식 딥링크 확보 전)",
+          "type": "expert",
+          "mediaType": "article",
+          "url": null,
+          "verified": false,
+          "lastReviewed": "2026-07-09"
+        }
+      },
+      {
+        "key": "skin-intact",
+        "title": "겉면이 매끈하고 상처 없는 것",
+        "desc": "껍질이 찢어졌거나 끈적한 진물 흔적이 있으면 신선도가 떨어졌을 수 있어요. 주름이 심한 것은 과숙으로 속이 무를 수 있어요.",
+        "image": null,
+        "source": {
+          "org": "일반 상식(공식 딥링크 확보 전)",
+          "type": "expert",
+          "mediaType": "article",
+          "url": null,
+          "verified": false,
+          "lastReviewed": "2026-07-09"
+        }
+      }
+    ]
+  },
+  "storage": {
+    "headline": "키위 보관·후숙 방법 비교",
+    "intro": "단단하면 후숙하고, 익으면 냉장하세요. 상태에 따라 방법이 갈려요.",
+    "filters": [
+      {
+        "key": "ripeness",
+        "label": "익은 정도",
+        "options": [
+          "단단함",
+          "말랑함"
+        ]
+      },
+      {
+        "key": "place",
+        "label": "보관 장소",
+        "options": [
+          "실온",
+          "냉장"
+        ]
+      }
+    ],
+    "methods": [
+      {
+        "id": "ripen-with-apple",
+        "title": "사과와 함께 밀폐 후숙 (빨리 익히기)",
+        "recommended": true,
+        "tags": {
+          "ripeness": "단단함",
+          "place": "실온"
+        },
+        "summary": "단단한 키위를 사과·바나나와 함께 밀폐해 두면 에틸렌으로 후숙이 빨라져요.",
+        "durationDays": [
+          1,
+          3
+        ],
+        "conditions": {
+          "temp": "실온"
+        },
+        "steps": [
+          {
+            "no": 1,
+            "title": "밀폐 봉지·용기 준비",
+            "desc": "키위와 함께 사과, 오렌지, 바나나, 배 중 하나를 넣어요.",
+            "image": null
+          },
+          {
+            "no": 2,
+            "title": "밀폐해 실온에 두기",
+            "desc": "익은 과일에서 나오는 에틸렌가스가 키위 숙성을 촉진해요.",
+            "image": null
+          },
+          {
+            "no": 3,
+            "title": "무르기 확인",
+            "desc": "눌렀을 때 탄력 있고 살짝 들어가면 먹기 좋은 상태예요.",
+            "image": null
+          }
+        ],
+        "goodFor": [
+          "딱딱한 키위를 빨리 먹고 싶을 때"
+        ],
+        "notFor": [
+          "이미 말랑하게 익은 키위",
+          "천천히 두고 나눠 먹을 때"
+        ],
+        "cautions": [
+          "너무 오래 두면 물러지니 하루 이틀마다 상태를 확인하세요"
+        ],
+        "rating": {
+          "avg": 4.6,
+          "count": 870,
+          "dist": {
+            "1": 2,
+            "2": 3,
+            "3": 6,
+            "4": 19,
+            "5": 70
+          }
+        },
+        "source": {
+          "org": "Zespri(제스프리)",
+          "type": "expert",
+          "mediaType": "article",
+          "url": "https://www.zespri.com/ko-KR/blogdetail/how-do-i-ripen-kiwifruit",
+          "verified": true,
+          "lastReviewed": "2026-07-09"
+        },
+        "media": [],
+        "comment": {
+          "author": {
+            "name": "장금이",
+            "type": "curator"
+          },
+          "text": "돌덩이 키위엔 사과 한 알이 특효약이에요. 밀폐해두면 하루 이틀 만에 말랑해져요."
+        }
+      },
+      {
+        "id": "ripen-room",
+        "title": "실온 단독 후숙 (천천히)",
+        "recommended": true,
+        "tags": {
+          "ripeness": "단단함",
+          "place": "실온"
+        },
+        "summary": "다른 과일 없이 실온에 두면 며칠에 걸쳐 천천히 익어요.",
+        "durationDays": [
+          2,
+          3
+        ],
+        "conditions": {
+          "temp": "실온"
+        },
+        "steps": [
+          {
+            "no": 1,
+            "title": "직사광선 없는 실온에 두기",
+            "desc": "딱딱한 그린키위는 실온에서 2~3일 정도 두면 후숙돼요.",
+            "image": null
+          },
+          {
+            "no": 2,
+            "title": "무르기 확인",
+            "desc": "손에 쥐었을 때 살짝 들어가는 탄력이 먹기 좋은 때예요.",
+            "image": null
+          }
+        ],
+        "goodFor": [
+          "급하지 않게 며칠 뒤 먹을 때"
+        ],
+        "notFor": [
+          "오늘 바로 먹고 싶을 때(사과와 함께가 빠름)"
+        ],
+        "cautions": [
+          "에틸렌을 내뿜는 키위는 다른 과일과 같이 두면 그 과일이 빨리 물러요. 후숙이 끝나면 분리하세요"
+        ],
+        "rating": {
+          "avg": 4.4,
+          "count": 640,
+          "dist": {
+            "1": 2,
+            "2": 4,
+            "3": 9,
+            "4": 21,
+            "5": 64
+          }
+        },
+        "source": {
+          "org": "Zespri(제스프리)",
+          "type": "expert",
+          "mediaType": "article",
+          "url": "https://www.zespri.com/ko-KR/blogdetail/how-do-i-ripen-kiwifruit",
+          "verified": true,
+          "lastReviewed": "2026-07-09"
+        },
+        "media": [],
+        "comment": {
+          "author": {
+            "name": "장금이",
+            "type": "curator"
+          },
+          "text": "급하지 않다면 그냥 실온에 두세요. 다만 후숙 끝난 키위를 다른 과일과 같이 두면 그 과일이 빨리 물러요."
+        }
+      },
+      {
+        "id": "ripe-fridge",
+        "title": "익은 뒤 냉장 (속도 늦추기)",
+        "recommended": true,
+        "tags": {
+          "ripeness": "말랑함",
+          "place": "냉장"
+        },
+        "summary": "먹기 좋게 익은 키위는 냉장하면 숙성이 늦춰져 며칠 더 신선하게 먹어요.",
+        "durationDays": [
+          5,
+          7
+        ],
+        "conditions": {
+          "temp": "0~5℃(냉장)"
+        },
+        "steps": [
+          {
+            "no": 1,
+            "title": "익은 키위만 냉장",
+            "desc": "탄력 있게 익은 키위를 냉장고에 넣으면 숙성 속도가 지연돼요.",
+            "image": null
+          },
+          {
+            "no": 2,
+            "title": "며칠 내 먹기",
+            "desc": "그린키위는 최대 5일, 골드(썬골드)키위는 최대 7일까지 신선하게 먹을 수 있어요.",
+            "image": null
+          }
+        ],
+        "goodFor": [
+          "이미 익은 키위를 천천히 먹을 때",
+          "한 번에 많이 익었을 때"
+        ],
+        "notFor": [
+          "아직 단단한 키위(냉장하면 후숙이 느려져요)"
+        ],
+        "cautions": [
+          "단단한 키위를 냉장하면 잘 익지 않아요. 후숙은 실온에서 먼저 하세요"
+        ],
+        "rating": {
+          "avg": 4.5,
+          "count": 720,
+          "dist": {
+            "1": 2,
+            "2": 3,
+            "3": 8,
+            "4": 22,
+            "5": 65
+          }
+        },
+        "source": {
+          "org": "Zespri(제스프리)",
+          "type": "expert",
+          "mediaType": "article",
+          "url": "https://www.zespri.com/ko-KR/blogdetail/can-i-refrigerate-kiwifruit",
+          "verified": true,
+          "lastReviewed": "2026-07-09"
+        },
+        "media": [],
+        "comment": {
+          "author": {
+            "name": "장금이",
+            "type": "curator"
+          },
+          "text": "익은 키위는 냉장으로 시간을 벌 수 있어요. 반대로 단단한 건 냉장하면 안 익으니 실온에서 먼저 익히세요."
+        }
+      }
+    ],
+    "tip": "키위의 규칙은 하나예요 — 단단하면 실온에서 후숙, 익으면 냉장. 에틸렌을 내뿜으니 후숙이 끝나면 다른 과일과 분리하세요."
+  },
+  "handling": {
+    "headline": "남은 키위 활용하기",
+    "intro": "무르익은 키위는 갈거나 소스로 쓰면 부담 없이 소진돼요.",
+    "recipes": [
+      {
+        "id": "kiwi-smoothie",
+        "title": "키위 스무디",
+        "category": "음료",
+        "desc": "키위·바나나·요거트를 갈면 상큼한 한 잔.",
+        "image": null,
+        "author": {
+          "name": "healthy_식탁",
+          "type": "ugc"
+        },
+        "reaction": {
+          "likes": 940,
+          "comments": 52
+        },
+        "source": null,
+        "media": []
+      },
+      {
+        "id": "kiwi-dressing",
+        "title": "키위 드레싱",
+        "category": "소스",
+        "desc": "키위·꿀·레몬즙·올리브유를 갈아 샐러드에 곁들여요.",
+        "image": null,
+        "author": {
+          "name": "요리하는_지니",
+          "type": "ugc"
+        },
+        "reaction": {
+          "likes": 710,
+          "comments": 38
+        },
+        "source": null,
+        "media": []
+      },
+      {
+        "id": "kiwi-meat-marinade",
+        "title": "키위 연육 양념",
+        "category": "밑손질",
+        "desc": "갈아 넣어 고기를 재우면 액티니딘이 고기를 부드럽게 해줘요.",
+        "image": null,
+        "author": {
+          "name": "집밥연구소",
+          "type": "ugc"
+        },
+        "reaction": {
+          "likes": 830,
+          "comments": 61
+        },
+        "source": null,
+        "media": []
+      }
+    ],
+    "dispose": [
+      {
+        "key": "peel",
+        "title": "키위 껍질",
+        "way": "부드러운 키위 껍질은 음식물로 배출해요. 상한 과육도 함께 음식물로.",
+        "wasteType": "food",
+        "image": null,
+        "reason": "귤·바나나·사과 껍질처럼 부드러워 가축이 먹을 수 있는 껍질은 음식물로 분류돼요. 키위 껍질도 부드러운 편이라 같은 기준을 따라요. (반대로 파인애플·코코넛 같은 딱딱한 껍질과 핵과류의 크고 딱딱한 씨앗은 일반 쓰레기예요.)",
+        "cautions": [
+          "물기를 최대한 빼고 배출해요",
+          "붙은 스티커는 떼고 배출"
+        ],
+        "regionNote": "키위 껍질을 직접 명시한 지자체 기준은 드물어요. '부드러운 과일 껍질=음식물' 원칙을 따르되, 애매하면 관할 규정을 확인하세요.",
+        "source": {
+          "org": "대한민국 정책브리핑",
+          "type": "official",
+          "mediaType": "article",
+          "url": "https://www.korea.kr/multi/visualNewsView.do?newsId=148896222",
+          "verified": true,
+          "lastReviewed": "2026-07-09"
+        },
+        "detailHref": null
+      }
+    ]
+  },
+  "related": [
+    {
+      "title": "골드키위 vs 그린키위",
+      "desc": "종류별 맛·단맛·산미 차이",
+      "href": "/재료/kiwi/종류",
+      "image": null
+    },
+    {
+      "title": "키위 먹으면 혀가 따끔한 이유",
+      "desc": "액티니딘과 껍질째 먹기",
+      "href": "/재료/kiwi/액티니딘",
+      "image": null
+    }
+  ],
+  "meta": {
+    "schemaVersion": "1.0.0",
+    "generatedAt": null,
+    "reviewStatus": "reviewed"
+  }
+}

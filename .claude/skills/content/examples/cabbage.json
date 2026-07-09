@@ -1,0 +1,458 @@
+{
+  "id": "cabbage",
+  "name": "양배추",
+  "aliases": [
+    "cabbage"
+  ],
+  "category": "vegetable",
+  "emoji": "🥬",
+  "summary": "한 통 사면 다 못 쓰기 쉬운 채소. 자른 뒤 보관·활용이 핵심이에요.",
+  "seasonMonths": [
+    4,
+    5,
+    11,
+    12
+  ],
+  "facts": [
+    {
+      "key": "category",
+      "label": "분류",
+      "value": "채소(엽채류)"
+    },
+    {
+      "key": "calorie",
+      "label": "칼로리",
+      "value": "31kcal (100g)"
+    },
+    {
+      "key": "nutrients",
+      "label": "주요 영양 성분",
+      "value": "비타민U, 비타민C, 비타민K, 식이섬유"
+    }
+  ],
+  "purchase": {
+    "headline": "좋은 양배추 고르는 법",
+    "intro": "겉잎 색과 무게만 보면 실패하지 않아요.",
+    "bestWorst": {
+      "good": {
+        "image": null,
+        "hint": "겉잎 연한 녹색, 묵직하고 단단한 것"
+      },
+      "bad": {
+        "image": null,
+        "hint": "겉잎 마르거나 갈색, 가볍고 노란 부위 많은 것"
+      }
+    },
+    "criteria": [
+      {
+        "key": "weight",
+        "title": "묵직하고 단단한 것",
+        "desc": "손에 들었을 때 크기에 비해 묵직하고, 눌렀을 때 단단한 것이 속이 꽉 차고 신선해요. 가벼우면 수분이 빠진 것일 수 있어요.",
+        "image": null,
+        "source": {
+          "org": "대한민국 정책브리핑",
+          "type": "official",
+          "mediaType": "article",
+          "url": "https://www.korea.kr/news/healthView.do?newsId=148887060",
+          "verified": true,
+          "lastReviewed": "2026-07-09"
+        }
+      },
+      {
+        "key": "outer-leaf",
+        "title": "겉잎이 연한 녹색인 것",
+        "desc": "겉잎이 연한 녹색을 띠고 시들지 않은 것이 좋아요. 지나치게 마르거나 갈색으로 변한 것은 피하세요.",
+        "image": null,
+        "source": {
+          "org": "대한민국 정책브리핑",
+          "type": "official",
+          "mediaType": "article",
+          "url": "https://www.korea.kr/news/healthView.do?newsId=148887060",
+          "verified": true,
+          "lastReviewed": "2026-07-09"
+        }
+      },
+      {
+        "key": "no-bolting",
+        "title": "노란 부위·꽃대가 없는 것",
+        "desc": "잘랐을 때 추대(꽃대)가 올라오거나 노란 부위가 많은 것은 피하세요. 맛과 식감이 떨어져요.",
+        "image": null,
+        "source": {
+          "org": "대한민국 정책브리핑",
+          "type": "official",
+          "mediaType": "article",
+          "url": "https://www.korea.kr/news/healthView.do?newsId=148887060",
+          "verified": true,
+          "lastReviewed": "2026-07-09"
+        }
+      }
+    ]
+  },
+  "storage": {
+    "headline": "양배추 보관 방법 비교",
+    "intro": "통째로냐 자른 뒤냐에 따라 방법이 갈려요. 자른 양배추는 단면 관리가 핵심이에요.",
+    "filters": [
+      {
+        "key": "form",
+        "label": "상태",
+        "options": [
+          "통째로",
+          "자른 뒤",
+          "채 썰어"
+        ]
+      },
+      {
+        "key": "place",
+        "label": "보관 장소",
+        "options": [
+          "냉장",
+          "냉동"
+        ]
+      }
+    ],
+    "methods": [
+      {
+        "id": "whole-fridge",
+        "title": "겉잎으로 싸서 냉장 (통째로)",
+        "recommended": true,
+        "tags": {
+          "form": "통째로",
+          "place": "냉장"
+        },
+        "summary": "겉잎 2~3장을 떼어 몸통을 감싼 뒤 냉장하면 속잎이 마르지 않아요.",
+        "durationDays": [
+          14,
+          21
+        ],
+        "conditions": {
+          "temp": "0~5℃(채소칸)"
+        },
+        "steps": [
+          {
+            "no": 1,
+            "title": "겉잎 2~3장 떼기",
+            "desc": "가장 바깥 겉잎을 떼어 두었다가 몸통을 감쌀 때 써요.",
+            "image": null
+          },
+          {
+            "no": 2,
+            "title": "겉잎으로 몸통 감싸기",
+            "desc": "떼어둔 겉잎으로 양배추를 싸면 속잎의 수분이 덜 날아가요.",
+            "image": null
+          },
+          {
+            "no": 3,
+            "title": "채소칸에 세워 보관",
+            "desc": "온도 변화가 적은 채소칸에 두는 것이 좋아요.",
+            "image": null
+          }
+        ],
+        "goodFor": [
+          "통양배추를 며칠에 걸쳐 쓸 때",
+          "속잎을 신선하게 유지하고 싶을 때"
+        ],
+        "notFor": [
+          "이미 반으로 자른 양배추",
+          "당장 다 쓸 소량"
+        ],
+        "cautions": [
+          "에틸렌을 많이 내뿜는 사과·토마토·바나나와 같이 두면 빨리 시들어요",
+          "칼을 대면 단면부터 상하니, 쓸 만큼만 그때그때 잘라 쓰세요"
+        ],
+        "rating": {
+          "avg": 4.6,
+          "count": 980,
+          "dist": {
+            "1": 2,
+            "2": 2,
+            "3": 6,
+            "4": 20,
+            "5": 70
+          }
+        },
+        "source": {
+          "org": "대한민국 정책브리핑",
+          "type": "official",
+          "mediaType": "article",
+          "url": "https://www.korea.kr/news/healthView.do?newsId=148887060",
+          "verified": true,
+          "lastReviewed": "2026-07-09"
+        },
+        "media": [],
+        "comment": {
+          "author": {
+            "name": "장금이",
+            "type": "curator"
+          },
+          "text": "떼어낸 겉잎을 버리지 말고 이불처럼 덮어주세요. 속잎이 훨씬 오래 촉촉해요."
+        }
+      },
+      {
+        "id": "cut-fridge",
+        "title": "심 빼고 젖은 키친타월 + 밀봉 냉장 (자른 뒤)",
+        "recommended": true,
+        "tags": {
+          "form": "자른 뒤",
+          "place": "냉장"
+        },
+        "summary": "자른 단면의 심을 도려내고 젖은 키친타월을 끼운 뒤 밀봉하면 갈변·건조를 늦춰요.",
+        "durationDays": [
+          5,
+          7
+        ],
+        "conditions": {
+          "temp": "0~5℃(채소칸)"
+        },
+        "steps": [
+          {
+            "no": 1,
+            "title": "단면의 심 도려내기",
+            "desc": "가운데 단단한 심을 V자로 도려내면 그 부분부터 상하는 걸 늦춰요.",
+            "image": null
+          },
+          {
+            "no": 2,
+            "title": "젖은 키친타월 끼우기",
+            "desc": "심을 뺀 자리에 물에 적신 키친타월을 넣으면 단면이 마르지 않아요.",
+            "image": null
+          },
+          {
+            "no": 3,
+            "title": "랩·밀폐용기로 밀봉",
+            "desc": "단면이 공기에 닿지 않게 감싸 냉장 채소칸에 둬요.",
+            "image": null
+          }
+        ],
+        "goodFor": [
+          "반·1/4 통으로 자른 양배추",
+          "며칠에 나눠 먹을 때"
+        ],
+        "notFor": [
+          "장기 보관(1주일 넘게)"
+        ],
+        "cautions": [
+          "단면을 공기에 그대로 두면 산화로 검게 변하고 빨리 물러져요",
+          "포장 없이 넣으면 냉장고 냄새를 흡수해요"
+        ],
+        "rating": {
+          "avg": 4.5,
+          "count": 1230,
+          "dist": {
+            "1": 2,
+            "2": 3,
+            "3": 8,
+            "4": 22,
+            "5": 65
+          }
+        },
+        "source": {
+          "org": "대한민국 정책브리핑",
+          "type": "official",
+          "mediaType": "article",
+          "url": "https://www.korea.kr/news/healthView.do?newsId=148887060",
+          "verified": true,
+          "lastReviewed": "2026-07-09"
+        },
+        "media": [],
+        "comment": {
+          "author": {
+            "name": "장금이",
+            "type": "curator"
+          },
+          "text": "자른 양배추의 적은 마른 단면이에요. 심 자리에 젖은 키친타월 하나면 며칠이 달라져요."
+        }
+      },
+      {
+        "id": "shred-freeze",
+        "title": "채 썰어 소분 냉동 (조리용)",
+        "recommended": false,
+        "tags": {
+          "form": "채 썰어",
+          "place": "냉동"
+        },
+        "summary": "용도에 맞게 손질해 비닐 팩에 소분해 냉동하면 오래 두고 조리에 바로 써요.",
+        "durationDays": [
+          30,
+          60
+        ],
+        "conditions": {
+          "temp": "-18℃"
+        },
+        "steps": [
+          {
+            "no": 1,
+            "title": "용도에 맞게 손질",
+            "desc": "볶음·국거리 등 쓸 크기로 채 썰거나 썰어요.",
+            "image": null
+          },
+          {
+            "no": 2,
+            "title": "비닐 팩에 소분",
+            "desc": "한 번 쓸 분량씩 나눠 담고 공기를 빼요.",
+            "image": null
+          },
+          {
+            "no": 3,
+            "title": "냉동 보관",
+            "desc": "필요할 때 꺼내 조리에 바로 넣거나 자연 해동해요.",
+            "image": null
+          }
+        ],
+        "goodFor": [
+          "대량으로 샀을 때",
+          "볶음·국·찜 등 익혀 먹는 조리용"
+        ],
+        "notFor": [
+          "샐러드·쌈 등 생으로 아삭하게 먹을 때"
+        ],
+        "cautions": [
+          "냉동하면 조직이 물러져 생채소 식감은 살지 않아요. 익혀 먹는 용도로만 쓰세요"
+        ],
+        "rating": {
+          "avg": 4.0,
+          "count": 420,
+          "dist": {
+            "1": 4,
+            "2": 6,
+            "3": 14,
+            "4": 26,
+            "5": 50
+          }
+        },
+        "source": {
+          "org": "대한민국 정책브리핑",
+          "type": "official",
+          "mediaType": "article",
+          "url": "https://www.korea.kr/news/healthView.do?newsId=148887060",
+          "verified": true,
+          "lastReviewed": "2026-07-09"
+        },
+        "media": [],
+        "comment": {
+          "author": {
+            "name": "장금이",
+            "type": "curator"
+          },
+          "text": "생으로 먹을 게 아니라면 채 썰어 얼려두세요. 볶음 할 때 바로 넣으면 편해요."
+        }
+      }
+    ],
+    "tip": "양배추는 자른 단면과 심이 가장 먼저 상해요. 통째로는 겉잎으로 싸고, 자른 뒤엔 단면을 밀봉하는 게 핵심이에요."
+  },
+  "handling": {
+    "headline": "남은 양배추 활용하기",
+    "intro": "한 통을 다 쓰기 어렵다면 볶음·샐러드로 부담 없이 소진해요.",
+    "recipes": [
+      {
+        "id": "cabbage-stirfry",
+        "title": "양배추 볶음",
+        "category": "반찬",
+        "desc": "마늘·간장에 센 불로 빠르게 볶아내는 기본 밑반찬.",
+        "image": null,
+        "author": {
+          "name": "집밥연구소",
+          "type": "ugc"
+        },
+        "reaction": {
+          "likes": 1120,
+          "comments": 74
+        },
+        "source": null,
+        "media": []
+      },
+      {
+        "id": "cabbage-salad",
+        "title": "양배추 샐러드",
+        "category": "반찬",
+        "desc": "채 썰어 드레싱에 버무리면 아삭한 생채 샐러드.",
+        "image": null,
+        "author": {
+          "name": "healthy_식탁",
+          "type": "ugc"
+        },
+        "reaction": {
+          "likes": 830,
+          "comments": 41
+        },
+        "source": null,
+        "media": []
+      },
+      {
+        "id": "cabbage-steamed",
+        "title": "양배추 찜 & 쌈",
+        "category": "반찬",
+        "desc": "부드럽게 쪄서 쌈장에 곁들이면 속 편한 한 끼.",
+        "image": null,
+        "author": {
+          "name": "요리하는_지니",
+          "type": "ugc"
+        },
+        "reaction": {
+          "likes": 690,
+          "comments": 33
+        },
+        "source": null,
+        "media": []
+      }
+    ],
+    "dispose": [
+      {
+        "key": "leaf",
+        "title": "먹다 남은 잎·시든 속잎",
+        "way": "부드러운 양배추 잎은 음식물로 배출해요. 부피가 크면 잘게 잘라서.",
+        "wasteType": "food",
+        "image": null,
+        "reason": "부드럽고 수분 있는 채소 잎은 퇴비·사료로 재활용할 수 있어 음식물로 분류돼요. 부피가 큰 통배추류는 잘게 잘라 배출하는 게 좋아요.",
+        "cautions": [
+          "부피가 크면 잘게 잘라 배출량을 줄여요",
+          "곰팡이가 폈거나 썩은 냄새가 나는 부분도 음식물로 배출"
+        ],
+        "regionNote": "음식물쓰레기 기준은 지자체 조례라 자치구마다 다를 수 있어요. 애매하면 관할 규정을 확인하세요.",
+        "source": {
+          "org": "서울특별시 생활환경과",
+          "type": "official",
+          "mediaType": "article",
+          "url": "https://mediahub.seoul.go.kr/archives/2004122",
+          "verified": true,
+          "lastReviewed": "2026-07-09"
+        },
+        "detailHref": null
+      },
+      {
+        "key": "core",
+        "title": "심(중심 줄기)·마른 겉잎",
+        "way": "단단한 심과 흙 묻은 마른 겉잎은 대개 일반 쓰레기(종량제 봉투)로. 관할 기준을 확인하세요.",
+        "wasteType": "general",
+        "image": null,
+        "reason": "양배추 심처럼 단단하고 질겨 분쇄가 어려운 부위나, 흙 묻은 마른 겉잎은 음식물 재활용에 부담이 커 일반 쓰레기로 보는 지자체가 많아요. (양파·마늘 껍질을 일반 쓰레기로 분류하는 것과 같은 이유예요.)",
+        "cautions": [
+          "심은 얇게 저미거나 익히면 먹을 수도 있어요(볶음·국)",
+          "질긴 정도·흙 묻음에 따라 음식물이 될 수도 있으니 애매하면 관할 확인"
+        ],
+        "regionNote": "질긴 채소 부위(뿌리·심)의 분류는 지자체마다 달라요. 서울시는 양파·마늘 껍질 등 질긴 부위를 일반 쓰레기로 통일했지만, 심은 별도 명시가 없어 관할 규정 확인이 안전해요.",
+        "source": {
+          "org": "서울특별시 생활환경과",
+          "type": "official",
+          "mediaType": "article",
+          "url": "https://mediahub.seoul.go.kr/archives/2004122",
+          "verified": true,
+          "lastReviewed": "2026-07-09"
+        },
+        "detailHref": null
+      }
+    ]
+  },
+  "related": [
+    {
+      "title": "자른 양배추가 검게 변했어요, 먹어도 될까?",
+      "desc": "산화 갈변과 곰팡이 구분법",
+      "href": "/재료/cabbage/갈변",
+      "image": null
+    }
+  ],
+  "meta": {
+    "schemaVersion": "1.0.0",
+    "generatedAt": null,
+    "reviewStatus": "reviewed"
+  }
+}
