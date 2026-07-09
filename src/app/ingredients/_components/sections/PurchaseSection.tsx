@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { Purchase } from "../../_lib/types";
+import { subjectParticle } from "../../_lib/josa";
 import { HeroSpeaker } from "../HeroSpeaker";
 import { BestWorst } from "../purchase/BestWorst";
 import { ProbabilityGauge } from "../purchase/ProbabilityGauge";
@@ -43,7 +44,7 @@ export function PurchaseSection({
       />
       {/* 게이지: 숫자만 (sticky, 체크리스트보다 위) */}
       <ProbabilityGauge
-        label={`이 ${ingredientName}이 좋은 ${ingredientName}일 확률`}
+        label={`이 ${ingredientName}${subjectParticle(ingredientName)} 좋은 ${ingredientName}일 확률`}
         checked={checkedCount}
         total={data.criteria.length}
       />

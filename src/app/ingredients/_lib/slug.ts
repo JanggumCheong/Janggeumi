@@ -11,21 +11,22 @@ export function toApiId(slug: string): string {
   return `ing_${slug.replace(/-/g, "_")}`;
 }
 
-/** 재료 slug → 표시 메타(이모지·이름). 로컬 JSON/API에 없을 때의 fallback. */
+/**
+ * 재료 slug → 표시 메타(이모지·이름). 헤더 제목·썸네일 등 동기 조회용 매핑.
+ * 헤더가 클라 컴포넌트라 async API 조회를 못 해 이름을 여기서 관리한다.
+ * 재료가 API에 추가되면 여기에 등록한다(slug = API id에서 ing_ 제거, _→-).
+ */
 const META: Record<string, { emoji: string; name: string }> = {
+  // API 등록 재료 (과일/채소)
   watermelon: { emoji: "🍉", name: "수박" },
+  strawberry: { emoji: "🍓", name: "딸기" },
+  apple: { emoji: "🍎", name: "사과" },
+  "shine-muscat": { emoji: "🍇", name: "샤인머스캣" },
+  avocado: { emoji: "🥑", name: "아보카도" },
+  peach: { emoji: "🍑", name: "천도복숭아" },
+  // 로컬 콘텐츠 재료 (API 미등록)
   potato: { emoji: "🥔", name: "감자" },
   "green-onion": { emoji: "🌿", name: "대파" },
-  peach: { emoji: "🍑", name: "천도복숭아" },
-  corn: { emoji: "🌽", name: "옥수수" },
-  cucumber: { emoji: "🥒", name: "오이" },
-  onion: { emoji: "🧅", name: "양파" },
-  tomato: { emoji: "🍅", name: "토마토" },
-  cabbage: { emoji: "🥬", name: "양배추" },
-  tofu: { emoji: "🧈", name: "두부" },
-  chicken: { emoji: "🍗", name: "닭고기" },
-  squid: { emoji: "🦑", name: "오징어" },
-  egg: { emoji: "🥚", name: "계란" },
 };
 
 /** slug → 이모지. 매핑 없으면 중립 자리표시. */
