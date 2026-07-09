@@ -76,9 +76,16 @@ def get_category_filters(category_id: str):
 
 
 @app.get("/v1/categories/{category_id}/ingredients")
-def get_ingredients_by_category(category_id: str, filter_options: Optional[List[str]] = Query(None)):
+def get_ingredients_by_category(
+    category_id: str,
+    filter_options: Optional[List[str]] = Query(None),
+    search: Optional[str] = Query(None),
+    name: Optional[str] = Query(None),
+    q: Optional[str] = Query(None)
+):
     try:
-        return query_get_ingredients_by_category(category_id, filter_options)
+        name_search = search or name or q
+        return query_get_ingredients_by_category(category_id, filter_options, name_search)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

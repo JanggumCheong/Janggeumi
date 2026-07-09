@@ -55,6 +55,231 @@ def _summary_from_text(text: Optional[str], limit: int = 80) -> str:
     return f"{normalized[:limit].rstrip()}..."
 
 
+HOME_BANNER_IMAGE_BY_ID = {
+    "ing_watermelon": "public/images/banners/watermelon-recommend-banner.webp",
+    "ing_peach": "public/images/banners/peach-recommend-banner.webp",
+}
+
+HOME_CATCHPHRASE_BY_ID = {
+    "ing_watermelon": "시원하게 즐기는 여름",
+    "ing_peach": "제철 맞은 달콤한",
+}
+
+HOME_EMOJI_BY_NAME = {
+    "수박": "🍉",
+    "천도복숭아": "🍑",
+    "복숭아": "🍑",
+    "아보카도": "🥑",
+    "사과": "🍎",
+    "딸기": "🍓",
+    "샤인머스켓": "🍇",
+    "포도": "🍇",
+}
+
+HOME_RATING_BY_ID = {
+    "ing_watermelon": {"avg": 4.7, "count": 1248},
+    "ing_peach": {"avg": 4.5, "count": 986},
+}
+
+
+def _is_fruit_category(category: dict[str, Any]) -> bool:
+    category_id = str(category.get("id") or "").lower()
+    category_name = str(category.get("name") or "").lower()
+    return (
+        category_name == "과일"
+        or category_name in {"fruit", "fruits"}
+        or category_id in {"fruit", "fruits"}
+        or "fruit" in category_id
+    )
+
+
+def _get_fruit_category_ids() -> list[str]:
+    categories = _execute_query(
+        supabase.table("categories").select("id, name")
+    )
+    return [
+        row["id"]
+        for row in categories or []
+        if row.get("id") and _is_fruit_category(row)
+    ]
+
+
+def _get_seasonal_fruits(current_month: int, limit: int = 6) -> list[dict[str, Any]]:
+    query = (
+        supabase.table("ingredients")
+        .select("id, category_id, name, catchphrase, description, image_url, peak_months")
+        .filter("peak_months", "cs", f"{{{current_month}}}")
+    )
+
+    fruit_category_ids = _get_fruit_category_ids()
+    if not fruit_category_ids:
+        return []
+
+    query = query.in_("category_id", fruit_category_ids)
+
+    return _execute_query(query.order("name").limit(limit))
+
+
+def _home_emoji(name: Optional[str]) -> str:
+    return HOME_EMOJI_BY_NAME.get(name or "", "🍽️")
+
+
+def _home_image_url(row: dict[str, Any]) -> Optional[str]:
+    return HOME_BANNER_IMAGE_BY_ID.get(row.get("id")) or row.get("image_url")
+
+
+def _home_catchphrase(row: dict[str, Any]) -> dict[str, str]:
+    name = row.get("name") or "제철 과일"
+    highlight = HOME_CATCHPHRASE_BY_ID.get(row.get("id"))
+
+    if not highlight:
+        catchphrase = str(row.get("catchphrase") or "").strip()
+        highlight = (
+            catchphrase
+            .replace(name, "")
+            .strip(" !?.。")
+        ) or "이번 달 제철"
+
+    return {
+        "highlight": highlight,
+        "title": name
+    }
+
+
+def _home_rating(row: dict[str, Any]) -> dict[str, Any]:
+    return HOME_RATING_BY_ID.get(row.get("id"), {"avg": 4.5, "count": 0})
+
+
+def _format_home_recommendation(row: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "id": row.get("id"),
+        "name": row.get("name"),
+        "emoji": _home_emoji(row.get("name")),
+        "catchphrase": _home_catchphrase(row),
+        "image_url": _home_image_url(row),
+        "is_season": True,
+        "rating": _home_rating(row),
+    }
+
+
+def _format_home_trending(row: dict[str, Any], rank: int) -> dict[str, Any]:
+    return {
+        "rank": rank,
+        "id": row.get("id"),
+        "name": row.get("name"),
+        "image_url": _home_image_url(row),
+        "trend_status": "지금 제철!",
+    }
+
+
+def _storage_conditions(option_id: Optional[str]) -> dict[str, str]:
+    if option_id == "fo_room":
+        return {
+            "place": "직사광선을 피한 서늘한 실온",
+            "temp": "15~20도 권장",
+            "sealed": "통풍이 되도록 보관"
+        }
+
+    if option_id == "fo_fridge":
+        return {
+            "place": "냉장실",
+            "temp": "4도 안팎",
+            "sealed": "랩이나 밀폐 용기 사용"
+        }
+
+    if option_id == "fo_freezer":
+        return {
+            "place": "냉동실",
+            "temp": "-18도 이하",
+            "sealed": "소분 후 밀폐 보관"
+        }
+
+    return {}
+
+
+def _storage_steps(option_id: Optional[str]) -> list[dict[str, Any]]:
+    if option_id == "fo_room":
+        return [
+            {
+                "no": 1,
+                "title": "상태 확인",
+                "desc": "상처나 무른 부분이 있는지 먼저 확인해요.",
+                "image": None
+            },
+            {
+                "no": 2,
+                "title": "서늘한 곳에 두기",
+                "desc": "직사광선을 피하고 통풍이 되는 실온 공간에 보관해요.",
+                "image": None
+            },
+            {
+                "no": 3,
+                "title": "빠르게 소비",
+                "desc": "실온 보관은 오래 두기보다 며칠 안에 먹는 것이 좋아요.",
+                "image": None
+            }
+        ]
+
+    if option_id == "fo_fridge":
+        return [
+            {
+                "no": 1,
+                "title": "물기 제거",
+                "desc": "겉면의 물기를 닦아 과습을 줄여요.",
+                "image": None
+            },
+            {
+                "no": 2,
+                "title": "밀폐하기",
+                "desc": "랩이나 밀폐 용기에 담아 냄새 배임과 수분 손실을 막아요.",
+                "image": None
+            },
+            {
+                "no": 3,
+                "title": "냉장 보관",
+                "desc": "냉장실 안쪽에 두고 가능한 빨리 먹어요.",
+                "image": None
+            }
+        ]
+
+    if option_id == "fo_freezer":
+        return [
+            {
+                "no": 1,
+                "title": "먹기 좋게 손질",
+                "desc": "나중에 바로 쓰기 좋게 한 번 먹을 분량으로 나눠요.",
+                "image": None
+            },
+            {
+                "no": 2,
+                "title": "소분 밀폐",
+                "desc": "냉동용 지퍼백이나 용기에 담고 공기를 최대한 빼요.",
+                "image": None
+            },
+            {
+                "no": 3,
+                "title": "냉동 보관",
+                "desc": "냉동 후에는 생식보다 조리나 음료용으로 활용하는 편이 좋아요.",
+                "image": None
+            }
+        ]
+
+    return []
+
+
+def _storage_reason(option_id: Optional[str], summary: str) -> str:
+    if option_id == "fo_room":
+        return "통째인 재료는 서늘한 실온에서 식감과 상태를 자연스럽게 유지하기 좋아요."
+
+    if option_id == "fo_fridge":
+        return "자른 재료는 수분 손실과 오염을 줄이기 위해 밀폐 냉장이 필요해요."
+
+    if option_id == "fo_freezer":
+        return "오래 두고 쓰려면 소분 냉동이 가장 안정적이에요."
+
+    return summary
+
+
 def _execute_query(query):
     response = query.execute()
     if getattr(response, "error", None):
@@ -79,9 +304,17 @@ def get_category_filters(category_id: str) -> Any:
     )
 
 
-def get_ingredients_by_category(category_id: str, filter_options: Optional[List[str]] = None) -> Any:
+def get_ingredients_by_category(
+    category_id: str,
+    filter_options: Optional[List[str]] = None,
+    name_search: Optional[str] = None
+) -> Any:
     """카테고리 내 식재료 목록을 조회하며, 옵션 필터링을 지원합니다."""
     query = supabase.table("ingredients").select("*").eq("category_id", category_id)
+    search_text = (name_search or "").strip()
+
+    if search_text:
+        query = query.ilike("name", f"%{search_text}%")
 
     if filter_options:
         detail_rows = _execute_query(
@@ -298,7 +531,7 @@ def _get_home_data_from_database(ingredient_id: str = "ing_watermelon") -> Dict[
             })
 
         return {
-            "today_recommended_ingredient": today_recommended,
+            "today_recommended_ingredients": [today_recommended] if today_recommended else [],
             "recent_views": recent_views,
             "weekly_trending_ingredients": weekly_trending
         }
@@ -446,37 +679,11 @@ def _get_home_data_from_database(ingredient_id: str = "ing_watermelon") -> Dict[
 def get_home_data(ingredient_id: str = "ing_watermelon") -> Dict[str, Any]:
     """Return the home screen data."""
     try:
+        current_month = datetime.now().month
+        seasonal_fruits = _get_seasonal_fruits(current_month, limit=6)
         today_recommended_ingredients = [
-            {
-                "id": "ing_watermelon",
-                "name": "수박",
-                "emoji": "🍉",
-                "catchphrase": {
-                    "highlight": "시원하게 즐기는 여름",
-                    "title": "수박"
-                },
-                "image_url": "public/images/banners/watermelon-recommend-banner.webp",
-                "is_season": True,
-                "rating": {
-                    "avg": 4.7,
-                    "count": 1248
-                }
-            },
-            {
-                "id": "ing_peach",
-                "name": "천도복숭아",
-                "emoji": "🍑",
-                "catchphrase": {
-                    "highlight": "제철 맞은 달콤한",
-                    "title": "천도복숭아"
-                },
-                "image_url": "public/images/banners/peach-recommend-banner.webp",
-                "is_season": True,
-                "rating": {
-                    "avg": 4.5,
-                    "count": 986
-                }
-            }
+            _format_home_recommendation(row)
+            for row in seasonal_fruits[:2]
         ]
 
         recent_rows = supabase.table("recent_views") \
@@ -497,52 +704,11 @@ def get_home_data(ingredient_id: str = "ing_watermelon") -> Dict[str, Any]:
                 })
 
         weekly_trending = [
-            {
-                "rank": 1,
-                "id": "ing_avocado",
-                "name": "아보카도",
-                "image_url": "https://example.com/images/avocado.png",
-                "trend_status": "지금 제철!"
-            },
-            {
-                "rank": 2,
-                "id": "ing_peach",
-                "name": "천도복숭아",
-                "image_url": "public/images/banners/peach-recommend-banner.webp",
-                "trend_status": "지금 제철!"
-            },
-            {
-                "rank": 3,
-                "id": "ing_watermelon",
-                "name": "수박",
-                "image_url": "public/images/banners/watermelon-recommend-banner.webp",
-                "trend_status": "지금 제철!"
-            },
-            {
-                "rank": 4,
-                "id": "ing_korean_melon",
-                "name": "참외",
-                "image_url": "https://example.com/images/korean-melon.png",
-                "trend_status": "지금 제철!"
-            },
-            {
-                "rank": 5,
-                "id": "ing_plum",
-                "name": "자두",
-                "image_url": "https://example.com/images/plum.png",
-                "trend_status": "지금 제철!"
-            },
-            {
-                "rank": 6,
-                "id": "ing_grape",
-                "name": "포도",
-                "image_url": "https://example.com/images/grape.png",
-                "trend_status": "지금 제철!"
-            }
+            _format_home_trending(row, index)
+            for index, row in enumerate(seasonal_fruits, start=1)
         ]
 
         return {
-            "today_recommended_ingredient": today_recommended_ingredients,
             "today_recommended_ingredients": today_recommended_ingredients,
             "recent_views": recent_views,
             "weekly_trending_ingredients": weekly_trending
@@ -727,7 +893,7 @@ def get_ingredient_storage_data(ingredient_id: str, fallback_name: str = None) -
 
         methods_map = {}
 
-        for row in system_details+user_posts:
+        for row in (system_details or []) + (user_posts or []):
             post_id = row.get("id")
             option_id = row.get("option_id")
             title = row.get("title")
@@ -747,6 +913,7 @@ def get_ingredient_storage_data(ingredient_id: str, fallback_name: str = None) -
                     "id": post_id,
                     "title": title_text,
                     "is_recommended": False,
+                    "recommended": False,
                     "tags": {
                         "storage_location_option_id": None,
                         "storage_cut_option_id": None,
@@ -755,6 +922,9 @@ def get_ingredient_storage_data(ingredient_id: str, fallback_name: str = None) -
                     "summary": summary_text,
                     "content": content_text,
                     "duration": None,
+                    "conditions": {},
+                    "steps": [],
+                    "reason": _storage_reason(option_id, summary_text),
                     "rating": {
                         "avg": float(rating_val),
                         "count": 1248
@@ -764,7 +934,7 @@ def get_ingredient_storage_data(ingredient_id: str, fallback_name: str = None) -
                             "name": "장금이",
                             "type": "curator"
                         },
-                        "text": content_text or summary_text
+                        "text": content_text
                     },
                     "sources": [
                         {
@@ -773,6 +943,8 @@ def get_ingredient_storage_data(ingredient_id: str, fallback_name: str = None) -
                         }
                     ]
                 }
+                if not content_text or content_text == summary_text:
+                    methods_map[post_id]["comment"] = None
             if section_id == "fs_storage_location":
                 cut_option_id = None
                 methods_map[post_id]["tags"][
@@ -788,6 +960,7 @@ def get_ingredient_storage_data(ingredient_id: str, fallback_name: str = None) -
                     ] = "중기"
                     cut_option_id = "fo_whole"
                     methods_map[post_id]["is_recommended"] = True
+                    methods_map[post_id]["recommended"] = True
 
                 elif option_id == "fo_fridge":
 
@@ -816,8 +989,14 @@ def get_ingredient_storage_data(ingredient_id: str, fallback_name: str = None) -
                         "fo_whole": "통째로",
                         "fo_trimmed": "자른 뒤"
                     }.get(cut_option_id)
-
-
+                methods_map[post_id]["conditions"] = _storage_conditions(
+                    option_id
+                )
+                methods_map[post_id]["steps"] = _storage_steps(option_id)
+                methods_map[post_id]["reason"] = _storage_reason(
+                    option_id,
+                    methods_map[post_id]["summary"]
+                )
 
             elif section_id == "fs_cut_status":
 
