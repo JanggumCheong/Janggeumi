@@ -55,6 +55,9 @@ export function Header() {
   const canGoBack = () => Number(sessionStorage.getItem(KEY) ?? "0") > 1;
   const handleBack = () => (canGoBack() ? router.back() : router.push("/"));
 
+  // 로그인(온보딩)은 전체 화면 스플래시 — 앱 헤더를 숨긴다.
+  if (pathname === "/login") return null;
+
   return (
     <header className="sticky top-0 z-20 flex h-14 w-full items-center justify-between px-2 bg-card">
       {isHome ? (

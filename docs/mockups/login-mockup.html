@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <!--
+  장금이 — 로그인(온보딩) 화면 목업 (모바일 우선)
+  스펙 출처: 사용자가 제시한 참조 이미지(폰 목업)를 그대로 스펙으로 삼음.
+    · SNS 3초 로그인 = 가입과 로그인 통합. 카카오 / 네이버 / 구글 순.
+    · 브랜드 로고 로크업(assets/images/logo.webp) = 캐릭터+워드마크 히어로.
+  구현 예정: 라우트 src/app/login, 재사용 요소는 src/features/auth.
+  ⚠️ 디자인 시스템 대비 결정 포인트(우측 명세 패널 '확정/미정' 참조):
+    - 배경: DS는 near-white(#FBFBFA) 원칙이나, 로그인=온보딩 스플래시(홈 예외 성격)라
+      참조 이미지의 '따뜻한 아이보리'를 저채도·모던하게 채택. 최종 확정 필요.
+    - SNS 버튼색: 각 제공자 브랜드 가이드 색(카카오/네이버/구글) — 토큰 팔레트의 의도적 예외(OAuth 브랜드 준수).
+  Figma 오토레이아웃 이관 대비: flex column = 세로 오토레이아웃, gap = itemSpacing.
+  -->
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>장금이 — 로그인 목업</title>
+    <style>
+      :root {
+        --jg-primary: #5c6e3d;
+        --jg-primary-strong: #47562f;
+        --jg-primary-soft: #eef1e6;
+        --jg-bg: #fbfbfa;
+        --jg-surface: #ffffff;
+        --jg-sunken: #f4f4f2;
+        --jg-ink: #1f1d18;
+        --jg-ink-sub: #6b675e;
+        --jg-ink-mute: #9b978c;
+        --jg-line: #e7e4dc;
+        --jg-buy: #1f804d;
+        --jg-buy-bg: #e9f6ee;
+        --jg-keep: #2f6e86;
+        --jg-keep-bg: #e8f2f6;
+        --jg-use: #c4712a;
+        --jg-use-bg: #fbf0e4;
+        --jg-star: #f0a93b;
+        --jg-danger: #c1453b;
+        --r-sm: 10px;
+        --r-md: 16px;
+        --r-lg: 20px;
+        --r-pill: 999px;
+        --shadow-card: 0 2px 10px rgba(31, 29, 24, 0.05);
+        --shadow-float: 0 6px 20px rgba(31, 29, 24, 0.1);
+        /* SNS 제공자 브랜드색 (토큰 예외 — OAuth 브랜드 준수). 배경·텍스트·포인트는 전부 기존 토큰 사용. */
+        --kakao: #fee500;
+        --kakao-ink: #191600;
+        --naver: #03c75a;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--jg-bg);
+        color: var(--jg-ink);
+        font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
+          "Pretendard", "Malgun Gothic", sans-serif;
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+      }
+      .page { max-width: 1240px; margin: 0 auto; padding: 32px 24px 64px; overflow-x: hidden; }
+      .page-title { font-size: 30px; font-weight: 800; margin: 0 0 6px; }
+      .page-sub { color: var(--jg-ink-sub); font-size: 15px; margin: 0 0 24px; max-width: 720px; }
+
+      /* ── 기획 2단 레이아웃 (재사용 표준, ingredient-detail-mockup 동일) ── */
+      .spec-layout { display: flex; gap: 28px; align-items: flex-start; justify-content: space-between; }
+      .spec-stage { flex: 0 1 auto; min-width: 0; max-width: 704px;
+        display: flex; flex-wrap: wrap; gap: 24px 24px; justify-content: center; align-items: flex-start; }
+      .spec-panel { width: 380px; flex: none; position: sticky; top: 24px;
+        max-height: calc(100vh - 48px); overflow-y: auto; display: flex; flex-direction: column; gap: 16px;
+        padding-right: 4px; }
+      .spec-head { padding: 2px 4px 4px; }
+      .spec-head-title { font-size: 18px; font-weight: 800; color: var(--jg-ink); }
+      .spec-head-sub { font-size: 12px; color: var(--jg-ink-sub); margin-top: 4px; line-height: 1.4; }
+      .spec-card { background: var(--jg-surface); border: 1px solid var(--jg-line); border-radius: var(--r-lg);
+        box-shadow: var(--shadow-card); padding: 18px 20px; }
+      .spec-card h2 { font-size: 15px; font-weight: 800; margin: 0 0 12px; letter-spacing: .2px; }
+      .spec-card table { border-collapse: collapse; width: 100%; font-size: 13px; }
+      .spec-card th, .spec-card td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--jg-line); vertical-align: top; }
+      .spec-card th { color: var(--jg-ink-sub); font-weight: 700; white-space: nowrap; }
+      .spec-card td:last-child { white-space: normal; }
+      .spec-card tr:last-child th, .spec-card tr:last-child td { border-bottom: none; }
+      .spec-card code { background: var(--jg-sunken); border-radius: 6px; padding: 1px 6px; font-size: 11px;
+        word-break: break-all; overflow-wrap: anywhere; }
+      .spec-card ul { margin: 0; padding-left: 18px; font-size: 13px; color: var(--jg-ink-sub); }
+      .spec-card li { margin: 5px 0; }
+      .spec-card li b { color: var(--jg-ink); }
+      .pill { display: inline-block; font-size: 11px; font-weight: 800; border-radius: var(--r-pill);
+        padding: 2px 9px; }
+      .pill-fix { background: var(--jg-buy-bg); color: var(--jg-buy); }
+      .pill-open { background: var(--jg-use-bg); color: var(--jg-use); }
+
+      .stage { display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start; justify-content: center; }
+      .screen-wrap { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+      .screen-label { font-size: 13px; font-weight: 700; color: var(--jg-ink-sub); }
+
+      /* 폰 프레임 (ingredient-detail-mockup 동일 규격) */
+      .phone {
+        width: 340px;
+        background: var(--jg-surface);
+        border: 10px solid #1f1d18;
+        border-radius: 42px;
+        overflow: hidden;
+        box-shadow: var(--shadow-float);
+      }
+      .status { height: 42px; display: flex; align-items: center;
+        justify-content: space-between; padding: 0 22px; font-size: 12px; font-weight: 700;
+        background: transparent; position: relative; z-index: 2; }
+      .status .dots { display: inline-flex; gap: 5px; align-items: center; }
+      .status .sig { width: 16px; height: 10px; border-radius: 2px; background: var(--jg-ink); opacity: .85; }
+      .status .batt { width: 22px; height: 11px; border: 1.5px solid var(--jg-ink); border-radius: 3px;
+        position: relative; opacity: .85; }
+      .status .batt::after { content: ""; position: absolute; left: 1.5px; top: 1.5px; bottom: 1.5px; width: 13px;
+        background: var(--jg-ink); border-radius: 1px; }
+
+      /* 로그인 앱 컨테이너 — DS 원칙: near-white 배경. 따뜻함은 캐릭터+그린 포인트로만. */
+      .app {
+        position: relative;
+        min-height: 660px;
+        display: flex;
+        flex-direction: column;
+        padding: 0 24px 26px;
+        background: var(--jg-bg);
+        overflow: hidden;
+      }
+
+      /* 히어로 (브랜드 로고 + 태그라인) */
+      .lg-hero { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center;
+        text-align: center; padding-top: 40px; }
+      /* component: AuthLogo (assets/images/logo.webp — 캐릭터+워드마크 로크업) */
+      .brand-logo { width: 240px; height: auto; }
+      .brand-tagline { margin: 12px 0 0; font-size: 15px; font-weight: 700; color: var(--jg-ink-sub); }
+
+      /* 액션 (SNS 버튼 스택) */
+      .lg-actions { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 12px;
+        margin-top: 40px; }
+      /* component: SocialButton (변형: kakao / naver / google) */
+      .sbtn { position: relative; display: flex; align-items: center; justify-content: center;
+        width: 100%; height: 54px; border: none; border-radius: var(--r-md); cursor: pointer;
+        font-family: inherit; font-size: 15.5px; font-weight: 700; }
+      .sbtn .ic { position: absolute; left: 18px; width: 26px; height: 26px; display: flex;
+        align-items: center; justify-content: center; }
+      .sbtn.kakao { background: var(--kakao); color: var(--kakao-ink); }
+      .sbtn.naver { background: var(--naver); color: #fff; }
+      .sbtn.google { background: #fff; color: var(--jg-ink); border: 1px solid var(--google-line); }
+      /* 제공자 아이콘 배지 */
+      .ic-kakao { border-radius: 50%; background: var(--kakao-ink); color: var(--kakao);
+        font-weight: 900; font-size: 14px; }
+      .ic-naver { color: #fff; font-weight: 900; font-size: 16px; font-style: italic; }
+      .ic-google { font-weight: 900; font-size: 17px;
+        background: conic-gradient(from -45deg, #ea4335 0 25%, #fbbc05 0 50%, #34a853 0 75%, #4285f4 0 100%);
+        -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+      /* 푸터 (구분선 + 안내 카피) */
+      .lg-foot { position: relative; z-index: 1; margin-top: auto; padding-top: 30px;
+        display: flex; flex-direction: column; align-items: center; }
+      .divider { display: flex; align-items: center; gap: 12px; width: 100%; margin-bottom: 16px; }
+      .divider::before, .divider::after { content: ""; flex: 1; height: 1px;
+        background: linear-gradient(90deg, transparent, var(--jg-line)); }
+      .divider::after { background: linear-gradient(90deg, var(--jg-line), transparent); }
+      .divider span { font-size: 11.5px; font-weight: 700; color: var(--jg-ink-mute); letter-spacing: .3px; }
+      .foot-lead { font-size: 14px; font-weight: 700; color: var(--jg-ink-sub); }
+      .foot-terms { margin-top: 5px; font-size: 11.5px; color: var(--jg-ink-mute); text-align: center; line-height: 1.5; }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <h1 class="page-title">로그인 (온보딩)</h1>
+      <p class="page-sub">
+        SNS 3초 로그인 — 가입·로그인 통합 진입 화면. 참조 이미지를 스펙으로 재현.
+        라우트 <code>/login</code>, 재사용 요소 <code>features/auth</code>.
+      </p>
+
+      <div class="spec-layout">
+        <div class="spec-stage">
+          <div class="screen-wrap">
+            <div class="phone">
+              <div class="app">
+                <!-- 상태바 -->
+                <div class="status">
+                  <span>9:41</span>
+                  <span class="dots">
+                    <span class="sig"></span>
+                    <span class="batt"></span>
+                  </span>
+                </div>
+
+                <!-- 히어로: 브랜드 로고 로크업(캐릭터 + 워드마크) -->
+                <div class="lg-hero">
+                  <!-- component: AuthLogo (assets/images/logo.webp — 캐릭터+워드마크) -->
+                  <img class="brand-logo" src="../../assets/images/logo.webp" alt="장금이" />
+                  <div class="brand-tagline">마트에서 살 식재료, 똑똑하게</div>
+                </div>
+
+                <!-- SNS 버튼 스택 -->
+                <div class="lg-actions">
+                  <!-- component: SocialButton / kakao -->
+                  <button class="sbtn kakao">
+                    <span class="ic"><span class="ic-kakao" style="width:24px;height:24px;display:flex;align-items:center;justify-content:center;">k</span></span>
+                    카카오로 시작하기
+                  </button>
+                  <!-- component: SocialButton / naver -->
+                  <button class="sbtn naver">
+                    <span class="ic"><span class="ic-naver">N</span></span>
+                    네이버로 시작하기
+                  </button>
+                  <!-- component: SocialButton / google -->
+                  <button class="sbtn google">
+                    <span class="ic"><span class="ic-google">G</span></span>
+                    구글로 시작하기
+                  </button>
+                </div>
+
+                <!-- 푸터 -->
+                <div class="lg-foot">
+                  <div class="divider"><span>SNS로 3초 만에</span></div>
+                  <div class="foot-lead">가입과 로그인이 하나로 처리됩니다</div>
+                  <div class="foot-terms">계속 시 이용약관 · 개인정보처리방침에 동의</div>
+                </div>
+              </div>
+            </div>
+            <div class="screen-label">/login — SNS 3초 로그인</div>
+          </div>
+        </div>
+        <!-- /spec-stage -->
+
+        <!-- 기획 명세 패널 -->
+        <aside class="spec-panel">
+          <div class="spec-head">
+            <div class="spec-head-title">📋 기획 명세</div>
+            <div class="spec-head-sub">이 화면의 라우팅·구현 구조·기능 요구사항. 참조 이미지를 스펙으로 확정.</div>
+          </div>
+
+          <div class="spec-card">
+            <h2>라우팅 · 구현 구조</h2>
+            <table>
+              <tr><th>라우트</th><td><code>src/app/login/page.tsx</code> → <code>/login</code></td></tr>
+              <tr><th>재사용</th><td><code>src/features/auth/</code> 에 컴포넌트·훅·서버액션 배치</td></tr>
+              <tr><th>진입</th><td>비로그인 상태에서 보호 라우트 접근 시 <code>/login</code> 리다이렉트</td></tr>
+              <tr><th>성공 후</th><td>이전 페이지(<code>?next=</code>) 또는 홈 <code>/</code> 으로 복귀</td></tr>
+            </table>
+          </div>
+
+          <div class="spec-card">
+            <h2>features/auth 구성(제안)</h2>
+            <ul>
+              <li><b>components/SocialLoginButton</b> — 변형 <code>kakao|naver|google</code></li>
+              <li><b>components/AuthLogo</b> — 브랜드 로고 로크업(<code>logo.webp</code>)</li>
+              <li><b>lib/oauth.ts</b> — 제공자별 authorize URL 생성</li>
+              <li><b>actions/signIn.ts</b> — OAuth 시작 서버액션</li>
+              <li><b>hooks/useAuth</b> — 세션·로그인 상태</li>
+            </ul>
+          </div>
+
+          <div class="spec-card">
+            <h2>기능 요구사항</h2>
+            <ul>
+              <li>버튼 클릭 → 제공자 OAuth 시작(가입·로그인 <b>통합</b>: 신규면 자동 가입)</li>
+              <li>제공자 순서 <b>카카오 → 네이버 → 구글</b>(참조 이미지 기준)</li>
+              <li>버튼 클릭이 곧 약관·개인정보처리방침 <b>동의</b>(하단 고지)</li>
+              <li>약관·개인정보 링크는 실제 문서로 연결(별도 라우트)</li>
+              <li>로딩·실패 상태 처리(제공자 팝업/리다이렉트 실패 토스트)</li>
+            </ul>
+          </div>
+
+          <div class="spec-card">
+            <h2>확정 / 미정</h2>
+            <table>
+              <tr>
+                <th><span class="pill pill-fix">확정</span></th>
+                <td>SNS 3버튼(카카오·네이버·구글) 통합 로그인, 임시 캐릭터+"교체 예정" 라벨, 카피(태그라인·약관 고지)</td>
+              </tr>
+              <tr>
+                <th><span class="pill pill-fix">확정</span></th>
+                <td><b>배경</b>: DS 원칙대로 near-white(<code>--jg-bg</code>). 따뜻함은 캐릭터·그린 포인트로만(장식 blob·아이보리 배경 제거)</td>
+              </tr>
+              <tr>
+                <th><span class="pill pill-fix">확정</span></th>
+                <td>SNS 버튼만 제공자 브랜드색(카카오·네이버·구글) — 유일한 토큰 예외. 그 외 색은 전부 기존 토큰</td>
+              </tr>
+              <tr>
+                <th><span class="pill pill-open">미정</span></th>
+                <td>정식 캐릭터 아트 확정 시 <code>AuthMascot</code> 교체</td>
+              </tr>
+            </table>
+          </div>
+        </aside>
+      </div>
+      <!-- /spec-layout -->
+    </div>
+  </body>
+</html>
