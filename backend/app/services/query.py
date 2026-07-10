@@ -182,7 +182,7 @@ def _format_home_recommendation(row: dict[str, Any]) -> dict[str, Any]:
         "name": row.get("name"),
         "emoji": _home_emoji(row.get("name")),
         "catchphrase": _home_catchphrase(row),
-        "image_url": _home_image_url(row),
+        "image_url": _banner_image_url(row),
         "is_season": True,
         "rating": _home_rating(row),
     }
@@ -194,7 +194,7 @@ def _format_home_trending(row: dict[str, Any], rank: int) -> dict[str, Any]:
         "id": row.get("id"),
         "href": _ingredient_href(row),
         "name": row.get("name"),
-        "image_url": _banner_image_url(row),
+        "image_url": _home_image_url(row),
         "trend_status": "지금 제철!",
     }
 
