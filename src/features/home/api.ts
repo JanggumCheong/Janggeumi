@@ -1,5 +1,3 @@
-import { apiUrl } from "@/lib/api";
-
 export type HomeTrendingIngredient = {
   slug: string;
   name: string;
@@ -144,7 +142,7 @@ function adaptRecentView(
 }
 
 export async function fetchHomeData(): Promise<HomeData> {
-  const response = await fetch(apiUrl("/v1/home"), { cache: "no-store" });
+  const response = await fetch("/api/home", { cache: "no-store" });
 
   if (!response.ok) {
     throw new Error(`Failed to fetch home data: ${response.status}`);
