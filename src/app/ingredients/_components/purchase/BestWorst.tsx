@@ -1,3 +1,7 @@
+"use client";
+
+import { ImageOff } from "lucide-react";
+import { useState } from "react";
 import type { BestWorst as BestWorstData } from "../../_lib/types";
 
 /**
@@ -38,6 +42,9 @@ function Col({
   /** 이미지 대체 텍스트(접근성) — 화면엔 안 보임. */
   alt?: string;
 }) {
+  const [failedImage, setFailedImage] = useState<string | null>(null);
+  const hasImageError = failedImage === image;
+
   return (
     <div className="flex-1 overflow-hidden rounded-[16px] border border-border">
       {/* 라벨 (색은 여기만) */}
@@ -48,10 +55,17 @@ function Col({
         {label}
       </div>
       {/* 이미지만 (무채색 배경). image 없으면 빈 배경. */}
-      <div className="h-32 bg-muted">
-        {image && (
+      <div className="flex h-32 items-center justify-center bg-muted text-muted-foreground">
+        {image && !hasImageError ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={image} alt={alt ?? ""} className="h-full w-full object-cover" />
+          <img
+            src={image}
+            alt={alt ?? ""}
+            className="h-full w-full object-cover"
+            onError={() => setFailedImage(image)}
+          />
+        ) : (
+          <ImageOff className="size-6 opacity-55" aria-hidden="true" />
         )}
       </div>
     </div>

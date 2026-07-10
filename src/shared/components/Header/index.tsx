@@ -4,11 +4,11 @@ import { usePathname, useRouter } from "next/navigation";
 import { Bell, ChevronLeft, LogIn, User } from "lucide-react";
 import { useAuthStore } from "../../stores";
 import { HeaderIconButton } from "./HeaderIconButton";
-import Image from "next/image";
 import logo from "../../../../assets/images/logo.webp";
 import { getIngredientName } from "@/app/ingredients/_lib/ingredients";
 import { useEffect } from "react";
 import Link from "next/link";
+import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
 
 /** 경로 → 헤더 제목. 정확 일치 우선, 없으면 가장 긴 접두사로 매칭. */
 const PAGE_TITLES: Record<string, string> = {
@@ -64,7 +64,7 @@ export function Header() {
     <header className="sticky top-0 z-20 flex h-14 w-full items-center justify-between px-2 bg-card">
       {isHome ? (
         <span>
-          <Image src={logo} alt="로고" className="h-12 w-auto" />
+          <ImageWithFallback src={logo} alt="로고" className="h-12 w-auto" />
         </span>
       ) : (
         <div className="flex items-center gap-1">

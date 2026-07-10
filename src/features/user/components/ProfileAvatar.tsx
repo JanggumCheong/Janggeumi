@@ -1,5 +1,5 @@
-import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
 
 /**
  * 장금이 프로필 아바타 — 브랜드 캐릭터(public/apple-touch-icon.png)를 원형으로.
@@ -14,7 +14,7 @@ export function ProfileAvatar({ className }: { className?: string }) {
         className,
       )}
     >
-      <Image
+      <ImageWithFallback
         src="/apple-touch-icon.png"
         alt="장금이 프로필"
         width={78}

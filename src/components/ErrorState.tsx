@@ -1,5 +1,6 @@
-import Image, { type StaticImageData } from "next/image";
+import { type StaticImageData } from "next/image";
 import Link from "next/link";
+import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
 
 /**
  * 에러/빈 상태 공통 프레젠테이션 — 404·재료 상세 에러·전역 에러가 같은 레이아웃을 공유한다.
@@ -37,7 +38,14 @@ export function ErrorState({
 }) {
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-5 py-12 text-center">
-      <Image src={image} alt={imageAlt} width={200} height={200} priority className="size-50" />
+      <ImageWithFallback
+        src={image}
+        alt={imageAlt}
+        width={200}
+        height={200}
+        priority
+        className="size-50"
+      />
 
       {title && <p className="text-lg font-extrabold text-jg-ink">{title}</p>}
 
