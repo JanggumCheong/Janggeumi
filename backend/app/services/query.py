@@ -140,7 +140,7 @@ def _ingredient_slug(ingredient_id: Optional[str]) -> Optional[str]:
 
 def _ingredient_href(ingredient_id: Optional[str]) -> Optional[str]:
     slug = _ingredient_slug(ingredient_id)
-    return f"/ingredients/{slug}" if slug else None
+    return f"/ingredients/{slug}/{slug}" if slug else None
 
 
 def _home_catchphrase(row: dict[str, Any]) -> dict[str, str]:
