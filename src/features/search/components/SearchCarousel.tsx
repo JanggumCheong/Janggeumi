@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
 import type { SeasonalIngredient } from "../types";
 import { useHorizontalWheel } from "../hooks";
 
@@ -29,7 +30,20 @@ export function SearchCarousel({ title, sortBy, list }: SearchCarouselProps) {
             href={`/ingredients/${item.slug}`}
             className="flex w-31 shrink-0 flex-col gap-1 rounded-lg p-3 bg-card border border-border shadow-xs shadow-gray-100"
           >
-            <div className="grid h-23 place-items-center rounded-sm text-4xl">{item.emoji}</div>
+            <div className="relative grid h-23 place-items-center overflow-hidden rounded-sm text-4xl">
+              {item.imageSrc ? (
+                <ImageWithFallback
+                  src={item.imageSrc}
+                  alt={`${item.name} 이미지`}
+                  fill
+                  className="object-cover"
+                  sizes="124px"
+                  fallback={<span className="text-4xl">{item.emoji}</span>}
+                />
+              ) : (
+                <span aria-hidden="true">{item.emoji}</span>
+              )}
+            </div>
             <span className="text-sm font-semibold">{item.name}</span>
             <span className="w-fit items-center py-0.5 text-xs font-semibold text-jg-buy flex gap-1">
               <span className="bg-jg-buy-bg rounded-full px-2 py-0.5">제철 {item.season}</span>
