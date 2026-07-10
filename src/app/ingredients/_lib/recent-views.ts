@@ -11,12 +11,15 @@ export const RECENT_VIEWS_UPDATED_EVENT = "janggeumi:recentViewedIngredientsUpda
 export const RECENT_VIEWS_LIMIT = 5;
 
 const INGREDIENT_IMAGE_SRC: Record<string, string> = {
-  apple: "/images/ingredients/apple.webp",
-  avocado: "/images/ingredients/avocado.webp",
-  peach: "/images/ingredients/peach.webp",
-  "shine-muscat": "/images/ingredients/shine-muscat.webp",
-  strawberry: "/images/ingredients/strawberry.webp",
-  watermelon: "/images/ingredients/watermelon.webp",
+  apple: "/images/ingredients/apple/apple.webp",
+  avocado: "/images/ingredients/avocado/avocado.webp",
+  banana: "/images/ingredients/banana/banana.webp",
+  mango: "/images/ingredients/mango/mango.webp",
+  peach: "/images/ingredients/peach/peach.webp",
+  plum: "/images/ingredients/plum/plum.webp",
+  "shine-muscat": "/images/ingredients/shine-muscat/shine-muscat.webp",
+  strawberry: "/images/ingredients/strawberry/strawberry.webp",
+  watermelon: "/images/ingredients/watermelon/watermelon.webp",
 };
 
 function isRecentViewedIngredient(value: unknown): value is RecentViewedIngredient {
@@ -45,7 +48,13 @@ export function readRecentViewedIngredients(): RecentViewedIngredient[] {
     const parsedValue: unknown = JSON.parse(rawValue);
     if (!Array.isArray(parsedValue)) return [];
 
-    return parsedValue.filter(isRecentViewedIngredient).slice(-RECENT_VIEWS_LIMIT);
+    return parsedValue
+      .filter(isRecentViewedIngredient)
+      .map((item) => ({
+        ...item,
+        imageSrc: getIngredientImageSrc(item.slug),
+      }))
+      .slice(-RECENT_VIEWS_LIMIT);
   } catch {
     return [];
   }
