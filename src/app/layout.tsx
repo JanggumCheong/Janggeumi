@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     title: "장금이",
   },
   icons: {
-    icon: "/icons/icon-192.png",
+    icon: "/icons/favicon.webp",
     apple: "/apple-touch-icon.png",
   },
 };
