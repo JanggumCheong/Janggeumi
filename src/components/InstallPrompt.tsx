@@ -123,11 +123,13 @@ export function InstallPrompt() {
       role="dialog"
       aria-label="앱 설치 안내"
       className={cn(
-        "fixed inset-x-0 bottom-0 z-50 mx-auto w-full max-w-md",
-        "px-4 pb-[max(4rem,env(safe-area-inset-bottom))]",
+        // 하단 탭바(약 4rem) 위로 띄운다 — 탭바를 덮으면 홈/검색/로그인 클릭이 막힘.
+        "fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-50 mx-auto w-full max-w-md px-4",
+        // 컨테이너(빈 여백)는 클릭을 통과시키고, 실제 배너 카드만 클릭을 받는다.
+        "pointer-events-none",
       )}
     >
-      <div className="flex items-start gap-3 rounded-[20px] border border-black/5 bg-card p-4 shadow-lg">
+      <div className="pointer-events-auto flex items-start gap-3 rounded-[20px] border border-black/5 bg-card p-4 shadow-lg">
         <span className="text-2xl leading-none">👩‍🍳</span>
         <div className="min-w-0 flex-1">
           <p className="text-sm font-bold text-jg-primary-strong">
