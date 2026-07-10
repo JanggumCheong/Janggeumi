@@ -4,35 +4,15 @@ import { type FormEvent, useEffect, useState } from "react";
 import localFont from "next/font/local";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, ArrowRight, ChevronRight, Clock3, Leaf, Search, X } from "lucide-react";
+import { fetchHomeData, type HomeRecommendedBanner } from "@/features/home/api";
 import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
 import {
   RECENT_VIEWS_UPDATED_EVENT,
   type RecentViewedIngredient,
   readRecentViewedIngredients,
 } from "./ingredients/_lib/recent-views";
-
-type TrendingIngredient = {
-  slug: string;
-  name: string;
-  emoji: string;
-  imageSrc?: string;
-};
-
-type RecommendedBanner = {
-  id: string;
-  slug: string;
-  name: string;
-  catchphrase: {
-    highlight: string;
-    title: string;
-  };
-  highlightColor: string;
-  titleColor: string;
-  imageSrc: string;
-  isSeason: boolean;
-  detailHref: string;
-};
 
 const roundedMisoBold = localFont({
   src: "./fonts/HakgyoansimDunggeunmisoTTF-B.woff2",
@@ -46,103 +26,60 @@ const roundedMisoRegular = localFont({
 
 const TRENDING_PAGE_SIZE = 4;
 
-const RECOMMENDED_BANNERS: RecommendedBanner[] = [
-  {
-    id: "ing_watermelon",
-    slug: "watermelon",
-    name: "수박",
-    catchphrase: {
-      highlight: "시원하게 즐기는 여름",
-      title: "수박",
-    },
-    highlightColor: "#2F7D4F",
-    titleColor: "#E94F64",
-    imageSrc: "/images/banners/watermelon-recommend-banner.webp",
-    isSeason: true,
-    detailHref: "/ingredients/watermelon",
-  },
-  {
-    id: "ing_peach",
-    slug: "peach",
-    name: "천도복숭아",
-    catchphrase: {
-      highlight: "제철 맞은 달콤한",
-      title: "천도복숭아",
-    },
-    highlightColor: "#C86445",
-    titleColor: "#F28C6B",
-    imageSrc: "/images/banners/peach-recommend-banner.webp",
-    isSeason: true,
-    detailHref: "/ingredients/peach",
-  },
-];
-
-const TRENDING_INGREDIENTS: TrendingIngredient[] = [
-  {
-    slug: "apple",
-    name: "사과",
-    emoji: "🍎",
-    imageSrc: "/images/ingredients/apple.webp",
-  },
-  {
-    slug: "avocado",
-    name: "아보카도",
-    emoji: "🥑",
-    imageSrc: "/images/ingredients/avocado.webp",
-  },
-  {
-    slug: "peach",
-    name: "천도복숭아",
-    emoji: "🍑",
-    imageSrc: "/images/ingredients/peach.webp",
-  },
-  {
-    slug: "shine-muscat",
-    name: "샤인머스켓",
-    emoji: "🍇",
-    imageSrc: "/images/ingredients/shine-muscat.webp",
-  },
-  {
-    slug: "strawberry",
-    name: "딸기",
-    emoji: "🍓",
-    imageSrc: "/images/ingredients/strawberry.webp",
-  },
-  {
-    slug: "watermelon",
-    name: "수박",
-    emoji: "🍉",
-    imageSrc: "/images/ingredients/watermelon.webp",
-  },
-];
-
-const TRENDING_TOTAL_PAGES = Math.ceil(TRENDING_INGREDIENTS.length / TRENDING_PAGE_SIZE);
-
-const INGREDIENT_SEARCH_INDEX: Record<string, string> = {
-  사과: "apple",
-  애플: "apple",
-  아보카도: "avocado",
-  avocado: "avocado",
-  천도복숭아: "peach",
-  복숭아: "peach",
-  peach: "peach",
-  샤인머스켓: "shine-muscat",
-  "shine-muscat": "shine-muscat",
-  딸기: "strawberry",
-  strawberry: "strawberry",
-  수박: "watermelon",
-  워터멜론: "watermelon",
-  watermelon: "watermelon",
-};
-
 function getSearchTarget(query: string) {
-  const keyword = query.trim().toLowerCase();
+  const keyword = query.trim();
 
   if (!keyword) {
     return "/search";
   }
 
-  return `/ingredients/${INGREDIENT_SEARCH_INDEX[keyword] ?? keyword}`;
+  return `/search?q=${encodeURIComponent(keyword)}`;
+}
+
+function SkeletonBlock({ className }: { className: string }) {
+  return <div className={`animate-pulse rounded-md bg-[#e9eadf] ${className}`} />;
+}
+
+function TrendingIngredientsSkeleton() {
+  return (
+    <div className="grid grid-cols-4 gap-2" aria-hidden="true">
+      {Array.from({ length: TRENDING_PAGE_SIZE }).map((_, index) => (
+        <div
+          key={index}
+          className="grid gap-1.5 rounded-lg border border-border p-1.5 shadow-[0_3px_10px_rgba(31,29,24,0.04)]"
+        >
+          <SkeletonBlock className="aspect-square rounded-[7px]" />
+          <SkeletonBlock className="mx-auto h-3 w-10" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function RecommendedBannerSkeleton() {
+  return (
+    <div className="relative size-full overflow-hidden bg-[#f6f5ef]" aria-hidden="true">
+      <div className="absolute inset-0 bg-gradient-to-r from-[#fbfbfa] via-[#fbfbfa]/80 to-transparent" />
+      <div className="absolute top-5 left-0 flex w-[58%] flex-col px-5">
+        <SkeletonBlock className="mb-3 h-5 w-16 rounded-full" />
+        <SkeletonBlock className="mb-2 h-6 w-32" />
+        <SkeletonBlock className="h-9 w-24" />
+      </div>
+      <SkeletonBlock className="absolute right-4 bottom-4 size-9 rounded-full bg-[#dedfcf]" />
+      <div className="absolute bottom-4 left-5 flex items-center gap-1.5">
+        <SkeletonBlock className="h-1.5 w-4 rounded-full bg-[#cdd5c1]" />
+        <SkeletonBlock className="size-1.5 rounded-full bg-[#cdd5c1]" />
+      </div>
+    </div>
+  );
+}
+
+function HomeDataEmptyState({ message }: { message: string }) {
+  return (
+    <div className="grid min-h-24 place-items-center rounded-lg border border-dashed border-[#cfd6c4] bg-card/65 px-4 text-center">
+      <p className="text-[12px] font-bold text-[#aaa69d]">{message}</p>
+    </div>
+  );
 }
 
 export default function Home() {
@@ -155,12 +92,38 @@ export default function Home() {
     [],
   );
   const [isRecommendedBannerPaused, setIsRecommendedBannerPaused] = useState(false);
+  const {
+    data: homeData,
+    isError: isHomeDataError,
+    isLoading: isHomeDataLoading,
+  } = useQuery({
+    queryKey: ["home"],
+    queryFn: fetchHomeData,
+  });
 
-  const activeRecommendedBanner = RECOMMENDED_BANNERS[recommendedBannerIndex];
+  const recommendedBanners = homeData?.recommendedBanners ?? [];
+  const trendingIngredients = homeData?.trendingIngredients ?? [];
+  const hasRecommendedBanners = recommendedBanners.length > 0;
+  const hasTrendingIngredients = trendingIngredients.length > 0;
+  const homeRecentViewedIngredients = homeData?.recentViews.length
+    ? homeData.recentViews
+    : recentViewedIngredients;
+  const trendingTotalPages = Math.max(
+    1,
+    Math.ceil(trendingIngredients.length / TRENDING_PAGE_SIZE),
+  );
+  const safeRecommendedBannerIndex = hasRecommendedBanners
+    ? recommendedBannerIndex % recommendedBanners.length
+    : 0;
+  const safeTrendingPage = trendingPage % trendingTotalPages;
 
-  const visibleTrendingIngredients = TRENDING_INGREDIENTS.slice(
-    trendingPage * TRENDING_PAGE_SIZE,
-    trendingPage * TRENDING_PAGE_SIZE + TRENDING_PAGE_SIZE,
+  const activeRecommendedBanner: HomeRecommendedBanner | undefined = hasRecommendedBanners
+    ? recommendedBanners[safeRecommendedBannerIndex]
+    : undefined;
+
+  const visibleTrendingIngredients = trendingIngredients.slice(
+    safeTrendingPage * TRENDING_PAGE_SIZE,
+    safeTrendingPage * TRENDING_PAGE_SIZE + TRENDING_PAGE_SIZE,
   );
 
   useEffect(() => {
@@ -179,16 +142,16 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (isRecommendedBannerPaused) return;
+    if (isRecommendedBannerPaused || recommendedBanners.length < 2) return;
 
     const timerId = window.setInterval(() => {
       setRecommendedBannerIndex((currentIndex) => {
-        return (currentIndex + 1) % RECOMMENDED_BANNERS.length;
+        return (currentIndex + 1) % recommendedBanners.length;
       });
     }, 4500);
 
     return () => window.clearInterval(timerId);
-  }, [isRecommendedBannerPaused]);
+  }, [isRecommendedBannerPaused, recommendedBanners.length]);
 
   function handleSearchSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -197,7 +160,7 @@ export default function Home() {
 
   function moveTrendingPage(direction: -1 | 1) {
     setTrendingPage((currentPage) => {
-      return (currentPage + direction + TRENDING_TOTAL_PAGES) % TRENDING_TOTAL_PAGES;
+      return (currentPage + direction + trendingTotalPages) % trendingTotalPages;
     });
   }
 
@@ -252,7 +215,7 @@ export default function Home() {
         />
         <Link
           href="/search"
-          className={`${roundedMisoRegular.className} group absolute bottom-8 left-10 flex items-center justify-center gap-1 rounded-full bg-primary px-4 py-2 leading-none text-primary-foreground shadow-[0_3px_10px_rgba(92,110,61,0.16)] transition-colors duration-200 hover:bg-[#47562f]`}
+          className={`${roundedMisoRegular.className} group absolute bottom-8 left-5 flex items-center justify-center gap-1 rounded-full bg-primary px-4 py-2 leading-none text-primary-foreground shadow-[0_3px_10px_rgba(92,110,61,0.16)] transition-colors duration-200 hover:bg-[#47562f]`}
         >
           <span className="flex items-center justify-center text-sm">재료 검색</span>
           <ArrowRight
@@ -264,9 +227,7 @@ export default function Home() {
 
       <section className="flex flex-col gap-2" aria-label="인기 상승 재료">
         <div className="flex items-center justify-between">
-          <h2 className={`${roundedMisoBold.className} text-[19px] text-[#344127]`}>
-            인기 상승 재료🔥
-          </h2>
+          <h2 className="font-bold text-[19px] text-[#344127]">인기 상승 재료🔥</h2>
           <Link
             href="/search"
             className="inline-flex items-center gap-0.5 text-[12px] font-semibold text-[#9b978c] transition-colors hover:text-[#343A40]"
@@ -276,82 +237,99 @@ export default function Home() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-4 gap-2">
-          {visibleTrendingIngredients.map((ingredient) => (
-            <Link
-              key={ingredient.slug}
-              href={`/ingredients/${ingredient.slug}`}
-              className="grid gap-1.5 rounded-lg border border-border p-1.5 shadow-[0_3px_10px_rgba(31,29,24,0.04)] transition-colors hover:border-primary/35"
-            >
-              <div className="relative grid aspect-square place-items-center overflow-hidden rounded-[7px]">
-                {ingredient.imageSrc ? (
-                  <ImageWithFallback
-                    src={ingredient.imageSrc}
-                    alt={`${ingredient.name} 이미지`}
-                    fill
-                    className="object-cover"
-                    sizes="80px"
-                  />
-                ) : (
-                  <span className="text-[28px]" aria-hidden="true">
-                    {ingredient.emoji}
-                  </span>
-                )}
+        {isHomeDataLoading ? (
+          <TrendingIngredientsSkeleton />
+        ) : hasTrendingIngredients ? (
+          <>
+            <div className="grid grid-cols-4 gap-2">
+              {visibleTrendingIngredients.map((ingredient) => (
+                <Link
+                  key={ingredient.slug}
+                  href={`/ingredients/${ingredient.slug}`}
+                  className="grid gap-1.5 rounded-lg border border-border p-1.5 shadow-[0_3px_10px_rgba(31,29,24,0.04)] transition-colors hover:border-primary/35"
+                >
+                  <div className="relative grid aspect-square place-items-center overflow-hidden rounded-[7px]">
+                    {ingredient.imageSrc ? (
+                      <ImageWithFallback
+                        src={ingredient.imageSrc}
+                        alt={`${ingredient.name} 이미지`}
+                        fill
+                        className="object-cover"
+                        sizes="80px"
+                      />
+                    ) : (
+                      <span className="text-[28px]" aria-hidden="true">
+                        {ingredient.emoji}
+                      </span>
+                    )}
+                  </div>
+                  <strong className="truncate text-center text-[11px] leading-tight font-black text-foreground">
+                    {ingredient.name}
+                  </strong>
+                </Link>
+              ))}
+            </div>
+
+            {trendingTotalPages > 1 && (
+              <div
+                className="flex items-center justify-center gap-3"
+                aria-label="인기 상승 재료 페이지"
+              >
+                <button
+                  type="button"
+                  className="grid size-8 cursor-pointer place-items-center rounded-full border border-border bg-card text-primary"
+                  aria-label="이전 인기 상승 재료"
+                  onClick={() => moveTrendingPage(-1)}
+                >
+                  <ArrowLeft className="size-4" strokeWidth={2.4} />
+                </button>
+
+                <div className="flex items-center gap-1.5">
+                  {Array.from({ length: trendingTotalPages }).map((_, pageIndex) => (
+                    <button
+                      key={pageIndex}
+                      type="button"
+                      className={`h-1.5 cursor-pointer rounded-full transition-all ${
+                        pageIndex === safeTrendingPage ? "w-4 bg-primary" : "w-1.5 bg-[#d4d8ca]"
+                      }`}
+                      aria-label={`${pageIndex + 1}번째 인기 상승 재료 페이지`}
+                      aria-current={pageIndex === safeTrendingPage ? "page" : undefined}
+                      onClick={() => setTrendingPage(pageIndex)}
+                    />
+                  ))}
+                </div>
+
+                <button
+                  type="button"
+                  className="grid size-8 cursor-pointer place-items-center rounded-full border border-border bg-card text-primary"
+                  aria-label="다음 인기 상승 재료"
+                  onClick={() => moveTrendingPage(1)}
+                >
+                  <ArrowRight className="size-4" strokeWidth={2.4} />
+                </button>
               </div>
-              <strong className="truncate text-center text-[11px] leading-tight font-black text-foreground">
-                {ingredient.name}
-              </strong>
-            </Link>
-          ))}
-        </div>
-
-        <div className="flex items-center justify-center gap-3" aria-label="인기 상승 재료 페이지">
-          <button
-            type="button"
-            className="grid size-8 cursor-pointer place-items-center rounded-full border border-border bg-card text-primary"
-            aria-label="이전 인기 상승 재료"
-            onClick={() => moveTrendingPage(-1)}
-          >
-            <ArrowLeft className="size-4" strokeWidth={2.4} />
-          </button>
-
-          <div className="flex items-center gap-1.5">
-            {Array.from({ length: TRENDING_TOTAL_PAGES }).map((_, pageIndex) => (
-              <button
-                key={pageIndex}
-                type="button"
-                className={`h-1.5 cursor-pointer rounded-full transition-all ${
-                  pageIndex === trendingPage ? "w-4 bg-primary" : "w-1.5 bg-[#d4d8ca]"
-                }`}
-                aria-label={`${pageIndex + 1}번째 인기 상승 재료 페이지`}
-                aria-current={pageIndex === trendingPage ? "page" : undefined}
-                onClick={() => setTrendingPage(pageIndex)}
-              />
-            ))}
-          </div>
-
-          <button
-            type="button"
-            className="grid size-8 cursor-pointer place-items-center rounded-full border border-border bg-card text-primary"
-            aria-label="다음 인기 상승 재료"
-            onClick={() => moveTrendingPage(1)}
-          >
-            <ArrowRight className="size-4" strokeWidth={2.4} />
-          </button>
-        </div>
+            )}
+          </>
+        ) : (
+          <HomeDataEmptyState
+            message={
+              isHomeDataError
+                ? "인기 상승 재료를 불러오지 못했어요"
+                : "인기 상승 재료가 아직 없어요"
+            }
+          />
+        )}
       </section>
 
       <section className="flex flex-col gap-2" aria-label="최근 본 재료">
         <div className="flex items-center justify-between">
-          <h2 className={`${roundedMisoBold.className} text-[19px] text-[#344127]`}>
-            최근 본 재료
-          </h2>
+          <h2 className="font-bold text-[19px] text-[#344127]">최근 본 재료</h2>
         </div>
 
         <div className="rounded-[14px] border border-dashed border-[#cfd6c4] bg-card/65 px-3 py-3">
-          {recentViewedIngredients.length > 0 ? (
+          {homeRecentViewedIngredients.length > 0 ? (
             <div className="grid grid-cols-5 gap-1.5">
-              {recentViewedIngredients.map((ingredient) => (
+              {homeRecentViewedIngredients.map((ingredient) => (
                 <Link
                   key={`${ingredient.slug}-${ingredient.viewedAt}`}
                   href={`/ingredients/${ingredient.slug}`}
@@ -394,63 +372,79 @@ export default function Home() {
         onMouseEnter={() => setIsRecommendedBannerPaused(true)}
         onMouseLeave={() => setIsRecommendedBannerPaused(false)}
       >
-        <Link
-          href={activeRecommendedBanner.detailHref}
-          className="group block size-full"
-          aria-label={`${activeRecommendedBanner.name} 상세 보기`}
-        >
-          <ImageWithFallback
-            src={activeRecommendedBanner.imageSrc}
-            alt={`${activeRecommendedBanner.name} 추천 배너`}
-            fill
-            className="object-cover transition-transform duration-500 group-hover:scale-[1.015]"
-            sizes="420px"
-            fallbackClassName="text-primary"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#fbfbfa]/95 via-[#fbfbfa]/72 to-transparent" />
+        {isHomeDataLoading ? (
+          <RecommendedBannerSkeleton />
+        ) : activeRecommendedBanner ? (
+          <>
+            <Link
+              href={activeRecommendedBanner.detailHref}
+              className="group block size-full"
+              aria-label={`${activeRecommendedBanner.name} 상세 보기`}
+            >
+              <ImageWithFallback
+                src={activeRecommendedBanner.imageSrc}
+                alt={`${activeRecommendedBanner.name} 추천 배너`}
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-[1.015]"
+                sizes="420px"
+                fallbackClassName="text-primary"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#fbfbfa]/95 via-[#fbfbfa]/72 to-transparent" />
 
-          <div className="absolute top-5 left-0 flex w-[58%] flex-col px-5">
-            {activeRecommendedBanner.isSeason && (
-              <span className="mb-2 inline-flex w-fit items-center gap-1 rounded-full border border-[#bfd3a4] bg-[#f2f7e9] px-2.5 py-1 text-[11px] leading-none font-black text-[#6f8d45]">
-                <Leaf className="size-3 fill-current opacity-45" strokeWidth={1.8} />
-                제철
+              <div className="absolute top-5 left-0 flex w-[58%] flex-col px-5">
+                {activeRecommendedBanner.isSeason && (
+                  <span className="mb-2 inline-flex w-fit items-center gap-1 rounded-full border border-[#bfd3a4] bg-[#f2f7e9] px-2.5 py-1 text-[11px] leading-none font-black text-[#6f8d45]">
+                    <Leaf className="size-3 fill-current opacity-45" strokeWidth={1.8} />
+                    제철
+                  </span>
+                )}
+                <p className={`${roundedMisoBold.className} flex flex-col text-2xl leading-tight`}>
+                  <span
+                    className="whitespace-nowrap"
+                    style={{ color: activeRecommendedBanner.highlightColor }}
+                  >
+                    {activeRecommendedBanner.catchphrase.highlight}
+                  </span>
+                  <span className="text-4xl" style={{ color: activeRecommendedBanner.titleColor }}>
+                    {activeRecommendedBanner.catchphrase.title}
+                  </span>
+                </p>
+              </div>
+
+              <span className="absolute right-4 bottom-4 grid size-9 place-items-center rounded-full bg-white/88 text-primary shadow-[0_4px_14px_rgba(31,29,24,0.12)]">
+                <ArrowRight className="size-4" strokeWidth={2.4} />
               </span>
-            )}
-            <p className={`${roundedMisoBold.className} flex flex-col text-2xl leading-tight`}>
-              <span
-                className="whitespace-nowrap"
-                style={{ color: activeRecommendedBanner.highlightColor }}
+            </Link>
+
+            {recommendedBanners.length > 1 && (
+              <div
+                className="absolute bottom-4 left-5 flex items-center gap-1.5"
+                aria-label="추천 식자재 배너 페이지"
               >
-                {activeRecommendedBanner.catchphrase.highlight}
-              </span>
-              <span className="text-4xl" style={{ color: activeRecommendedBanner.titleColor }}>
-                {activeRecommendedBanner.catchphrase.title}
-              </span>
+                {recommendedBanners.map((banner, index) => (
+                  <button
+                    key={banner.id}
+                    type="button"
+                    className={`h-1.5 cursor-pointer rounded-full transition-all ${
+                      index === safeRecommendedBannerIndex ? "w-4 bg-primary" : "w-1.5 bg-[#cdd5c1]"
+                    }`}
+                    aria-label={`${banner.name} 추천 배너 보기`}
+                    aria-current={index === safeRecommendedBannerIndex ? "page" : undefined}
+                    onClick={() => setRecommendedBannerIndex(index)}
+                  />
+                ))}
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="grid size-full place-items-center bg-card/65 px-4 text-center">
+            <p className="text-[12px] font-bold text-[#aaa69d]">
+              {isHomeDataError
+                ? "오늘 추천 식자재를 불러오지 못했어요"
+                : "오늘 추천 식자재가 아직 없어요"}
             </p>
           </div>
-
-          <span className="absolute right-4 bottom-4 grid size-9 place-items-center rounded-full bg-white/88 text-primary shadow-[0_4px_14px_rgba(31,29,24,0.12)]">
-            <ArrowRight className="size-4" strokeWidth={2.4} />
-          </span>
-        </Link>
-
-        <div
-          className="absolute bottom-4 left-5 flex items-center gap-1.5"
-          aria-label="추천 식자재 배너 페이지"
-        >
-          {RECOMMENDED_BANNERS.map((banner, index) => (
-            <button
-              key={banner.id}
-              type="button"
-              className={`h-1.5 cursor-pointer rounded-full transition-all ${
-                index === recommendedBannerIndex ? "w-4 bg-primary" : "w-1.5 bg-[#cdd5c1]"
-              }`}
-              aria-label={`${banner.name} 추천 배너 보기`}
-              aria-current={index === recommendedBannerIndex ? "page" : undefined}
-              onClick={() => setRecommendedBannerIndex(index)}
-            />
-          ))}
-        </div>
+        )}
       </section>
     </div>
   );

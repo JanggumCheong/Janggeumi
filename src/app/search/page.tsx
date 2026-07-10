@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   HOTS,
@@ -21,9 +22,19 @@ import {
  * 검색어 입력만으로는 화면이 바뀌지 않고, "실행"해야 결과 모드로 전환된다.
  */
 export default function SearchPage() {
+  return (
+    <Suspense fallback={<SearchPageFallback />}>
+      <SearchPageContent />
+    </Suspense>
+  );
+}
+
+function SearchPageContent() {
+  const searchParams = useSearchParams();
+  const initialQuery = searchParams.get("q") ?? "";
   const [category, setCategory] = useState<CategoryOption>("전체");
-  const [query, setQuery] = useState("");
-  const [submittedQuery, setSubmittedQuery] = useState("");
+  const [query, setQuery] = useState(initialQuery);
+  const [submittedQuery, setSubmittedQuery] = useState(initialQuery);
 
   const hasSearched = submittedQuery.trim().length > 0;
   const { data: results, isFetching } = useSearchIngredients(
@@ -67,6 +78,19 @@ export default function SearchPage() {
           <SearchGuideBox />
         </>
       )}
+    </div>
+  );
+}
+
+function SearchPageFallback() {
+  return (
+    <div className="flex flex-col gap-6">
+      <Skeleton className="h-12 w-full rounded-[17px]" />
+      <div className="grid grid-cols-4 gap-x-2 gap-y-5 pt-5">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <Skeleton key={i} className="aspect-square w-full rounded-sm" />
+        ))}
+      </div>
     </div>
   );
 }
