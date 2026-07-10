@@ -57,7 +57,7 @@ const ApiStorageMethodSchema = z.object({
       count: z.number(),
     })
     .optional(),
-  janggeumiComment: z.string().optional(),
+  janggeumiComment: z.string().nullable().optional(),
   comment: z
     .object({
       author: z
@@ -68,6 +68,7 @@ const ApiStorageMethodSchema = z.object({
         .optional(),
       text: z.string().optional(),
     })
+    .nullable()
     .optional(),
 });
 
@@ -171,17 +172,39 @@ export async function getIngredientFromApi(slug: string, base: Ingredient): Prom
   return IngredientSchema.parse(next);
 }
 
-async function fetchApi<T extends z.ZodType>(schema: T, path: string): Promise<z.infer<T> | null> {
-  try {
-    const response = await fetch(apiUrl(path), { cache: "no-store" });
-    if (!response.ok) return null;
+// onrender 무료티어는 콜드스타트·간헐 실패가 잦다 → 넉넉한 타임아웃 + 재시도.
+// (단발 fetch면 느린 순간에 null→빈 데이터(0/0)가 불규칙하게 뜬다.)
+const API_TIMEOUT_MS = 12_000;
+const API_RETRIES = 3;
+const API_BACKOFF_MS = 700;
+const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-    const json = await response.json();
-    const parsed = schema.safeParse(json);
-    return parsed.success ? parsed.data : null;
-  } catch {
-    return null;
+async function fetchApi<T extends z.ZodType>(schema: T, path: string): Promise<z.infer<T> | null> {
+  for (let attempt = 0; attempt <= API_RETRIES; attempt++) {
+    if (attempt > 0) await wait(API_BACKOFF_MS * attempt);
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+    try {
+      const response = await fetch(apiUrl(path), {
+        cache: "no-store",
+        signal: controller.signal,
+      });
+      // 5xx는 일시 실패 → 재시도. 4xx는 데이터 없음 → 즉시 null.
+      if (response.status >= 500) continue;
+      if (!response.ok) return null;
+
+      const json = await response.json();
+      const parsed = schema.safeParse(json);
+      // 파싱 실패는 스키마·데이터 문제라 재시도해도 같음 → null.
+      return parsed.success ? parsed.data : null;
+    } catch {
+      // 타임아웃(abort)·네트워크 오류 → 다음 시도.
+    } finally {
+      clearTimeout(timer);
+    }
   }
+  return null; // 재시도 다 실패
 }
 
 function adaptPurchase(api: ApiPurchaseResponse, base: Ingredient): Ingredient["purchase"] {
