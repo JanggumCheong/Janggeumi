@@ -12,13 +12,12 @@ import { getIngredientFromApi } from "./api-adapter";
 import { fetchIngredientMeta } from "./queries/ingredient-meta";
 import { emojiFor, nameFor } from "./slug";
 
-import watermelon from "./data/watermelon.json";
 import potato from "./data/potato.json";
 import greenOnion from "./data/green-onion.json";
 
-// slug → 검증된 데이터. 재료가 늘면 여기만 추가하면 된다.
+// slug → 로컬 검증 데이터. API에 아직 없는 재료만 로컬로 유지한다.
+// (watermelon 등 API가 커버하는 재료는 로컬 JSON을 두지 않고 API로 대응한다.)
 const INGREDIENTS: Record<string, Ingredient> = {
-  watermelon: IngredientSchema.parse(watermelon),
   potato: IngredientSchema.parse(potato),
   "green-onion": IngredientSchema.parse(greenOnion),
 };
@@ -61,10 +60,19 @@ export async function getIngredientDetail(slug: string): Promise<Ingredient | nu
   const local = getIngredient(slug);
   if (local) return getIngredientFromApi(slug, local);
 
-  // 로컬에 없는 재료 — API에 존재하면 빈 base로 어댑팅.
-  const meta = await fetchIngredientMeta(slug);
-  if (!meta) return null;
-  return getIngredientFromApi(slug, emptyBase(slug, meta.name));
+  // 로컬에 없는 재료 — API 메타로 존재 확인.
+  // 실패(통신 오류)와 진짜 없음을 구분한다: 실패를 '없음'으로 오판하면 정식 재료가 발화로 샌다.
+  try {
+    const meta = await fetchIngredientMeta(slug);
+    if (!meta) return null; // 200+null = 진짜 없는 재료 → 발화 안내로
+    return getIngredientFromApi(slug, emptyBase(slug, meta.name));
+  } catch {
+    // API 일시 실패(콜드스타트 등). slug 매핑에 있는 정식 재료면 발화로 보내지 않고
+    // 이름만이라도 살려 렌더한다(빈손 방지). 매핑에 없으면 없는 재료로 판정(발화).
+    const known = nameFor(slug);
+    if (!known) return null;
+    return getIngredientFromApi(slug, emptyBase(slug, known));
+  }
 }
 
 /**

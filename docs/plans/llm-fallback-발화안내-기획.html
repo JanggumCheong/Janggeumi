@@ -1,0 +1,187 @@
+<meta charset="utf-8" />
+<title>없는 재료 LLM 발화 안내 — 기획</title>
+<style>
+  :root {
+    --jg-primary: #5c6e3d; --jg-primary-strong: #47562f; --jg-primary-soft: #eef1e6;
+    --jg-bg: #fbfbfa; --jg-surface: #ffffff; --jg-sunken: #f4f4f2;
+    --jg-ink: #1f1d18; --jg-ink-sub: #6b675e; --jg-ink-mute: #9b978c; --jg-line: #e7e4dc;
+    --jg-buy: #1f804d; --jg-buy-bg: #e9f6ee; --jg-keep: #2f6e86; --jg-keep-bg: #e8f2f6;
+    --jg-use: #c4712a; --jg-use-bg: #fbf0e4; --jg-star: #f0a93b;
+    --jg-danger: #c1453b; --jg-danger-bg: #fbeceb;
+    --r-sm: 10px; --r-md: 16px; --r-lg: 20px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", Pretendard, sans-serif;
+    background: var(--jg-bg); color: var(--jg-ink); line-height: 1.6;
+    padding: 40px 24px 80px; max-width: 1180px; margin: 0 auto;
+  }
+  .hero { background: var(--jg-primary); color: #fff; border-radius: var(--r-lg); padding: 32px 28px; margin-bottom: 28px; }
+  .hero .tag { display: inline-block; background: rgba(255,255,255,.18); font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px; margin-bottom: 12px; }
+  .hero h1 { font-size: 26px; font-weight: 800; margin-bottom: 8px; }
+  .hero p { font-size: 15px; opacity: .92; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
+  .card { background: var(--jg-surface); border: 1px solid var(--jg-line); border-radius: var(--r-md); padding: 20px 22px; }
+  .card h2 { font-size: 13px; font-weight: 800; color: var(--jg-primary); letter-spacing: .02em; margin-bottom: 12px; text-transform: uppercase; }
+  .card h3 { font-size: 16px; font-weight: 800; margin: 0 0 6px; }
+  .card p, .card li { font-size: 14px; color: var(--jg-ink-sub); }
+  .card ul { padding-left: 18px; margin-top: 6px; }
+  .card li { margin-bottom: 4px; }
+  .full { grid-column: 1 / -1; }
+  .badges { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .badge { font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px; }
+  .b-strong { background: var(--jg-buy-bg); color: var(--jg-buy); }
+  .b-mid { background: var(--jg-keep-bg); color: var(--jg-keep); }
+  .b-weak { background: var(--jg-danger-bg); color: var(--jg-danger); }
+  .spec-row { display: grid; grid-template-columns: 140px 1fr; gap: 10px; padding: 9px 0; border-bottom: 1px dashed var(--jg-line); font-size: 13.5px; }
+  .spec-row:last-child { border-bottom: none; }
+  .spec-row b { color: var(--jg-ink); }
+  .warn { background: var(--jg-use-bg); border: 1px solid #ecd7bd; border-radius: var(--r-md); padding: 16px 18px; }
+  .warn h2 { color: var(--jg-use); }
+  .flow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 10px; font-size: 13px; }
+  .flow span { background: var(--jg-sunken); border-radius: 999px; padding: 5px 12px; font-weight: 600; }
+  .flow em { color: var(--jg-ink-mute); font-style: normal; }
+  .section-title { font-size: 18px; font-weight: 800; margin: 8px 0 14px; }
+
+  /* 폰 목업 */
+  .mock-wrap { display: grid; grid-template-columns: 300px 1fr; gap: 24px; align-items: start; }
+  .phone { width: 300px; background: var(--jg-surface); border: 1px solid var(--jg-line); border-radius: 26px; overflow: hidden; box-shadow: 0 8px 30px rgba(31,29,24,.08); }
+  .phone-hdr { display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--jg-line); font-weight: 800; }
+  .phone-body { padding: 16px; background: var(--jg-bg); }
+  .msg-card { background: var(--jg-surface); border: 1px solid var(--jg-line); border-radius: var(--r-md); padding: 14px; }
+  .speaker { display: inline-flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+  .speaker .av { width: 26px; height: 26px; border-radius: 999px; object-fit: cover; background: var(--jg-primary-soft); }
+  .speaker b { font-size: 12px; color: var(--jg-primary); }
+  .ai-badge { font-size: 10px; font-weight: 800; color: var(--jg-use); background: var(--jg-use-bg); padding: 2px 7px; border-radius: 999px; margin-left: 4px; }
+  .msg-intro { font-size: 14.5px; font-weight: 700; margin-bottom: 10px; }
+  .msg-sec { margin-bottom: 10px; }
+  .msg-sec .h { display: inline-block; font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 999px; margin-bottom: 5px; }
+  .h-buy { background: var(--jg-buy-bg); color: var(--jg-buy); }
+  .h-keep { background: var(--jg-keep-bg); color: var(--jg-keep); }
+  .h-use { background: var(--jg-use-bg); color: var(--jg-use); }
+  .msg-sec ul { padding-left: 16px; }
+  .msg-sec li { font-size: 12.5px; color: var(--jg-ink-sub); margin-bottom: 3px; }
+  .msg-foot { font-size: 12px; color: var(--jg-ink-mute); margin-top: 8px; border-top: 1px dashed var(--jg-line); padding-top: 8px; }
+</style>
+
+<div class="hero">
+  <span class="tag">기능 기획 · 데이터 공백 대체</span>
+  <h1>없는 재료, 장금이가 즉석 발화로 안내</h1>
+  <p>정식 데이터가 없는 재료(없는 상세·검색 무결과)에서 <b>POST /api/ai/chat</b>으로 장금이가 구매·보관·손질을 임시 안내한다. 빈 화면 대신 발화로 공백을 메운다.</p>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h2>문제 (Why)</h2>
+    <p>정식 콘텐츠는 재료 6개뿐(딸기·사과·샤인머스캣·수박·아보카도·천도복숭아). 그 외(당근·양파·고구마…)는 진입 시 <b>404</b>·검색 <b>무결과</b> → "끝까지 안 버리기" 가치에 어긋난다. 데이터 없다고 빈손으로 돌려보내면 이탈.</p>
+  </div>
+  <div class="card">
+    <h2>대상 & 시나리오</h2>
+    <ul>
+      <li><b>당근 검색</b> → 매칭 없음 → 장금이 발화</li>
+      <li><b>없는 재료 진입</b> /ingredients/carrot → 404 대신 발화 카드</li>
+      <li><b>이상 입력</b> "asdf" → API가 되묻기("어떤 재료가 궁금하신가요?")</li>
+    </ul>
+  </div>
+</div>
+
+<div class="card full" style="margin-bottom:28px">
+  <h2>핵심 가치 매핑</h2>
+  <div class="badges">
+    <span class="badge b-strong">끝까지(안 버리기) — 빈손 방지, 발화로라도 안내</span>
+    <span class="badge b-mid">빠른 확신 — 구매/보관/손질 구조로 즉시</span>
+    <span class="badge b-weak">믿음(집단지성) — 약함: LLM 미검증 → "임시/AI" 명시로 정식과 구분</span>
+  </div>
+</div>
+
+<h2 class="section-title">화면 — 장금이 발화 카드</h2>
+<div class="mock-wrap" style="margin-bottom:32px">
+  <!-- 폰 목업 -->
+  <div class="phone">
+    <div class="phone-hdr"><span>‹</span> 당근</div>
+    <div class="phone-body">
+      <div class="msg-card">
+        <div class="speaker">
+          <img class="av" src="assets/janggeumi-avatar.png" alt="장금이" /><b>장금이 왈,</b><span class="ai-badge">임시 안내 · AI</span>
+        </div>
+        <div class="msg-intro">당근은 아직 정리 전이지만,<br/>제가 아는 대로 일러드리는 것이옵니다</div>
+        <div class="msg-sec">
+          <span class="h h-buy">구매</span>
+          <ul><li>선명한 주황색에 표면이 매끈하고 단단한 것이 좋아요</li><li>잎이 붙어 있으면 싱싱한 초록색인 것이 신선해요</li></ul>
+        </div>
+        <div class="msg-sec">
+          <span class="h h-keep">보관</span>
+          <ul><li>냉장 보관하되 비닐에 구멍을 내거나 키친타월로 감싸 습기를 잡아주세요</li></ul>
+        </div>
+        <div class="msg-sec">
+          <span class="h h-use">손질</span>
+          <ul><li>흐르는 물에 깨끗이 씻고, 쓰임에 맞게 채 썰거나 깍둑 썰어 쓰세요</li></ul>
+        </div>
+        <div class="msg-foot">제대로 된 안내는 준비 중이에요. 수박·딸기는 이미 검증된 안내가 있답니다 →</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 명세 패널 -->
+  <div class="card">
+    <h2>기획 명세 (spec)</h2>
+    <div class="spec-row"><b>API</b><span>POST /api/ai/chat &nbsp;<code>{message}</code> → <code>{answer}</code></span></div>
+    <div class="spec-row"><b>message</b><span>재료 진입=재료명 / 검색=사용자 입력 원문</span></div>
+    <div class="spec-row"><b>answer 파싱</b><span>인트로 → 구매·보관·손질 섹션(<code>- </code> 리스트) → 마무리. 헤더 없으면(되묻기) 통째 1카드</span></div>
+    <div class="spec-row"><b>섹션 색</b><span>구매=초록 / 보관=청록 / 손질=주황 (정식 3탭 액센트 재사용)</span></div>
+    <div class="spec-row"><b>AI 표기</b><span>"임시 안내 · AI" 배지 필수 — 정식(검증) 콘텐츠와 구분</span></div>
+    <div class="spec-row"><b>정식 데이터</b><span>zod 스키마와 <b>무관</b> — answer 텍스트만 사용</span></div>
+    <div class="spec-row"><b>추천 링크</b><span>정식 재료(수박·딸기 등)로 유도</span></div>
+  </div>
+</div>
+
+<div class="warn full" style="margin-bottom:24px">
+  <h2>⚠️ 검색 무분별 호출 방지 (핵심 제약)</h2>
+  <p style="color:var(--jg-ink-sub);margin-bottom:8px">LLM은 비용·지연이 있어 <b>타이핑마다 호출 금지</b>. 다층 방어:</p>
+  <ul style="padding-left:18px;font-size:14px;color:var(--jg-ink-sub)">
+    <li><b>명시적 트리거만</b> — 자동 호출 X, 엔터/검색 버튼 등 확정 액션에만</li>
+    <li><b>무결과일 때만</b> — 매칭 재료 있으면 호출 안 함</li>
+    <li><b>디바운스</b> — 연타 방지 (~500ms)</li>
+    <li><b>캐싱</b> — 같은 쿼리 재호출 방지(쿼리키 캐시), 동일 재료 재진입 시 재호출 X</li>
+    <li><b>길이·형식 가드</b> — 1글자·비정상 입력은 호출 전 컷</li>
+  </ul>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h2>트리거</h2>
+    <div class="flow"><span>없는 재료 진입</span><em>→</em><span>데이터 없음</span><em>→</em><span>ai/chat 1회</span><em>→</em><span>발화 카드</span></div>
+    <div class="flow"><span>검색 확정</span><em>→</em><span>무결과</span><em>→</em><span>ai/chat</span><em>→</em><span>발화 카드</span></div>
+  </div>
+  <div class="card">
+    <h2>로딩 · 에러 (API 스펙: 200 / 422)</h2>
+    <ul>
+      <li><b>로딩:</b> "👩‍🍳 장금이가 생각 중"(LLM 지연 수 초)</li>
+      <li><b>422</b>(message 누락·빈값): 호출 전 프론트가 컷</li>
+      <li><b>되묻기 답변</b>(200): "어떤 재료가 궁금하신가요?" 그대로 노출(에러 아님)</li>
+      <li><b>네트워크·타임아웃·5xx:</b> "지금은 답을 못 드리겠어요 🥲" + <b>다시 시도</b></li>
+      <li><b>길이 가드:</b> 상한(예 100자) 넘으면 호출 전 컷 (API엔 제한 없음)</li>
+      <li><b>강등:</b> 검색發 실패 시 "재료가 없어요"로 우아하게 되돌림</li>
+    </ul>
+  </div>
+</div>
+
+<div class="card full" style="margin-top:16px">
+  <h2>성공 지표</h2>
+  <ul style="padding-left:18px;font-size:14px;color:var(--jg-ink-sub)">
+    <li>없는 재료·무결과 진입 후 <b>이탈률 감소</b> (빈 화면 대비)</li>
+    <li>발화 카드 → 정식 재료 추천 <b>클릭률</b></li>
+    <li>LLM <b>호출 수/검색 세션</b> (무분별 호출 억제 확인 — 낮을수록 좋음)</li>
+    <li>(후속) 발화 상위 재료 = <b>정식 콘텐츠 우선순위</b> 신호</li>
+  </ul>
+</div>
+
+<div class="card full warn" style="margin-top:16px">
+  <h2>범위 밖 / 미정 (팀 논의)</h2>
+  <ul style="padding-left:18px;font-size:14px;color:var(--jg-ink-sub)">
+    <li>연속 대화(채팅 UI) — 이번엔 단발 발화만</li>
+    <li>AI 답변 품질 검수·부적절 답변 처리 방침</li>
+    <li>정식 콘텐츠 전환 트리거(발화 자주 뜨는 재료 정식화 기준)</li>
+    <li>LLM 호출 상한·레이트리밋 정책 (백엔드 협의)</li>
+  </ul>
+</div>
