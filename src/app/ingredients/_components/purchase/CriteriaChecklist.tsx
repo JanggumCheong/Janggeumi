@@ -41,6 +41,8 @@ export function CriteriaChecklist({
     <ul className="grid grid-cols-2 overflow-hidden rounded-[20px] border border-border bg-card shadow-[0_2px_10px_rgba(31,29,24,0.05)]">
       {criteria.map((c, i) => {
         const on = checked.has(c.key);
+        // 마지막 항목이 홀수 index(왼쪽 열)면 짝이 없으므로 2칸 전체 차지 → 반쪽 빈 공간 방지.
+        const isLastOdd = i === criteria.length - 1 && i % 2 === 0;
         const isRightCol = i % 2 === 1;
         const isFirstRow = i < 2;
         return (
@@ -51,6 +53,7 @@ export function CriteriaChecklist({
               aria-pressed={on}
               className={[
                 "relative flex min-h-[116px] cursor-pointer flex-col overflow-hidden p-3 text-left transition-colors",
+                isLastOdd ? "col-span-2" : "",
                 isRightCol ? "border-l border-border" : "",
                 isFirstRow ? "" : "border-t border-border",
                 on ? "bg-jg-buy-bg" : "hover:bg-black/[0.015]",
