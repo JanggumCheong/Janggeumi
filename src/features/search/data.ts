@@ -91,8 +91,12 @@ export const HOTS: SeasonalIngredient[] = [
   },
 ];
 
+/**
+ * 검색 가데이터. 과일(FRUIT)만 검색 API가 있으므로, 과일이 아닌 카테고리는
+ * 이 목데이터로 검색 결과에 "노출만" 시킨다(상세 이동 불가 → comingSoon).
+ * 과일은 API에서 오므로 여기 넣지 않는다(전체 검색 시 중복 방지).
+ */
 export const INGREDIENTS: Ingredient[] = [
-  { slug: "watermelon", name: "수박", emoji: "🍉", rating: 4.7, category: "과일", inSeason: true },
   { slug: "onion", name: "양파", emoji: "🧅", rating: 4.6, category: "채소", inSeason: false },
   { slug: "potato", name: "감자", emoji: "🥔", rating: 4.5, category: "채소", inSeason: false },
   {
@@ -112,3 +116,36 @@ export const INGREDIENTS: Ingredient[] = [
   { slug: "squid", name: "오징어", emoji: "🦑", rating: 4.5, category: "수산", inSeason: false },
   { slug: "egg", name: "계란", emoji: "🥚", rating: 4.6, category: "유제품", inSeason: false },
 ];
+
+/**
+ * 과일 슬러그 → 이모지. 검색 API는 이모지를 주지 않으므로 여기서 매핑한다.
+ * API에 과일이 추가되면 여기에 등록한다(없으면 중립 자리표시).
+ */
+export const FRUIT_EMOJI: Record<string, string> = {
+  strawberry: "🍓",
+  apple: "🍎",
+  "shine-muscat": "🍇",
+  watermelon: "🍉",
+  avocado: "🥑",
+  peach: "🍑",
+  persimmon: "🍊",
+  mandarin: "🍊",
+  lemon: "🍋",
+  mango: "🥭",
+  melon: "🍈",
+  fig: "🫐",
+  banana: "🍌",
+  "cherry-tomato": "🍅",
+  pear: "🍐",
+  blueberry: "🫐",
+  pomegranate: "🍎",
+  orange: "🍊",
+  plum: "🍑",
+  grapefruit: "🍊",
+  "oriental-melon": "🍈",
+  "green-grape": "🍇",
+  cherry: "🍒",
+  kiwi: "🥝",
+  pineapple: "🍍",
+  grape: "🍇",
+};
