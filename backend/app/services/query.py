@@ -127,7 +127,8 @@ def _home_emoji(name: Optional[str]) -> str:
 
 
 def _home_image_url(row: dict[str, Any]) -> Optional[str]:
-    return HOME_BANNER_IMAGE_BY_ID.get(row.get("id")) or row.get("image_url")
+    #return f"/images/banners/{row.get('id').removeprefix('ing_')}-recommend-banner.webp"
+    return row.get("image_url")
 
 def _banner_image_url(row: dict[str, Any]) -> Optional[str]:
     return f"/images/banners/{row.get('id').removeprefix('ing_')}-recommend-banner.webp"
