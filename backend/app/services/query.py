@@ -128,7 +128,7 @@ def _home_image_url(row: dict[str, Any]) -> Optional[str]:
     return HOME_BANNER_IMAGE_BY_ID.get(row.get("id")) or row.get("image_url")
 
 
-def _ingredient_slug(ingredient_id: Optional[str]) -> Optional[str]:
+def _ingredient_route_slug(ingredient_id: Optional[str]) -> Optional[str]:
     if not ingredient_id:
         return None
 
@@ -138,9 +138,13 @@ def _ingredient_slug(ingredient_id: Optional[str]) -> Optional[str]:
     return value.replace("_", "-")
 
 
-def _ingredient_href(ingredient_id: Optional[str]) -> Optional[str]:
-    slug = _ingredient_slug(ingredient_id)
-    return f"/ingredients/{slug}/{slug}" if slug else None
+def _ingredient_href(row: dict[str, Any], ingredient_id: Optional[str] = None) -> Optional[str]:
+    url = row.get("url")
+    if url:
+        return url
+
+    slug = _ingredient_route_slug(ingredient_id or row.get("id"))
+    return f"/ingredients/{slug}" if slug else None
 
 
 def _home_catchphrase(row: dict[str, Any]) -> dict[str, str]:
@@ -168,8 +172,7 @@ def _home_rating(row: dict[str, Any]) -> dict[str, Any]:
 def _format_home_recommendation(row: dict[str, Any]) -> dict[str, Any]:
     return {
         "id": row.get("id"),
-        "slug": _ingredient_slug(row.get("id")),
-        "href": _ingredient_href(row.get("id")),
+        "href": _ingredient_href(row),
         "name": row.get("name"),
         "emoji": _home_emoji(row.get("name")),
         "catchphrase": _home_catchphrase(row),
@@ -183,8 +186,7 @@ def _format_home_trending(row: dict[str, Any], rank: int) -> dict[str, Any]:
     return {
         "rank": rank,
         "id": row.get("id"),
-        "slug": _ingredient_slug(row.get("id")),
-        "href": _ingredient_href(row.get("id")),
+        "href": _ingredient_href(row),
         "name": row.get("name"),
         "image_url": _home_image_url(row),
         "trend_status": "지금 제철!",
@@ -477,7 +479,7 @@ def get_recent_views_for_user(user_id: str) -> Any:
         supabase.table("recent_views")
         .select(
             "id, viewed_at, ingredient_id, "
-            "ingredients(id, name, catchphrase, description, image_url, peak_months)"
+            "ingredients(*)"
         )
         .eq("user_id", user_id)
         .order("viewed_at", desc=True)
@@ -488,19 +490,12 @@ def get_recent_views_for_user(user_id: str) -> Any:
     for row in rows or []:
         ingredient = row.get("ingredients") or {}
         ingredient_id = ingredient.get("id") or row.get("ingredient_id")
-        slug = _ingredient_slug(ingredient_id)
-        href = _ingredient_href(ingredient_id)
-        formatted_ingredient = {
-            **ingredient,
-            "slug": slug,
-            "href": href,
-        } if ingredient else None
+        formatted_ingredient = {**ingredient} if ingredient else None
 
         recent_views.append({
             **row,
             "ingredient_id": ingredient_id,
-            "slug": slug,
-            "href": href,
+            "href": _ingredient_href(ingredient, ingredient_id),
             "ingredient": formatted_ingredient,
             "ingredients": formatted_ingredient,
         })
@@ -540,7 +535,7 @@ def _get_home_data_from_database(ingredient_id: str = "ing_watermelon") -> Dict[
             }
 
         recent_rows = supabase.table("recent_views") \
-            .select("viewed_at, ingredients(id, name, image_url)") \
+            .select("viewed_at, ingredients(*)") \
             .order("viewed_at", desc=True) \
             .limit(5) \
             .execute()
@@ -551,8 +546,7 @@ def _get_home_data_from_database(ingredient_id: str = "ing_watermelon") -> Dict[
             if ing:
                 recent_views.append({
                     "id": ing.get("id"),
-                    "slug": _ingredient_slug(ing.get("id")),
-                    "href": _ingredient_href(ing.get("id")),
+                    "href": _ingredient_href(ing),
                     "name": ing.get("name"),
                     "image_url": ing.get("image_url"),
                     "viewed_at": row.get("viewed_at")
@@ -731,7 +725,7 @@ def get_home_data(ingredient_id: str = "ing_watermelon") -> Dict[str, Any]:
         ]
 
         recent_rows = supabase.table("recent_views") \
-            .select("viewed_at, ingredients(id, name, image_url)") \
+            .select("viewed_at, ingredients(*)") \
             .order("viewed_at", desc=True) \
             .limit(5) \
             .execute()
@@ -742,8 +736,7 @@ def get_home_data(ingredient_id: str = "ing_watermelon") -> Dict[str, Any]:
             if ing:
                 recent_views.append({
                     "id": ing.get("id"),
-                    "slug": _ingredient_slug(ing.get("id")),
-                    "href": _ingredient_href(ing.get("id")),
+                    "href": _ingredient_href(ing),
                     "name": ing.get("name"),
                     "image_url": ing.get("image_url"),
                     "viewed_at": row.get("viewed_at")
