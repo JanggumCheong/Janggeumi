@@ -3,6 +3,7 @@ from typing import Optional, List
 
 from fastapi import FastAPI, HTTPException, Query
 from supabase import create_client, Client
+from fastapi.middleware.cors import CORSMiddleware
 
 from .schemas import RecentViewCreate
 from .services.query import (
@@ -24,6 +25,20 @@ app = FastAPI(
     description="Backend API for the Janggeumi project.",
 )
 app.include_router(ai_router, prefix="/api/ai", tags=["AI Chat"])
+
+origins = [
+    "http://localhost:3000",          
+    "http://127.0.0.1:3000",
+    "https://janggeumi.vercel.app" 
+]
+
+app.add_middleware(
+    CORSMiddleware, 
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Supabase 클라이언트 전역 초기화 (프로젝트의 글로벌 설정에 맞춰 변수 주입 필요)
 SUPABASE_URL = os.getenv("SUPABASE_URL", "https://your-project.supabase.co")
