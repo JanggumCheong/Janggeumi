@@ -58,6 +58,15 @@ export function InstallPrompt() {
   const [showIosGuide, setShowIosGuide] = useState(false);
   const [visible, setVisible] = useState(false);
 
+  // service worker 등록 — Chrome 계열은 fetch 핸들러 SW가 있어야
+  // beforeinstallprompt(설치 프롬프트)를 발생시킨다. iOS에는 영향 없음.
+  useEffect(() => {
+    if (!("serviceWorker" in navigator)) return;
+    navigator.serviceWorker.register("/sw.js").catch(() => {
+      // 등록 실패는 설치 프롬프트만 못 뜰 뿐 앱 동작엔 지장 없으므로 무시.
+    });
+  }, []);
+
   useEffect(() => {
     // 이미 설치됐거나 최근에 닫았으면 표시하지 않는다.
     if (isStandalone() || recentlyDismissed()) return;

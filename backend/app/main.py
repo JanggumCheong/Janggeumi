@@ -2,8 +2,8 @@ import os
 from typing import Optional, List
 
 from fastapi import FastAPI, HTTPException, Query
-from fastapi.middleware.cors import CORSMiddleware
 from supabase import create_client, Client
+from fastapi.middleware.cors import CORSMiddleware
 
 from .schemas import RecentViewCreate
 from .services.query import (
@@ -26,10 +26,15 @@ app = FastAPI(
 )
 app.include_router(ai_router, prefix="/api/ai", tags=["AI Chat"])
 
-app.add_middleware(
-    CORSMiddleware,
+origins = [
+    "http://localhost:3000",          
+    "http://127.0.0.1:3000",
+    "https://janggeumi.vercel.app" 
+]
 
-    allow_origins=["http://localhost:3000"],
+app.add_middleware(
+    CORSMiddleware, 
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -104,6 +109,14 @@ def get_ingredient_detail(ingredient_id: str):
 def get_recent_views(user_id: str):
     try:
         return get_recent_views_for_user(user_id)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/v1/recent-views", status_code=201)
+def create_recent_view(view: RecentViewCreate):
+    try:
+        return add_recent_view_record(view)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
