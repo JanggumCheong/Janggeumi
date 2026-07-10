@@ -1,7 +1,6 @@
-import { notFound } from "next/navigation";
 import { getIngredient, getIngredientSlugs } from "../_lib/ingredients";
 import { fetchIngredientMeta } from "../_lib/queries/ingredient-meta";
-import { emojiFor } from "../_lib/slug";
+import { emojiFor, nameFor } from "../_lib/slug";
 import { SegmentTabs } from "../_components/SegmentTabs";
 import { RecentViewTracker } from "../_components/RecentViewTracker";
 
@@ -39,17 +38,27 @@ export default async function IngredientLayout({
 }) {
   const { slug } = await params;
   const localIngredient = getIngredient(slug);
-  // 로컬 상세 데이터가 있으면 API 없이도 통과, 로컬에 없으면 API 메타로 존재 확인.
-  const meta = localIngredient ? null : await fetchIngredientMeta(slug);
-  if (!localIngredient && !meta) notFound();
+  // 로컬 상세가 있으면 API 없이 통과, 없으면 API 메타로 이름 조회(존재 판정은 아래 page가 함).
+  // 존재 확인 notFound()는 layout이 아니라 page에서 부른다 —
+  // layout이 notFound()를 부르면 재료 전용 not-found.tsx가 못 잡고 전역 404로 샌다.
+  // API 실패는 이름만 slug 매핑으로 대체(셸은 떠야 page가 판정) — 실패로 layout이 500 나면 안 됨.
+  let metaName: string | null = null;
+  if (!localIngredient) {
+    metaName = await fetchIngredientMeta(slug)
+      .then((m) => m?.name ?? null)
+      .catch(() => nameFor(slug));
+  }
+  const displayName = localIngredient?.name ?? metaName ?? undefined;
 
   return (
     <div className="flex flex-1 flex-col">
-      <RecentViewTracker
-        slug={slug}
-        name={localIngredient?.name ?? meta!.name}
-        emoji={localIngredient?.emoji ?? emojiFor(slug)}
-      />
+      {displayName && (
+        <RecentViewTracker
+          slug={slug}
+          name={displayName}
+          emoji={localIngredient?.emoji ?? emojiFor(slug)}
+        />
+      )}
 
       {/* 세그먼트 탭 — Header 아래 밀착, 좌우 엣지까지. (sticky 아님 — 스크롤과 함께 올라감) */}
       <div className="-mx-5 -mt-5">
