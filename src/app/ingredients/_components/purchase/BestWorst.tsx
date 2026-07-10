@@ -39,7 +39,7 @@ function Col({
   alt?: string;
 }) {
   return (
-    <div className="flex-1 overflow-hidden rounded-[16px] border border-border">
+    <div className="flex-1 overflow-hidden rounded-[16px]">
       {/* 라벨 (색은 여기만) */}
       <div
         className="flex items-center gap-1.5 px-2.5 py-[7px] text-xs font-extrabold text-white"
@@ -48,6 +48,8 @@ function Col({
         {label}
       </div>
       {/* 이미지만 (무채색 배경). image 없으면 빈 배경. */}
+      {/* 모서리는 부모 카드의 overflow-hidden이 책임짐 — 자식에 라운드를 따로 주면
+          바깥 border와 안쪽 곡선이 어긋나 하단 좌우에 회색 틈이 생김. */}
       <div className="h-32 bg-muted">
         {image && (
           // eslint-disable-next-line @next/next/no-img-element
