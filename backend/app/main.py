@@ -113,6 +113,14 @@ def get_recent_views(user_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.post("/v1/recent-views", status_code=201)
+def create_recent_view(view: RecentViewCreate):
+    try:
+        return add_recent_view_record(view)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.get("/v1/ingredients/{ingredient_id}/storage")
 def get_ingredient_storage(ingredient_id: str):
     """보관탭 가이드"""

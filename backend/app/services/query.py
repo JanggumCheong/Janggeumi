@@ -58,6 +58,8 @@ def _summary_from_text(text: Optional[str], limit: int = 80) -> str:
 HOME_BANNER_IMAGE_BY_ID = {
     "ing_watermelon": "public/images/banners/watermelon-recommend-banner.webp",
     "ing_peach": "public/images/banners/peach-recommend-banner.webp",
+    "ing_mango": "public/images/banners/mango-recommend-banner.webp",
+    "ing_banana": "public/images/banners/banana-recommend-banner.webp",
 }
 
 HOME_CATCHPHRASE_BY_ID = {
@@ -127,6 +129,9 @@ def _home_emoji(name: Optional[str]) -> str:
 def _home_image_url(row: dict[str, Any]) -> Optional[str]:
     return HOME_BANNER_IMAGE_BY_ID.get(row.get("id")) or row.get("image_url")
 
+def _banner_image_url(row: dict[str, Any]) -> Optional[str]:
+    return f"public/images/banners/{row.get('id').removeprefix('ing_')}-recommend-banner.webp"
+    #return HOME_BANNER_IMAGE_BY_ID.get(row.get("id")) or row.get("image_url")
 
 def _ingredient_route_slug(ingredient_id: Optional[str]) -> Optional[str]:
     if not ingredient_id:
@@ -188,7 +193,7 @@ def _format_home_trending(row: dict[str, Any], rank: int) -> dict[str, Any]:
         "id": row.get("id"),
         "href": _ingredient_href(row),
         "name": row.get("name"),
-        "image_url": _home_image_url(row),
+        "image_url": _banner_image_url(row),
         "trend_status": "지금 제철!",
     }
 
