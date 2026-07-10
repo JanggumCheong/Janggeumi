@@ -130,7 +130,7 @@ def _home_image_url(row: dict[str, Any]) -> Optional[str]:
     return HOME_BANNER_IMAGE_BY_ID.get(row.get("id")) or row.get("image_url")
 
 def _banner_image_url(row: dict[str, Any]) -> Optional[str]:
-    return f"public/images/banners/{row.get('id').removeprefix('ing_')}-recommend-banner.webp"
+    return f"/images/banners/{row.get('id').removeprefix('ing_')}-recommend-banner.webp"
     #return HOME_BANNER_IMAGE_BY_ID.get(row.get("id")) or row.get("image_url")
 
 def _ingredient_route_slug(ingredient_id: Optional[str]) -> Optional[str]:
