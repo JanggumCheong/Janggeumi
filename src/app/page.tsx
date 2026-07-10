@@ -1,13 +1,13 @@
 "use client";
 
 import { type FormEvent, useEffect, useState } from "react";
-import Image from "next/image";
 import localFont from "next/font/local";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, ArrowRight, ChevronRight, Clock3, Leaf, Search, X } from "lucide-react";
 import { fetchHomeData, type HomeRecommendedBanner } from "@/features/home/api";
+import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
 import {
   RECENT_VIEWS_UPDATED_EVENT,
   type RecentViewedIngredient,
@@ -204,13 +204,14 @@ export default function Home() {
         className="relative aspect-[1029/582] overflow-hidden rounded-lg"
         aria-label="장금이 앱 소개"
       >
-        <Image
+        <ImageWithFallback
           src="/images/main/janggeumi-main-banner.png"
           alt="똑똑한 식재료 관리, 장금이와 함께해요"
           fill
           priority
           className="object-cover"
           sizes="420px"
+          fallbackClassName="text-primary"
         />
         <Link
           href="/search"
@@ -249,9 +250,9 @@ export default function Home() {
                 >
                   <div className="relative grid aspect-square place-items-center overflow-hidden rounded-[7px]">
                     {ingredient.imageSrc ? (
-                      <Image
+                      <ImageWithFallback
                         src={ingredient.imageSrc}
-                        alt=""
+                        alt={`${ingredient.name} 이미지`}
                         fill
                         className="object-cover"
                         sizes="80px"
@@ -337,9 +338,9 @@ export default function Home() {
                 >
                   <span className="relative grid size-12 place-items-center overflow-hidden rounded-full border border-border bg-[#f8f5ec] shadow-[0_3px_10px_rgba(31,29,24,0.04)]">
                     {ingredient.imageSrc ? (
-                      <Image
+                      <ImageWithFallback
                         src={ingredient.imageSrc}
-                        alt=""
+                        alt={`${ingredient.name} 이미지`}
                         fill
                         className="object-cover"
                         sizes="48px"
@@ -380,12 +381,13 @@ export default function Home() {
               className="group block size-full"
               aria-label={`${activeRecommendedBanner.name} 상세 보기`}
             >
-              <Image
+              <ImageWithFallback
                 src={activeRecommendedBanner.imageSrc}
-                alt=""
+                alt={`${activeRecommendedBanner.name} 추천 배너`}
                 fill
                 className="object-cover transition-transform duration-500 group-hover:scale-[1.015]"
                 sizes="420px"
+                fallbackClassName="text-primary"
               />
               <div className="absolute inset-0 bg-gradient-to-r from-[#fbfbfa]/95 via-[#fbfbfa]/72 to-transparent" />
 
