@@ -1,0 +1,422 @@
+<!doctype html>
+<!--
+  장금이 피칭 덱 템플릿 (self-contained)
+  - 이 파일 하나로 발표 가능. 외부 리소스 로드 없음(폰트=시스템 스택, 이미지=data URI 또는 상대경로).
+  - 디자인 토큰은 design-system.md와 1:1. 임의 색 추가 금지.
+  - 슬라이드 = <section class="slide">. 좌우 화살표/Space/클릭으로 이동. F=전체화면, S=발표자노트, O=개요.
+  - 발표자 노트(대본)는 각 슬라이드 안 <aside class="notes">에 넣는다. 화면엔 안 보이고 S 토글 또는 발표자뷰에서만 보인다.
+  실제 덱을 만들 때: 이 파일을 docs/presentations/<주제>-deck.html로 복사하고 .slide 내용만 채운다.
+-->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>장금이 — 피칭 덱</title>
+<style>
+  :root {
+    /* 브랜드 (장금이 세이지 그린) */
+    --jg-primary: #5C6E3D;
+    --jg-primary-strong: #47562F;
+    --jg-primary-soft: #EEF1E6;
+    /* 배경 */
+    --jg-bg: #FBFBFA;
+    --jg-surface: #FFFFFF;
+    --jg-surface-sunken: #F4F4F2;
+    /* 텍스트 */
+    --jg-ink: #1F1D18;
+    --jg-ink-sub: #6B675E;
+    --jg-ink-mute: #9B978C;
+    /* 경계 */
+    --jg-line: #E7E4DC;
+    /* 영역 액센트 (구매/보관/처리) */
+    --jg-buy: #1F804D;  --jg-buy-bg: #E9F6EE;
+    --jg-keep: #2F6E86; --jg-keep-bg: #E8F2F6;
+    --jg-use: #C4712A;  --jg-use-bg: #FBF0E4;
+    /* 상태 */
+    --jg-star: #F0A93B;
+    --jg-danger: #C1453B;
+    /* 반경·그림자 */
+    --r-sm: 10px; --r-md: 16px; --r-lg: 20px; --r-pill: 999px;
+    --shadow-card: 0 2px 10px rgba(31,29,24,.05);
+    --shadow-float: 0 6px 20px rgba(31,29,24,.10);
+    --font: -apple-system, "Apple SD Gothic Neo", "Pretendard", "Malgun Gothic", sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: var(--font);
+    color: var(--jg-ink);
+    background: #0e0d0b; /* 무대 배경 — 슬라이드가 떠 보이게 */
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
+
+  /* ── 무대 & 슬라이드 (16:9) ── */
+  .stage { position: fixed; inset: 0; display: grid; place-items: center; }
+  .deck { position: relative; width: 100vw; height: 56.25vw; max-height: 100vh; max-width: 177.78vh; }
+  .slide {
+    position: absolute; inset: 0;
+    background: var(--jg-bg);
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    padding: 6.5% 8%;
+    /* 슬라이드 내부는 컨테이너 폭에 맞춘 상대단위(cqw)로 크기 지정 → 어떤 화면에서도 비율 유지 */
+    container-type: size;
+  }
+  .slide.active { display: flex; animation: fade .35s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  /* 슬라이드 내부 타이포는 cqw(컨테이너 폭 %) 기준 — 발표 시 풀스크린에서 정확히 스케일 */
+  .kicker { font-size: 1.6cqw; font-weight: 700; letter-spacing: .04em; color: var(--jg-primary); text-transform: uppercase; margin-bottom: 1.6cqw; }
+  .slide h1 { font-size: 5.2cqw; font-weight: 800; line-height: 1.12; letter-spacing: -0.02em; }
+  .slide h2 { font-size: 3.4cqw; font-weight: 800; line-height: 1.18; letter-spacing: -0.01em; }
+  .slide h3 { font-size: 2.2cqw; font-weight: 700; }
+  .slide p { font-size: 1.9cqw; font-weight: 400; line-height: 1.5; color: var(--jg-ink-sub); }
+  .slide .lead { font-size: 2.4cqw; color: var(--jg-ink-sub); font-weight: 500; }
+  .slide strong { color: var(--jg-ink); font-weight: 700; }
+  .accent { color: var(--jg-primary); }
+  .stack > * + * { margin-top: 2.4cqw; }
+  .stack-sm > * + * { margin-top: 1.2cqw; }
+
+  /* ── 표지 슬라이드 ── */
+  .cover { align-items: flex-start; }
+  .cover h1 { font-size: 6.4cqw; }
+  .cover .mascot { position: absolute; right: 7%; bottom: 6%; width: 26cqw; height: auto; }
+  .cover .tagline { margin-top: 2.4cqw; font-size: 2.2cqw; color: var(--jg-ink-sub); }
+  /* 표지 QR (우상단) — 서비스 바로 접속 */
+  .cover .qr-box { position: absolute; right: 7%; top: 10%; display: flex; flex-direction: column; align-items: center; gap: .8cqw; }
+  .cover .qr-box .qr { width: 13cqw; height: 13cqw; display: block; background: var(--jg-surface); padding: 1cqw; border-radius: var(--r-md); border: 1px solid var(--jg-line); box-shadow: var(--shadow-card); }
+  .cover .qr-box .qr-cap { font-size: 1.3cqw; font-weight: 600; color: var(--jg-ink-sub); }
+
+  /* ── O/X 살림 퀴즈 슬라이드 ── */
+  .quiz { align-items: flex-start; }
+  .quiz .q { font-size: 3.6cqw; font-weight: 800; line-height: 1.2; margin: 1.2cqw 0 2.8cqw; letter-spacing: -0.01em; }
+  .ox { display: flex; gap: 2.4cqw; }
+  .ox .opt { flex: 1; border-radius: var(--r-lg); border: 2px solid var(--jg-line); background: var(--jg-surface); padding: 3cqw 2.4cqw; text-align: center; }
+  .ox .mark { font-size: 7cqw; font-weight: 800; line-height: 1; }
+  .ox .mark.o { color: var(--jg-buy); }
+  .ox .mark.x { color: var(--jg-danger); }
+  .ox .opt .desc { margin-top: 1cqw; font-size: 1.6cqw; color: var(--jg-ink-mute); }
+  /* 정답 공개 상태(.reveal): 정답 옵션 강조 + 해설 노출 */
+  .quiz.reveal .opt.answer { border-color: var(--jg-primary); background: var(--jg-primary-soft); }
+  .quiz.reveal .opt.answer .desc { color: var(--jg-primary-strong); font-weight: 700; }
+  .quiz.reveal .opt:not(.answer) { opacity: .4; }
+  .quiz .explain { display: none; margin-top: 2.8cqw; background: var(--jg-primary-soft); border-radius: var(--r-lg); padding: 2.2cqw; }
+  .quiz.reveal .explain { display: block; }
+  .quiz .explain p { font-size: 1.8cqw; color: var(--jg-primary-strong); font-weight: 600; }
+  .quiz .explain .src { margin-top: 1cqw; font-size: 1.3cqw; color: var(--jg-ink-mute); font-weight: 500; }
+
+  /* ── 큰 숫자/지표 카드 ── */
+  .metrics { display: flex; gap: 2.4cqw; }
+  .metric { flex: 1; background: var(--jg-surface); border: 1px solid var(--jg-line); border-radius: var(--r-lg); padding: 2.8cqw; box-shadow: var(--shadow-card); }
+  .metric .num { font-size: 5cqw; font-weight: 800; color: var(--jg-primary); line-height: 1; letter-spacing: -0.02em; }
+  .metric .label { margin-top: 1cqw; font-size: 1.5cqw; color: var(--jg-ink-sub); }
+
+  /* ── 3영역(구매·보관·처리) 컬럼 ── */
+  .areas { display: flex; gap: 2cqw; }
+  .area { flex: 1; border-radius: var(--r-lg); padding: 2.4cqw; }
+  .area.buy  { background: var(--jg-buy-bg); }
+  .area.keep { background: var(--jg-keep-bg); }
+  .area.use  { background: var(--jg-use-bg); }
+  .area .tag { font-size: 1.4cqw; font-weight: 700; }
+  .area.buy .tag  { color: var(--jg-buy); }
+  .area.keep .tag { color: var(--jg-keep); }
+  .area.use .tag  { color: var(--jg-use); }
+  .area h3 { margin: .8cqw 0; font-size: 2cqw; }
+  .area p { font-size: 1.5cqw; }
+
+  /* ── 화면 캡처(데모) 프레임 ── */
+  .shots { display: flex; gap: 2.4cqw; align-items: flex-end; }
+  .shot { border-radius: var(--r-lg); overflow: hidden; box-shadow: var(--shadow-float); background: #fff; border: 1px solid var(--jg-line); }
+  .shot img { display: block; width: 100%; height: auto; }
+  .shot .cap { font-size: 1.3cqw; color: var(--jg-ink-mute); padding: .8cqw 1.2cqw; }
+  /* 폰 프레임(모바일 캡처용) */
+  .phone-shot { width: 22cqw; border-radius: 3cqw; padding: 1cqw; background: #111; }
+  .phone-shot img { border-radius: 2cqw; }
+
+  /* ── 대비(before/after, 기존 vs 장금이) ── */
+  .compare { display: flex; gap: 0; border-radius: var(--r-lg); overflow: hidden; border: 1px solid var(--jg-line); }
+  .compare > div { flex: 1; padding: 2.6cqw; }
+  .compare .before { background: var(--jg-surface-sunken); }
+  .compare .after  { background: var(--jg-primary-soft); }
+  .compare .before h3 { color: var(--jg-ink-mute); }
+  .compare .after h3  { color: var(--jg-primary-strong); }
+  .compare li { font-size: 1.6cqw; color: var(--jg-ink-sub); list-style: none; padding-left: 2cqw; position: relative; }
+  .compare li + li { margin-top: 1cqw; }
+  .compare li::before { content: "—"; position: absolute; left: 0; color: var(--jg-ink-mute); }
+  .compare .after li::before { content: "✓"; color: var(--jg-primary); }
+
+  /* 장금이 화자 말풍선 (가볍게, 마스코트 수준) */
+  .quote { display: flex; gap: 1.6cqw; align-items: center; background: var(--jg-primary-soft); border-radius: var(--r-lg); padding: 2.2cqw; }
+  .quote .emoji { font-size: 3.2cqw; }
+  .quote p { font-size: 1.9cqw; color: var(--jg-primary-strong); font-weight: 600; }
+
+  /* ── 진행바 + 컨트롤 ── */
+  .progress { position: fixed; top: 0; left: 0; height: 3px; background: var(--jg-primary); z-index: 20; transition: width .35s ease; }
+  .hud { position: fixed; bottom: 14px; right: 16px; z-index: 20; display: flex; gap: 8px; align-items: center; color: #fff; font-size: 12px; opacity: .5; transition: opacity .2s; }
+  .hud:hover { opacity: 1; }
+  .hud button { background: rgba(255,255,255,.14); color: #fff; border: 0; width: 30px; height: 30px; border-radius: 8px; cursor: pointer; font-size: 15px; }
+  .hud .count { min-width: 54px; text-align: center; font-variant-numeric: tabular-nums; }
+
+  /* ── 발표자 노트 오버레이 (S 토글) ── */
+  .notes { display: none; }
+  body.show-notes .notes {
+    display: block; position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
+    background: rgba(14,13,11,.94); color: #f4f2ee; padding: 20px 28px; max-height: 32vh; overflow: auto;
+    font-size: 15px; line-height: 1.55; border-top: 2px solid var(--jg-primary);
+  }
+  body.show-notes .notes::before { content: "🎙 발표자 노트"; display: block; font-size: 12px; color: var(--jg-primary-soft); margin-bottom: 8px; letter-spacing: .05em; }
+  body.show-notes .notes { display: none; }
+  body.show-notes .slide.active .notes { display: block; }
+
+  /* ── 개요(그리드) 뷰 (O 토글) ── */
+  body.overview .deck { display: grid; position: static; width: 100vw; height: 100vh; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 24px; overflow: auto; place-content: start; background: #0e0d0b; }
+  body.overview .slide { position: relative; display: flex !important; inset: auto; aspect-ratio: 16/9; height: auto; cursor: pointer; border-radius: 8px; overflow: hidden; padding: 4%; transform: none; animation: none; container-type: size; }
+  body.overview .slide.active { outline: 3px solid var(--jg-primary); outline-offset: 2px; }
+  body.overview .hud, body.overview .progress { display: none; }
+  body.overview .cover .mascot { display: none; }
+
+  /* 인쇄(PDF 내보내기): 한 슬라이드 = 한 페이지 */
+  @media print {
+    body { background: #fff; overflow: visible; }
+    .hud, .progress { display: none !important; }
+    .stage, .deck { position: static; width: 100%; height: auto; max-width: none; max-height: none; }
+    .slide { display: flex !important; position: relative; inset: auto; width: 100%; aspect-ratio: 16/9; page-break-after: always; }
+  }
+</style>
+</head>
+<body>
+  <div class="progress" id="progress"></div>
+
+  <div class="stage">
+    <div class="deck" id="deck">
+
+      <!-- ══════════ 슬라이드 1 · 표지 ══════════ -->
+      <section class="slide cover active">
+        <div class="kicker">식재료 구매 · 보관 · 처리</div>
+        <h1>사면서 고민, 두면서 고민,<br>버릴 때 또 고민.<br><span class="accent">장금이</span>가 끝냅니다.</h1>
+        <p class="tagline">살림 초보도 헤매지 않고 바로 확신을 얻는 식재료 가이드</p>
+
+        <!-- 서비스 바로 접속 QR (janggeumi.vercel.app). SVG 인라인 임베드 → 자체 완결형(오프라인 안전) -->
+        <div class="qr-box">
+          <svg class="qr" xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 31 31" shape-rendering="crispEdges" role="img" aria-label="장금이 서비스 접속 QR (janggeumi.vercel.app)"><path stroke="#1F1D18" d="M0 0.5h7m4 0h2m2 0h2m1 0h3m1 0h7M0 1.5h1m5 0h1m3 0h1m1 0h1m7 0h1m1 0h1m5 0h1M0 2.5h1m1 0h3m1 0h1m1 0h1m2 0h2m1 0h1m1 0h1m2 0h1m2 0h1m1 0h3m1 0h1M0 3.5h1m1 0h3m1 0h1m1 0h2m6 0h2m4 0h1m1 0h3m1 0h1M0 4.5h1m1 0h3m1 0h1m1 0h1m4 0h3m1 0h4m1 0h1m1 0h3m1 0h1M0 5.5h1m5 0h1m1 0h1m1 0h7m5 0h1m5 0h1M0 6.5h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7M8 7.5h2m1 0h1m1 0h1m1 0h1m2 0h2M0 8.5h1m1 0h5m4 0h1m2 0h2m1 0h2m1 0h1m1 0h5M1 9.5h1m2 0h2m4 0h1m1 0h1m2 0h10m3 0h1M1 10.5h3m1 0h3m1 0h2m1 0h1m4 0h1m2 0h1m2 0h1M7 11.5h1m2 0h2m2 0h1m1 0h1m1 0h1m1 0h1m1 0h4m1 0h1M2 12.5h1m3 0h3m3 0h1m3 0h2m7 0h2M4 13.5h1m2 0h1m3 0h5m2 0h7m3 0h1M0 14.5h1m3 0h1m1 0h2m1 0h1m3 0h4m1 0h1m6 0h2M2 15.5h4m2 0h3m1 0h2m1 0h1m3 0h2m2 0h1m3 0h1M1 16.5h1m1 0h2m1 0h3m2 0h2m1 0h2m1 0h1m2 0h1m4 0h2M0 17.5h1m1 0h1m4 0h1m3 0h2m2 0h2m2 0h2m1 0h3m1 0h1m1 0h1M0 18.5h1m1 0h2m2 0h1m2 0h3m6 0h1m4 0h2m1 0h1M0 19.5h1m3 0h1m2 0h1m1 0h3m2 0h1m1 0h1m1 0h3m3 0h1m2 0h1M0 20.5h1m1 0h1m3 0h1m1 0h3m5 0h2m1 0h6m1 0h3M8 21.5h1m2 0h1m1 0h3m4 0h1m3 0h5M0 22.5h7m2 0h8m1 0h3m1 0h1m1 0h3M0 23.5h1m5 0h1m1 0h2m3 0h1m1 0h1m2 0h1m1 0h1m3 0h1M0 24.5h1m1 0h3m1 0h1m1 0h1m5 0h2m1 0h2m1 0h5m1 0h1m1 0h1M0 25.5h1m1 0h3m1 0h1m1 0h1m4 0h1m1 0h5m5 0h2M0 26.5h1m1 0h3m1 0h1m1 0h1m1 0h1m1 0h3m2 0h1m2 0h8M0 27.5h1m5 0h1m2 0h2m1 0h1m3 0h1m3 0h1m1 0h1m2 0h1m1 0h1M0 28.5h7m1 0h1m9 0h2m6 0h1"/></svg>
+          <div class="qr-cap">📱 지금 열어보세요 · janggeumi.vercel.app</div>
+        </div>
+        <!-- 마스코트: 실제 덱에선 data URI로 임베드하거나 상대경로. 예: <img class="mascot" src="mascot.png" alt=""> -->
+        <aside class="notes">
+          안녕하세요. 오늘 소개할 장금이는 "무엇을 살까"가 아니라 "이걸 어떻게 사고, 두고, 처리하지?"라는 매일의 고민을 없애는 서비스입니다. (QR을 가리키며) 지금 바로 열어보셔도 좋습니다. 딱 한 문장으로 — 식재료를 사서 끝까지 쓰는 전 과정을 가장 쉽고 믿을 수 있게 만듭니다.
+        </aside>
+      </section>
+
+      <!-- ══════════ 슬라이드 · 살림 퀴즈 ① (감자) ══════════ -->
+      <!-- 아이스브레이커: 스페이스/→ 로 정답 공개(.reveal 토글). 발표자가 청중에게 O/X 손 들게 한 뒤 넘긴다. -->
+      <section class="slide quiz" data-quiz>
+        <div class="kicker">🖐 살림 O/X 퀴즈 · 1</div>
+        <div class="q">🥔 감자는 <span class="accent">냉장고</span>에 넣어두면 오래간다?</div>
+        <div class="ox">
+          <div class="opt" data-opt="O"><div class="mark o">O</div><div class="desc">그렇다</div></div>
+          <div class="opt answer" data-opt="X"><div class="mark x">X</div><div class="desc">아니다</div></div>
+        </div>
+        <div class="explain">
+          <p>정답은 <strong>X</strong>. 감자는 냉장 보관이 오히려 해로워요 — 저온에서 전분이 당으로 바뀌어 맛이 변합니다. <strong>빛을 차단한 서늘한 냉암소</strong>에 사과 한 알과 함께 두는 게 정답이에요.</p>
+          <div class="src">출처: 대한민국 정책브리핑(농림축산식품부) · 식품안전나라(식약처) — 장금이 감자 보관 콘텐츠</div>
+        </div>
+        <aside class="notes">
+          먼저 손을 들게 합니다: "감자 냉장고에 넣으시는 분?" 반응을 본 뒤 넘겨서 정답을 공개합니다. 대부분 냉장을 고르는데 답은 X — 여기서 "우리는 이런 걸 출처와 함께 정확히 알려준다"로 자연스럽게 연결합니다. (스페이스/→ 로 정답 공개)
+        </aside>
+      </section>
+
+      <!-- ══════════ 슬라이드 · 살림 퀴즈 ② (수박) ══════════ -->
+      <section class="slide quiz" data-quiz>
+        <div class="kicker">🖐 살림 O/X 퀴즈 · 2</div>
+        <div class="q">🍉 안 자른 수박은 <span class="accent">실온</span>에 두는 게 낫다?</div>
+        <div class="ox">
+          <div class="opt answer" data-opt="O"><div class="mark o">O</div><div class="desc">그렇다</div></div>
+          <div class="opt" data-opt="X"><div class="mark x">X</div><div class="desc">아니다</div></div>
+        </div>
+        <div class="explain">
+          <p>정답은 <strong>O</strong>. 통수박은 <strong>직사광선을 피한 통풍 잘 되는 서늘한 실온</strong>이 좋아요 — 오히려 당도가 더 올라갑니다. 잘라서 먹기 전엔 냉장이 맞지만, 통째로는 실온이 정답이에요.</p>
+          <div class="src">출처: 농촌진흥청 농사로 — 장금이 수박 보관 콘텐츠</div>
+        </div>
+        <aside class="notes">
+          "그럼 수박은요?" 하고 이어갑니다. 이건 반대로 답이 O라 헷갈립니다 — 감자는 냉장이 아니고, 수박은 통째면 실온. 두 문제로 "상식이 자주 틀린다 → 믿을 근거가 필요하다"를 각인시키고 문제 슬라이드로 넘어갑니다.
+        </aside>
+      </section>
+
+      <!-- ══════════ 슬라이드 2 · 문제 ══════════ -->
+      <section class="slide stack">
+        <div class="kicker">Problem</div>
+        <h2>식재료는 <span class="accent">사는 순간부터 버리는 순간까지</span> 계속 고민이다</h2>
+        <div class="metrics">
+          <div class="metric"><div class="num">?</div><div class="label">이거 잘 고른 걸까 — 확신 없이 구매</div></div>
+          <div class="metric"><div class="num">?</div><div class="label">냉장·실온·냉동 — 어디에 얼마나</div></div>
+          <div class="metric"><div class="num">?</div><div class="label">시들었는데 — 먹어도 되나, 어떻게</div></div>
+        </div>
+        <p>정보는 블로그·영상에 흩어져 있고, 신뢰할 수 있는지도 모른다. 매번 검색하고 매번 헤맨다.</p>
+        <aside class="notes">
+          핵심은 "한 번의 고민"이 아니라는 것. 구매·보관·처리 세 국면 모두에서 반복됩니다. 숫자를 넣을 수 있으면(가구당 음식물 폐기 비용 등) 여기에 실측치로 교체하세요. 근거 없는 숫자는 넣지 않습니다.
+        </aside>
+      </section>
+
+      <!-- ══════════ 슬라이드 3 · 기존 방식의 한계 ══════════ -->
+      <section class="slide stack">
+        <div class="kicker">Why now</div>
+        <h2>기존 방식은 왜 부족했나</h2>
+        <div class="compare">
+          <div class="before">
+            <h3>지금</h3>
+            <ul>
+              <li>블로그·영상에 정보가 흩어짐</li>
+              <li>출처·신뢰도 확인 불가</li>
+              <li>구매·보관·처리가 따로 논다</li>
+            </ul>
+          </div>
+          <div class="after">
+            <h3>장금이</h3>
+            <ul>
+              <li>한 재료의 전 과정을 한 곳에</li>
+              <li>출처 등급으로 신뢰를 보증</li>
+              <li>간결한 화면으로 바로 확신</li>
+            </ul>
+          </div>
+        </div>
+        <aside class="notes">
+          여기서 "왜 지금까지 안 됐나"를 짚습니다: 정보가 흩어져 있고 신뢰를 확인할 수 없었다. 우리는 흩어진 걸 한 곳에 모으고, 출처로 신뢰를 보증하고, 화면을 유려·심플·직관·현대로 풉니다. (특정 회사 브랜드명은 발표에서 쓰지 않습니다.)
+        </aside>
+      </section>
+
+      <!-- ══════════ 슬라이드 4 · 해결(제품 한 줄) ══════════ -->
+      <section class="slide stack">
+        <div class="kicker">Solution</div>
+        <h2>재료 하나를 검색하면, <span class="accent">사고 → 두고 → 처리</span>까지 끝난다</h2>
+        <div class="areas">
+          <div class="area buy"><div class="tag">구매 · 정답형</div><h3>잘 고르는 법</h3><p>기준·베스트/워스트를 출처와 함께</p></div>
+          <div class="area keep"><div class="tag">보관 · 합의형</div><h3>오래 두는 법</h3><p>조건별 방법을 비교·평가로</p></div>
+          <div class="area use"><div class="tag">처리 · 확산형</div><h3>끝까지 쓰는 법</h3><p>활용 레시피·폐기까지 피드로</p></div>
+        </div>
+        <div class="quote"><span class="emoji">👩‍🍳</span><p>장금이 왈, 좋은 재료 고르는 법부터 알려드리는 것이옵니다.</p></div>
+        <aside class="notes">
+          세 영역이 성격이 다르다는 게 우리의 인사이트입니다 — 구매는 정답을 주고, 보관은 합의를 모으고, 처리는 사용자 콘텐츠로 확산됩니다. 같은 카드 3개가 아닙니다.
+        </aside>
+      </section>
+
+      <!-- ══════════ 슬라이드 5 · 데모(실제 화면) ══════════ -->
+      <section class="slide stack">
+        <div class="kicker">Demo</div>
+        <h2>실제 화면</h2>
+        <div class="shots">
+          <!-- 스킬이 Playwright로 캡처한 실제 앱 스크린샷을 여기에. 모바일은 .phone-shot 사용. -->
+          <div class="shot phone-shot"><img src="shots/home.png" alt="홈 화면"></div>
+          <div class="shot phone-shot"><img src="shots/purchase.png" alt="구매 탭"></div>
+          <div class="shot phone-shot"><img src="shots/storage.png" alt="보관 탭"></div>
+          <div class="shot phone-shot"><img src="shots/handling.png" alt="처리 탭"></div>
+        </div>
+        <aside class="notes">
+          여기서 말로 설명하지 말고 화면으로 보여줍니다. 검색 → 재료 상세 → 세 탭 전환을 라이브로 시연하면 가장 강력합니다. 캡처는 실제 실행 결과입니다.
+        </aside>
+      </section>
+
+      <!-- ══════════ 슬라이드 6 · 차별점 ══════════ -->
+      <section class="slide stack">
+        <div class="kicker">Moat</div>
+        <h2>검색·AI가 <span class="accent">우리를 인용</span>하게 설계했다</h2>
+        <p>화면마다 검색어 h1·구조화 데이터(JSON-LD)·출처 등급을 심어, 구글 검색과 AI 답변(AI Overviews·ChatGPT)이 장금이를 근거로 삼게 한다. 신뢰가 곧 성장 동력.</p>
+        <div class="metrics">
+          <div class="metric"><div class="num">SEO</div><div class="label">재료별 검색 진입</div></div>
+          <div class="metric"><div class="num">GEO</div><div class="label">AI 답변 인용</div></div>
+          <div class="metric"><div class="num">출처</div><div class="label">공식·영상 등급으로 신뢰</div></div>
+        </div>
+        <aside class="notes">
+          이게 마케팅비 없이 크는 구조라는 걸 강조합니다. 콘텐츠 신뢰 모델(출처 등급)이 SEO/GEO와 직접 연결됩니다.
+        </aside>
+      </section>
+
+      <!-- ══════════ 슬라이드 7 · 다음 / 요청 ══════════ -->
+      <section class="slide stack">
+        <div class="kicker">Ask</div>
+        <h2>지금까지, 그리고 <span class="accent">다음</span></h2>
+        <div class="areas">
+          <div class="area buy"><div class="tag">완료</div><h3>세 탭 MVP</h3><p>구매·보관·처리 화면 + 콘텐츠 파이프라인</p></div>
+          <div class="area keep"><div class="tag">진행</div><h3>API 정합·데이터 확장</h3><p>백엔드 계약 정리, 재료 커버리지 확대</p></div>
+          <div class="area use"><div class="tag">다음</div><h3>UGC·성장</h3><p>사용자 후기·평점, SEO/GEO 본격화</p></div>
+        </div>
+        <div class="quote"><span class="emoji">🍳</span><p>장금이 왈, 함께 식탁의 고민을 끝내보실는지요.</p></div>
+        <aside class="notes">
+          마지막 슬라이드는 "무엇을 요청하는가"로 끝냅니다 — 투자·협업·피드백 중 이 발표의 목적에 맞게 한 문장으로. 감사 인사보다 다음 행동을 남기세요.
+        </aside>
+      </section>
+
+    </div>
+  </div>
+
+  <div class="hud">
+    <button id="prev" aria-label="이전">‹</button>
+    <span class="count"><span id="cur">1</span> / <span id="total">7</span></span>
+    <button id="next" aria-label="다음">›</button>
+  </div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const deck = document.getElementById('deck');
+  let i = slides.findIndex(s => s.classList.contains('active'));
+  if (i < 0) i = 0;
+  document.getElementById('total').textContent = slides.length;
+
+  function render() {
+    slides.forEach((s, n) => {
+      s.classList.toggle('active', n === i);
+      // 벗어난 퀴즈 슬라이드는 정답 공개 상태를 초기화 → 다시 들어오면 문제부터
+      if (n !== i && s.hasAttribute('data-quiz')) s.classList.remove('reveal');
+    });
+    document.getElementById('cur').textContent = i + 1;
+    document.getElementById('progress').style.width = ((i + 1) / slides.length * 100) + '%';
+    if (location.hash !== '#' + (i + 1)) history.replaceState(null, '', '#' + (i + 1));
+  }
+  function go(n) { i = Math.max(0, Math.min(slides.length - 1, n)); render(); }
+
+  // 다음: 퀴즈 슬라이드면 먼저 정답을 공개(.reveal)하고, 이미 공개됐으면 다음 슬라이드로.
+  function advance() {
+    const cur = slides[i];
+    if (cur && cur.hasAttribute('data-quiz') && !cur.classList.contains('reveal')) {
+      cur.classList.add('reveal');
+      return;
+    }
+    go(i + 1);
+  }
+
+  document.getElementById('next').onclick = () => advance();
+  document.getElementById('prev').onclick = () => go(i - 1);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { advance(); e.preventDefault(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { go(i - 1); }
+    else if (e.key === 'Home') go(0);
+    else if (e.key === 'End') go(slides.length - 1);
+    else if (e.key.toLowerCase() === 'f') { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); }
+    else if (e.key.toLowerCase() === 's') document.body.classList.toggle('show-notes');
+    else if (e.key.toLowerCase() === 'o') document.body.classList.toggle('overview');
+    else if (e.key === 'Escape') document.body.classList.remove('overview');
+  });
+
+  // 개요 뷰에서 슬라이드 클릭 → 이동
+  deck.addEventListener('click', (e) => {
+    if (!document.body.classList.contains('overview')) return;
+    const s = e.target.closest('.slide');
+    if (s) { go(slides.indexOf(s)); document.body.classList.remove('overview'); }
+  });
+
+  // 본문 클릭(개요 아닐 때)으로 다음. 컨트롤·링크 클릭은 제외.
+  document.querySelector('.stage').addEventListener('click', (e) => {
+    if (document.body.classList.contains('overview')) return;
+    if (e.target.closest('.hud') || e.target.closest('a')) return;
+    advance();
+  });
+
+  // 딥링크(#3) 지원
+  const fromHash = parseInt(location.hash.slice(1), 10);
+  if (fromHash) go(fromHash - 1); else render();
+</script>
+</body>
+</html>
