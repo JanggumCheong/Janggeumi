@@ -166,6 +166,20 @@
   .demo-cap .dot.keep { background: var(--jg-keep); }
   .demo-cap .dot.use { background: var(--jg-use); }
 
+  /* ── AI 활용 회고 (효과 / 한계·교훈 2열) ── */
+  .retro { display: flex; gap: 3cqw; align-items: stretch; }
+  .retro .col { flex: 1; border-radius: var(--r-lg); padding: 2.6cqw; }
+  .retro .col.win { background: var(--jg-primary-soft); }
+  .retro .col.lesson { background: var(--jg-surface-sunken); }
+  .retro .col h3 { font-size: 2cqw; display: flex; align-items: center; gap: .8cqw; margin-bottom: 1.8cqw; }
+  .retro .col.win h3 { color: var(--jg-primary-strong); }
+  .retro .col.lesson h3 { color: var(--jg-ink-sub); }
+  .retro ul { list-style: none; display: flex; flex-direction: column; gap: 1.4cqw; }
+  .retro li { font-size: 1.55cqw; line-height: 1.45; color: var(--jg-ink-sub); padding-left: 2.2cqw; position: relative; }
+  .retro li strong { color: var(--jg-ink); font-weight: 700; }
+  .retro .col.win li::before { content: "✓"; position: absolute; left: 0; color: var(--jg-primary); font-weight: 800; }
+  .retro .col.lesson li::before { content: "!"; position: absolute; left: .4cqw; color: var(--jg-use); font-weight: 800; }
+
   /* ── 대비(before/after, 기존 vs 장금이) ── */
   .compare { display: flex; gap: 0; border-radius: var(--r-lg); overflow: hidden; border: 1px solid var(--jg-line); }
   .compare > div { flex: 1; padding: 2.6cqw; }
@@ -418,6 +432,34 @@
         <div class="quote"><span class="emoji">🍳</span><p>장금이 왈, 함께 식탁의 고민을 끝내보실는지요.</p></div>
         <aside class="notes">
           마지막 슬라이드는 "무엇을 요청하는가"로 끝냅니다 — 투자·협업·피드백 중 이 발표의 목적에 맞게 한 문장으로. 감사 인사보다 다음 행동을 남기세요.
+        </aside>
+      </section>
+
+      <!-- ══════════ 슬라이드 · AI 활용 회고 (진짜 마지막) ══════════ -->
+      <section class="slide stack">
+        <div class="kicker">How we built it · AI 활용</div>
+        <h2>AI를 <span class="accent">이렇게 썼고</span>, 이런 걸 배웠습니다</h2>
+        <div class="retro">
+          <div class="col win">
+            <h3>✅ 효과가 컸던 방법</h3>
+            <ul>
+              <li><strong>스킬로 반복작업·일관성.</strong> content·design·presentation·product 스킬을 구성해 화면·기획·콘텐츠를 같은 규칙으로 반복 생성했습니다.</li>
+              <li><strong>만든 스킬을 계속 재사용.</strong> 한 번 정한 토큰·서사를 매번 새로 짓지 않고 그대로 불러 썼습니다.</li>
+              <li><strong>plan 모드로 기획·생각 보완.</strong> 바로 코드로 가지 않고 계획 단계에서 빠진 관점을 메웠습니다.</li>
+              <li><strong>API 검수 도구로 활용.</strong> 디스코드 알림봇·API 응답을 프론트 스키마와 AI가 대조 — recipes에 폐기 데이터가 섞였는지, dispose 구조가 화면 기획과 맞는지, wasteType 값이 모순되는지 확인했습니다.</li>
+            </ul>
+          </div>
+          <div class="col lesson">
+            <h3>⚠️ 한계와 교훈</h3>
+            <ul>
+              <li><strong>Claude와 Codex를 함께 써</strong> 둘을 연동하는 별도 작업이 필요했습니다(.claude ↔ .codex 스킬 동기화).</li>
+              <li><strong>생각보다 더 자세히 써줘야 했습니다.</strong> 지시가 두루뭉술하면 결과도 두루뭉술 — 스펙을 구체적으로 쥐여줄수록 품질이 올라갔습니다.</li>
+              <li><strong>ERD·DB 설계를 한 번에 맡기면 품질이 안 나옵니다.</strong> 특히 PoC 초기엔 요구사항 리스트조차 명확하지 않아 더 안 나왔습니다 — 사람이 먼저 범위를 좁혀야 했습니다.</li>
+            </ul>
+          </div>
+        </div>
+        <aside class="notes">
+          솔직한 회고로 마무리합니다. AI로 반복작업과 일관성은 확실히 벌었고(스킬·plan·API 검수), 동시에 한계도 분명했습니다 — 도구 연동 비용, 지시를 아주 구체적으로 줘야 한다는 점, 그리고 ERD·요구사항이 안 잡힌 초기엔 AI에게 한 번에 맡기면 오히려 품질이 떨어진다는 것. "AI가 다 해준다"가 아니라 "사람이 범위를 좁히고 규칙을 쥐여줄 때 AI가 반복을 대신한다"가 우리가 얻은 결론입니다.
         </aside>
       </section>
 
