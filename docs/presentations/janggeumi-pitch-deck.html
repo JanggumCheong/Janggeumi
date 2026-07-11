@@ -154,6 +154,16 @@
   /* 폰 프레임(모바일 캡처용) */
   .phone-shot { width: 22cqw; border-radius: 3cqw; padding: 1cqw; background: #111; }
   .phone-shot img { border-radius: 2cqw; }
+  /* 데모: 4폰 나란히 + 영역별 라벨 */
+  .demo-shots { align-items: flex-start; gap: 2.6cqw; justify-content: space-between; }
+  .demo-phone { display: flex; flex-direction: column; align-items: center; flex: 1; }
+  .demo-phone .phone-shot { width: 100%; border-radius: 2.4cqw; padding: .7cqw; }
+  .demo-phone .phone-shot img { border-radius: 1.8cqw; }
+  .demo-cap { margin-top: 1.4cqw; font-size: 1.5cqw; font-weight: 700; color: var(--jg-ink); display: flex; align-items: center; gap: .7cqw; }
+  .demo-cap .dot { width: 1.1cqw; height: 1.1cqw; border-radius: 999px; display: inline-block; }
+  .demo-cap .dot.buy { background: var(--jg-buy); }
+  .demo-cap .dot.keep { background: var(--jg-keep); }
+  .demo-cap .dot.use { background: var(--jg-use); }
 
   /* ── 대비(before/after, 기존 vs 장금이) ── */
   .compare { display: flex; gap: 0; border-radius: var(--r-lg); overflow: hidden; border: 1px solid var(--jg-line); }
@@ -354,17 +364,28 @@
 
       <!-- ══════════ 슬라이드 5 · 데모(실제 화면) ══════════ -->
       <section class="slide stack">
-        <div class="kicker">Demo</div>
-        <h2>실제 화면</h2>
-        <div class="shots">
-          <!-- 스킬이 Playwright로 캡처한 실제 앱 스크린샷을 여기에. 모바일은 .phone-shot 사용. -->
-          <div class="shot phone-shot"><img src="shots/home.png" alt="홈 화면"></div>
-          <div class="shot phone-shot"><img src="shots/purchase.png" alt="구매 탭"></div>
-          <div class="shot phone-shot"><img src="shots/storage.png" alt="보관 탭"></div>
-          <div class="shot phone-shot"><img src="shots/handling.png" alt="처리 탭"></div>
+        <div class="kicker">Demo · 실제 앱 화면</div>
+        <h2>검색 한 번에 <span class="accent">사고 → 두고 → 처리</span></h2>
+        <div class="shots demo-shots">
+          <div class="demo-phone">
+            <div class="shot phone-shot"><img src="shots/app-home.png" alt="장금이 홈 화면 — 검색바와 인기 재료"></div>
+            <div class="demo-cap">홈 · 재료 검색</div>
+          </div>
+          <div class="demo-phone">
+            <div class="shot phone-shot"><img src="shots/app-purchase.png" alt="수박 구매 탭 — 좋은 수박일 확률 게이지와 고르는 기준"></div>
+            <div class="demo-cap"><span class="dot buy"></span>구매 · 잘 고르기</div>
+          </div>
+          <div class="demo-phone">
+            <div class="shot phone-shot"><img src="shots/app-storage.png" alt="수박 보관 탭 — 필터와 방법 비교"></div>
+            <div class="demo-cap"><span class="dot keep"></span>보관 · 오래 두기</div>
+          </div>
+          <div class="demo-phone">
+            <div class="shot phone-shot"><img src="shots/app-handling.png" alt="수박 처리 탭 — 활용·폐기와 사용자 후기"></div>
+            <div class="demo-cap"><span class="dot use"></span>처리 · 끝까지 쓰기</div>
+          </div>
         </div>
         <aside class="notes">
-          여기서 말로 설명하지 말고 화면으로 보여줍니다. 검색 → 재료 상세 → 세 탭 전환을 라이브로 시연하면 가장 강력합니다. 캡처는 실제 실행 결과입니다.
+          말로 설명하지 말고 화면으로 보여줍니다. "수박 하나 검색하면 — 잘 고르는 법, 오래 두는 법, 남으면 처리하는 법까지 한 흐름에 있습니다." 구매는 확률 게이지로 확신을 주고, 보관은 방법을 비교·평가로, 처리는 사용자 후기까지. 가능하면 이 네 화면을 실제 앱에서 라이브로 넘기며 시연하는 게 가장 강력합니다.
         </aside>
       </section>
 
