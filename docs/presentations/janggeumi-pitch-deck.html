@@ -93,8 +93,10 @@
   /* ── O/X 살림 퀴즈 슬라이드 ── */
   .quiz { align-items: flex-start; }
   .quiz .q { font-size: 3.6cqw; font-weight: 800; line-height: 1.2; margin: 1.2cqw 0 2.8cqw; letter-spacing: -0.01em; }
-  .ox { display: flex; gap: 2.4cqw; }
-  .ox .opt { flex: 1; border-radius: var(--r-lg); border: 2px solid var(--jg-line); background: var(--jg-surface); padding: 3cqw 2.4cqw; text-align: center; }
+  /* O/X(좌) + 해설(우) 가로 배치 — 시선 흐름: 문제 → 선택 → 근거 */
+  .quiz-body { display: flex; gap: 3cqw; align-items: stretch; }
+  .ox { display: flex; gap: 2.4cqw; flex: 0 0 auto; }
+  .ox .opt { width: 12cqw; border-radius: var(--r-lg); border: 2px solid var(--jg-line); background: var(--jg-surface); padding: 2.6cqw 2cqw; text-align: center; display: flex; flex-direction: column; justify-content: center; }
   .ox .mark { font-size: 7cqw; font-weight: 800; line-height: 1; }
   .ox .mark.o { color: var(--jg-buy); }
   .ox .mark.x { color: var(--jg-danger); }
@@ -103,10 +105,11 @@
   .quiz.reveal .opt.answer { border-color: var(--jg-primary); background: var(--jg-primary-soft); }
   .quiz.reveal .opt.answer .desc { color: var(--jg-primary-strong); font-weight: 700; }
   .quiz.reveal .opt:not(.answer) { opacity: .4; }
-  .quiz .explain { display: none; margin-top: 2.8cqw; background: var(--jg-primary-soft); border-radius: var(--r-lg); padding: 2.2cqw; }
-  .quiz.reveal .explain { display: block; }
-  .quiz .explain p { font-size: 1.8cqw; color: var(--jg-primary-strong); font-weight: 600; }
-  .quiz .explain .src { margin-top: 1cqw; font-size: 1.3cqw; color: var(--jg-ink-mute); font-weight: 500; }
+  /* 해설: O/X 오른쪽, 세로 중앙. 공개 전엔 자리만 비워 O/X가 튀지 않게(visibility) */
+  .quiz .explain { flex: 1; visibility: hidden; align-self: center; background: var(--jg-primary-soft); border-radius: var(--r-lg); padding: 2.4cqw 2.8cqw; }
+  .quiz.reveal .explain { visibility: visible; }
+  .quiz .explain p { font-size: 1.8cqw; color: var(--jg-primary-strong); font-weight: 600; line-height: 1.5; }
+  .quiz .explain .src { margin-top: 1.2cqw; font-size: 1.3cqw; color: var(--jg-ink-mute); font-weight: 500; }
 
   /* ── 큰 숫자/지표 카드 ── */
   .metrics { display: flex; gap: 2.4cqw; }
@@ -215,13 +218,15 @@
       <section class="slide quiz" data-quiz>
         <div class="kicker">🖐 살림 O/X 퀴즈 · 1</div>
         <div class="q">🥔 감자는 <span class="accent">냉장고</span>에 넣어두면 오래간다?</div>
-        <div class="ox">
-          <div class="opt" data-opt="O"><div class="mark o">O</div><div class="desc">그렇다</div></div>
-          <div class="opt answer" data-opt="X"><div class="mark x">X</div><div class="desc">아니다</div></div>
-        </div>
-        <div class="explain">
-          <p>정답은 <strong>X</strong>. 감자는 냉장 보관이 오히려 해로워요 — 저온에서 전분이 당으로 바뀌어 맛이 변합니다. <strong>빛을 차단한 서늘한 냉암소</strong>에 사과 한 알과 함께 두는 게 정답이에요.</p>
-          <div class="src">출처: 대한민국 정책브리핑(농림축산식품부) · 식품안전나라(식약처) — 장금이 감자 보관 콘텐츠</div>
+        <div class="quiz-body">
+          <div class="ox">
+            <div class="opt" data-opt="O"><div class="mark o">O</div><div class="desc">그렇다</div></div>
+            <div class="opt answer" data-opt="X"><div class="mark x">X</div><div class="desc">아니다</div></div>
+          </div>
+          <div class="explain">
+            <p>정답은 <strong>X</strong>. 감자는 냉장 보관이 오히려 해로워요 — 저온에서 전분이 당으로 바뀌어 맛이 변합니다. <strong>빛을 차단한 서늘한 냉암소</strong>에 사과 한 알과 함께 두는 게 정답이에요.</p>
+            <div class="src">출처: 대한민국 정책브리핑(농림축산식품부) · 식품안전나라(식약처) — 장금이 감자 보관 콘텐츠</div>
+          </div>
         </div>
         <aside class="notes">
           먼저 손을 들게 합니다: "감자 냉장고에 넣으시는 분?" 반응을 본 뒤 넘겨서 정답을 공개합니다. 대부분 냉장을 고르는데 답은 X — 여기서 "우리는 이런 걸 출처와 함께 정확히 알려준다"로 자연스럽게 연결합니다. (스페이스/→ 로 정답 공개)
@@ -232,13 +237,15 @@
       <section class="slide quiz" data-quiz>
         <div class="kicker">🖐 살림 O/X 퀴즈 · 2</div>
         <div class="q">🍉 안 자른 수박은 <span class="accent">실온</span>에 두는 게 낫다?</div>
-        <div class="ox">
-          <div class="opt answer" data-opt="O"><div class="mark o">O</div><div class="desc">그렇다</div></div>
-          <div class="opt" data-opt="X"><div class="mark x">X</div><div class="desc">아니다</div></div>
-        </div>
-        <div class="explain">
-          <p>정답은 <strong>O</strong>. 통수박은 <strong>직사광선을 피한 통풍 잘 되는 서늘한 실온</strong>이 좋아요 — 오히려 당도가 더 올라갑니다. 잘라서 먹기 전엔 냉장이 맞지만, 통째로는 실온이 정답이에요.</p>
-          <div class="src">출처: 농촌진흥청 농사로 — 장금이 수박 보관 콘텐츠</div>
+        <div class="quiz-body">
+          <div class="ox">
+            <div class="opt answer" data-opt="O"><div class="mark o">O</div><div class="desc">그렇다</div></div>
+            <div class="opt" data-opt="X"><div class="mark x">X</div><div class="desc">아니다</div></div>
+          </div>
+          <div class="explain">
+            <p>정답은 <strong>O</strong>. 통수박은 <strong>직사광선을 피한 통풍 잘 되는 서늘한 실온</strong>이 좋아요 — 오히려 당도가 더 올라갑니다. 잘라서 먹기 전엔 냉장이 맞지만, 통째로는 실온이 정답이에요.</p>
+            <div class="src">출처: 농촌진흥청 농사로 — 장금이 수박 보관 콘텐츠</div>
+          </div>
         </div>
         <aside class="notes">
           "그럼 수박은요?" 하고 이어갑니다. 이건 반대로 답이 O라 헷갈립니다 — 감자는 냉장이 아니고, 수박은 통째면 실온. 두 문제로 "상식이 자주 틀린다 → 믿을 근거가 필요하다"를 각인시키고 문제 슬라이드로 넘어갑니다.
