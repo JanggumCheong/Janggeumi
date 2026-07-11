@@ -135,6 +135,22 @@
   .shot { border-radius: var(--r-lg); overflow: hidden; box-shadow: var(--shadow-float); background: #fff; border: 1px solid var(--jg-line); }
   .shot img { display: block; width: 100%; height: auto; }
   .shot .cap { font-size: 1.3cqw; color: var(--jg-ink-mute); padding: .8cqw 1.2cqw; }
+
+  /* ── '지금(Before)' 증거 스크린샷 2장 나란히 ── */
+  .evidence { display: flex; gap: 3cqw; }
+  .evidence .ev { flex: 1; display: flex; flex-direction: column; }
+  .evidence .ev-label { font-size: 1.6cqw; font-weight: 700; color: var(--jg-ink); margin-bottom: 1.2cqw; }
+  .evidence .ev-label .site { color: var(--jg-ink-mute); font-weight: 600; }
+  /* 브라우저 창 프레임(상단 신호등 바) */
+  .browser { border-radius: var(--r-md); overflow: hidden; border: 1px solid var(--jg-line); box-shadow: var(--shadow-float); background: #fff; }
+  .browser .bar { display: flex; gap: .7cqw; align-items: center; padding: 1cqw 1.4cqw; background: var(--jg-surface-sunken); border-bottom: 1px solid var(--jg-line); }
+  .browser .bar i { width: 1.1cqw; height: 1.1cqw; border-radius: 999px; display: inline-block; }
+  .browser .bar i:nth-child(1) { background: #E86B60; }
+  .browser .bar i:nth-child(2) { background: #F0B429; }
+  .browser .bar i:nth-child(3) { background: #4CAF6E; }
+  .browser img { display: block; width: 100%; height: 24cqw; object-fit: cover; object-position: top; }
+  .evidence .ev-note { margin-top: 1.2cqw; font-size: 1.5cqw; color: var(--jg-ink-sub); }
+  .evidence .ev-note strong { color: var(--jg-danger); }
   /* 폰 프레임(모바일 캡처용) */
   .phone-shot { width: 22cqw; border-radius: 3cqw; padding: 1cqw; background: #111; }
   .phone-shot img { border-radius: 2cqw; }
@@ -291,6 +307,33 @@
         </div>
         <aside class="notes">
           여기서 "왜 지금까지 안 됐나"를 짚습니다: 정보가 흩어져 있고 신뢰를 확인할 수 없었다. 우리는 흩어진 걸 한 곳에 모으고, 출처로 신뢰를 보증하고, 화면을 유려·심플·직관·현대로 풉니다. (특정 회사 브랜드명은 발표에서 쓰지 않습니다.)
+        </aside>
+      </section>
+
+      <!-- ══════════ 슬라이드 · '지금'의 증거 (실제 검색 화면) ══════════ -->
+      <section class="slide stack">
+        <div class="kicker">Why now · 실제로 이렇습니다</div>
+        <h2>"파 하나 보관법" 찾으면 <span class="accent">이게 전부</span>입니다</h2>
+        <div class="evidence">
+          <div class="ev">
+            <div class="ev-label">유튜브 <span class="site">— "파보관법"</span></div>
+            <div class="browser">
+              <div class="bar"><i></i><i></i><i></i></div>
+              <img src="shots/before-youtube-search.png" alt="유튜브 '파보관법' 검색 결과 — 대파 보관 영상이 수십 개">
+            </div>
+            <div class="ev-note">영상만 수십 개. <strong>어느 게 맞는지</strong> 알 수 없다.</div>
+          </div>
+          <div class="ev">
+            <div class="ev-label">구글 <span class="site">— "파 보관법"</span></div>
+            <div class="browser">
+              <div class="bar"><i></i><i></i><i></i></div>
+              <img src="shots/before-google-search.png" alt="구글 '파 보관법' 검색 결과 — 블로그·레시피·영상이 뒤섞이고 정보가 제각각">
+            </div>
+            <div class="ev-note">2017년 블로그·레시피·영상이 뒤섞이고 <strong>정보가 제각각</strong>(15일 vs 3개월).</div>
+          </div>
+        </div>
+        <aside class="notes">
+          앞의 대비를 말로만 하지 않고 실제로 보여줍니다. "파 하나 보관법 찾아보신 적 있죠? 이게 검색 결과 전부입니다." 유튜브엔 영상만 수십 개, 구글엔 8년 된 블로그부터 레시피·영상이 섞여 보관 기간도 15일이라는 곳, 3개월이라는 곳 제각각입니다. 뭘 믿어야 할지 모른다 — 이 답답함이 바로 우리가 푸는 문제라고 연결합니다.
         </aside>
       </section>
 
